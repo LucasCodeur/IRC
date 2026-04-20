@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/20 14:55:38 by lud-adam         ###   ########.fr       */
+/*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/04/20 14:55:31 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-int	main(void)
-{
-	server();
-	return (0);
-}
+bool    server(void);
+
+#endif
