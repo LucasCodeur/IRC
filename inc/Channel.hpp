@@ -8,18 +8,15 @@
 class Channel
 {
 	private:
-	std::string 			_name;
-	std::string 			_topic;
-	std::string 			_password;
-	std::vector<Client> 	_user;
-	std::vector<Client> 	_operator;
-	std::vector<Client> 	_invited;
-	bool 					_invOnly;
-	bool					_topicRestric;
-	int						_maxUser;
+	std::string				_name;
+	std::string				_topic;
+	std::string				_password;
+	std::vector<Client>		_user;
+	std::vector<Client>		_operator;
+	std::vector<Client>		_invited;
+	int						_mode;
 
-
- 	 public:
+ 	public:
   	// CONSTRUCTOR
   	Channel();
 	~Channel();
