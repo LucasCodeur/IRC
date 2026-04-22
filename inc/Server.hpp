@@ -13,8 +13,8 @@ class Server
 	int								_port;
 	int								_fd;
 	std::string						_password;
-	std::map<int, Client>			_client; //int for the fd of the client
-	std::map<std::string, Channel>	_channel; // string for the name of the chanel
+	std::map<int, Client>			_clients; //int for the fd of the client
+	std::map<std::string, Channel>	_channels; // string for the name of the chanel
 
 	public:
 	// CONSTRUCTOR
