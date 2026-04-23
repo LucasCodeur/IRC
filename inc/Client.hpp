@@ -45,8 +45,6 @@ class Client
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
 	void setAuthState(authState state);
-	void appendBuf(std::string const &data);
-	void clearBuf();
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 

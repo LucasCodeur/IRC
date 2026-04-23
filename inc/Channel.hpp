@@ -39,12 +39,12 @@ class Channel
 	void setPassword(std::string const &password);
 	void setMode(int mode);
 
-	// METHODS
-	void addUser(int fd);
-	void removeUser(int fd);
-	void addOperator(int fd);
-	void removeOperator(int fd);
-	void addInvited(int fd);
+	// // METHODS
+	// void addUser(int fd);
+	// void removeUser(int fd);
+	// void addOperator(int fd);
+	// void removeOperator(int fd);
+	// void addInvited(int fd);
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);
 
