@@ -1,12 +1,18 @@
 #include "Server.hpp"
+#include <iostream>
 
 Server::Server()
-	: _port(0), _fd(-1), _serverName("ircserv"), _password("")
+	: _port(0),
+	  _fd(-1),
+	  _serverName("ircserv"),
+	  _password("")
 {
+	std::cout << "Server created: " << *this << std::endl;
 }
 
 Server::~Server()
 {
+	std::cout << "Server destroyed: " << *this << std::endl;
 }
 
 Server::Server(Server const &original)
@@ -72,6 +78,5 @@ void Server::handleJoin(Command const &cmd)
 
 std::ostream &operator<<(std::ostream &o, const Server &obj)
 {
-	(void)obj;
-	return (o);
+	return (o << "Server: " << obj.getServerName() << ": " << obj.getPort());
 }
