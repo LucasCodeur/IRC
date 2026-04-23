@@ -40,8 +40,12 @@ Channel &Channel::operator=(Channel const &other)
 
 std::ostream &operator<<(std::ostream &o, const Channel &obj)
 {
-	(void)obj; // TODO: not implemented yet
-	return (o);
+	return (o << "Channel: " << obj.getName() 
+			  << " (Topic: " << obj.getTopic()
+			  << ", Users: " << obj.getUsers().size()
+			  << ", Operators: " << obj.getOperators().size()
+			  << ", Invited: " << obj.getInvited().size() 
+			  << ", Mode: " << obj.getMode() << ")");
 }
 
 std::string const &Channel::getName() const

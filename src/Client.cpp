@@ -40,8 +40,11 @@ Client &Client::operator=(Client const &other)
 
 std::ostream &operator<<(std::ostream &o, const Client &obj)
 {
-	(void)obj;
-	return (o);
+	return (o << "Client: " << obj.getNickname() 
+			  << " (Username: " << obj.getUsername() 
+			  << ", FD: " << obj.getFd() 
+			  << ", AuthState: " << obj.getAuthState()
+			  << ")");
 }
 
 std::string const &Client::getUsername() const

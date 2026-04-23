@@ -61,7 +61,7 @@ std::string const &Server::getPassword() const
 
 void Server::handleCommand(Command const &cmd)
 {
-	switch (cmd.getCommandType())
+	switch (cmd.getCommandType()) // TODO: will add all the commands later
 	{
 		case Command::JOIN:
 			this->handleJoin(cmd);
@@ -78,5 +78,6 @@ void Server::handleJoin(Command const &cmd)
 
 std::ostream &operator<<(std::ostream &o, const Server &obj)
 {
-	return (o << "Server: " << obj.getServerName() << ": " << obj.getPort());
+	return (o << "Server: " << obj.getServerName()
+			  << ": " << obj.getPort());
 }

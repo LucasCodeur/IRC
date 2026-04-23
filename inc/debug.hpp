@@ -6,11 +6,13 @@
 /*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/22 10:14:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/23 14:47:28 by enzo             ###   ########lyon.fr   */
+/*   Updated: 2026/04/23 17:15:23 by enzo             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef DEBUG_HPP
+#define DEBUG_HPP
+
 #include <iostream>
 
 #define RESET     "\033[0m"
@@ -24,3 +26,5 @@
 
 #define PRINT(x, color, newline) \
     std::cout << color << x << RESET << newline;
+
+#endif // !DEBUG_HPP
