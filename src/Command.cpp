@@ -8,7 +8,7 @@ Command::Command()
 	std::cout << "Command created: " << *this << std::endl;
 }
 
-Command::Command(int clientFd, Command::commandType type, std::vector<std::string> params)
+Command::Command(int clientFd, Command::commandType type, std::vector<std::string> const &params)
 	: _clientFd(clientFd),
 	  _commandType(type),
 	  _params(params)
@@ -37,22 +37,22 @@ Command &Command::operator=(Command const &other)
 		this->_commandType = other._commandType;
 		this->_params = other._params;
 	}
-	return *this;
+	return (*this);
 }
 
 int Command::getClientFd() const
 {
-	return _clientFd;
+	return (_clientFd);
 }
 
 Command::commandType Command::getCommandType() const
 {
-	return _commandType;
+	return (_commandType);
 }
 
 std::vector<std::string> const &Command::getParams() const
 {
-	return _params;
+	return (_params);
 }
 
 std::ostream &operator<<(std::ostream &o, const Command &obj)
@@ -67,6 +67,5 @@ std::ostream &operator<<(std::ostream &o, const Command &obj)
 			o << ", ";
 	}
 	o << "]";
-	return o;
+	return (o);
 }
-

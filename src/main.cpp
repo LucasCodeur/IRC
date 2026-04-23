@@ -16,6 +16,6 @@
 int	main(void)
 {
 	Server server;
-	server.test();
+	(void)server;
 	return (0);
 }

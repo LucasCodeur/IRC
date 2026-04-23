@@ -35,11 +35,46 @@ Channel &Channel::operator=(Channel const &other)
 		this->_invited = other._invited;
 		this->_mode = other._mode;
 	}
-	return *this;
+	return (*this);
 }
 
 std::ostream &operator<<(std::ostream &o, const Channel &obj)
 {
-	(void)obj;
-	return o;
+	(void)obj; // TODO: not implemented yet
+	return (o);
+}
+
+std::string const &Channel::getName() const
+{
+	return (_name);
+}
+
+std::string const &Channel::getTopic() const
+{
+	return (_topic);
+}
+
+std::string const &Channel::getPassword() const
+{
+	return (_password);
+}
+
+std::vector<int> const &Channel::getUsers() const
+{
+	return (_users);
+}
+
+std::vector<int> const &Channel::getOperators() const
+{
+	return (_operators);
+}
+
+std::vector<int> const &Channel::getInvited() const
+{
+	return (_invited);
+}
+
+int Channel::getMode() const
+{
+	return (_mode);
 }

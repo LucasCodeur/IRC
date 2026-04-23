@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 
 #include <ostream>
+#include <string>
 #include <vector>
 
 class Command
@@ -22,15 +23,16 @@ class Command
 		USER,
 		PART
 	};
+
 	private:
 	int							_clientFd;
 	commandType					_commandType;
 	std::vector<std::string>	_params;
 
-  public:
+	public:
 	// CONSTRUCTOR
 	Command();
-	Command(int clientFd, commandType type, std::vector<std::string> params);
+	Command(int clientFd, commandType type, std::vector<std::string> const &params);
 	~Command();
 	Command(Command const &original);
 

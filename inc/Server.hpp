@@ -5,8 +5,8 @@
 #include <ostream>
 #include <string>
 #include "Channel.hpp"
-#include "Command.hpp"
 #include "Client.hpp"
+#include "Command.hpp"
 
 class Server
 {
@@ -15,8 +15,8 @@ class Server
 	int								_fd;
 	std::string						_serverName;
 	std::string						_password;
-	std::map<int, Client>			_clients; //int for the fd of the client
-	std::map<std::string, Channel>	_channels; // string for the name of the chanel
+	std::map<int, Client>			_clients;
+	std::map<std::string, Channel>	_channels;
 
 	public:
 	// CONSTRUCTOR
@@ -28,12 +28,17 @@ class Server
 	Server &operator=(Server const &other);
 
 	// GETTERS
+	int getPort() const;
+	int getFd() const;
+	std::string const &getServerName() const;
+	std::string const &getPassword() const;
 
 	// METHODS
 	void handleCommand(Command const &cmd);
-	void test();
+
+	private:
+	void handleJoin(Command const &cmd);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
-
 
 #endif // !SERVER_HPP

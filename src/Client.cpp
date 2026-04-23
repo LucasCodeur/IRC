@@ -35,11 +35,40 @@ Client &Client::operator=(Client const &other)
 		this->_fd = other._fd;
 		this->_authState = other._authState;
 	}
-	return *this;
+	return (*this);
 }
 
 std::ostream &operator<<(std::ostream &o, const Client &obj)
 {
 	(void)obj;
-	return o;
+	return (o);
+}
+
+std::string const &Client::getUsername() const
+{
+	return (_username);
+}
+std::string const &Client::getNickname() const
+{
+	return (_nickname);
+}
+
+std::string const &Client::getPassword() const
+{
+	return (_password);
+}
+
+std::string const &Client::getBuf() const
+{
+	return (_buf);
+}
+
+int Client::getFd() const
+{
+	return (_fd);
+}
+
+Client::authState Client::getAuthState() const
+{
+	return (_authState);
 }

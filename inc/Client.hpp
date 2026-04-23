@@ -6,7 +6,7 @@
 
 class Client
 {
-  private:
+	public:
 	enum authState
 	{
 		EMPTY,
@@ -14,6 +14,8 @@ class Client
 		NICK_RECEIVED,
 		FULLY_REGISTERED
 	};
+
+	private:
 	std::string		_username;
 	std::string		_nickname;
 	std::string		_password;
@@ -21,8 +23,7 @@ class Client
 	int				_fd;
 	authState		_authState;
 
-
-  public:
+	public:
 	// CONSTRUCTOR
 	Client();
 	~Client();
@@ -31,7 +32,21 @@ class Client
 	// OPERATOR
 	Client &operator=(Client const &other);
 
+	// GETTERS
+	std::string const &getUsername() const;
+	std::string const &getNickname() const;
+	std::string const &getPassword() const;
+	std::string const &getBuf() const;
+	int getFd() const;
+	authState getAuthState() const;
 
+	// SETTERS
+	void setUsername(std::string const &username);
+	void setNickname(std::string const &nickname);
+	void setPassword(std::string const &password);
+	void setAuthState(authState state);
+	void appendBuf(std::string const &data);
+	void clearBuf();
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 

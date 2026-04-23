@@ -1,6 +1,5 @@
 #include "Server.hpp"
-#include "Command.hpp"
-#include <iostream>
+
 Server::Server()
 	: _port(0), _fd(-1), _serverName("ircserv"), _password("")
 {
@@ -31,36 +30,48 @@ Server &Server::operator=(Server const &other)
 		this->_clients = other._clients;
 		this->_channels = other._channels;
 	}
-	return *this;
+	return (*this);
 }
 
-std::ostream &operator<<(std::ostream &o, const Server &obj)
+int Server::getPort() const
 {
-	(void)obj;
-	return o;
+	return (this->_port);
+}
+
+int Server::getFd() const
+{
+	return (this->_fd);
+}
+
+std::string const &Server::getServerName() const
+{
+	return (this->_serverName);
+}
+
+std::string const &Server::getPassword() const
+{
+	return (this->_password);
 }
 
 void Server::handleCommand(Command const &cmd)
 {
 	switch (cmd.getCommandType())
 	{
-	case Command::EMPTY:
-		std::cout << "Handling EMPTY command " << cmd.getClientFd() << std::endl;
-		break;
-	case Command::JOIN:
-		std::cout << "Handling JOIN command " << cmd.getClientFd() << std::endl;
-		this->handleJoin(cmd);
-		break;
-	default:
-		std::cout << "Handling unknown command " << cmd.getClientFd() << std::endl;
-		break;
+		case Command::JOIN:
+			this->handleJoin(cmd);
+			break;
+		default:
+			break;
 	}
 }
 
-void Server::test()
+void Server::handleJoin(Command const &cmd)
 {
-	Command cmd(42, Command::EMPTY, std::vector<std::string>());
-	this->handleCommand(cmd);
-	Command cmd2(42, Command::JOIN, std::vector<std::string>());
-	this->handleCommand(cmd2);
+	(void)cmd;
+}
+
+std::ostream &operator<<(std::ostream &o, const Server &obj)
+{
+	(void)obj;
+	return (o);
 }
