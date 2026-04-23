@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/13 11:40:04 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/04/23 15:33:30 by enzo             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "debug.hpp"
+// #include "debug.hpp"
+# include "Server.hpp"
 
 int	main(void)
 {
-	PRINT("Hello World !", GREEN, "\n");
+	Server server;
+	server.test();
 	return (0);
 }

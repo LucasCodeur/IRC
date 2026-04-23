@@ -1,0 +1,42 @@
+#include "Channel.hpp"
+
+Channel::Channel()
+	: _name(""), _topic(""), _password(""), _mode(0)
+{
+}
+
+Channel::~Channel()
+{
+}
+
+Channel::Channel(Channel const &original)
+	: _name(original._name),
+	  _topic(original._topic),
+	  _password(original._password),
+	  _users(original._users),
+	  _operators(original._operators),
+	  _invited(original._invited),
+	  _mode(original._mode)
+{
+}
+
+Channel &Channel::operator=(Channel const &other)
+{
+	if (this != &other)
+	{
+		this->_name = other._name;
+		this->_topic = other._topic;
+		this->_password = other._password;
+		this->_users = other._users;
+		this->_operators = other._operators;
+		this->_invited = other._invited;
+		this->_mode = other._mode;
+	}
+	return *this;
+}
+
+std::ostream &operator<<(std::ostream &o, const Channel &obj)
+{
+	(void)obj;
+	return o;
+}
