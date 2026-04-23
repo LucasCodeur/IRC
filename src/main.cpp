@@ -6,12 +6,12 @@
 /*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/23 15:33:30 by enzo             ###   ########lyon.fr   */
+/*   Updated: 2026/04/23 15:55:19 by enzo             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 // #include "debug.hpp"
-# include "Server.hpp"
+#include "Server.hpp"
 
 int	main(void)
 {

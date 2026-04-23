@@ -33,9 +33,9 @@ Command &Command::operator=(Command const &other)
 {
 	if (this != &other)
 	{
-		_clientFd = other._clientFd;
-		_commandType = other._commandType;
-		_params = other._params;
+		this->_clientFd = other._clientFd;
+		this->_commandType = other._commandType;
+		this->_params = other._params;
 	}
 	return *this;
 }

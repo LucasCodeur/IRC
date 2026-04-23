@@ -1,7 +1,10 @@
 #include "Channel.hpp"
 
 Channel::Channel()
-	: _name(""), _topic(""), _password(""), _mode(0)
+	: _name(""),
+	  _topic(""),
+	  _password(""),
+	  _mode(0)
 {
 }
 
