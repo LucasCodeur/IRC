@@ -3,7 +3,6 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include "Client.hpp"
 
 class Channel
 {
@@ -11,9 +10,9 @@ class Channel
 	std::string				_name;
 	std::string				_topic;
 	std::string				_password;
-	std::vector<Client>		_user;
-	std::vector<Client>		_operator;
-	std::vector<Client>		_invited;
+	std::vector<int>		_users;
+	std::vector<int>		_operators;
+	std::vector<int>		_invited;
 	int						_mode;
 
  	public:

@@ -1,12 +1,12 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
-#include "Client.hpp"
 #include <ostream>
 #include <vector>
 
 class Message
 {
+	private:
 	enum commandType
 	{
 		PRIVMSG,
@@ -21,10 +21,9 @@ class Message
 		USER,
 		PART
 	};
-  private:
-	Client 						&client;
-	commandType					commandeType;
-	std::vector<std::string>	params;
+	int							_clientFd;
+	commandType					_commandType;
+	std::vector<std::string>	_params;
 
   public:
 	// CONSTRUCTOR

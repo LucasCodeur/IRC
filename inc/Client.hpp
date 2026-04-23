@@ -6,6 +6,7 @@
 
 class Client
 {
+  private:
 	enum authState
 	{
 		EMPTY,
@@ -13,8 +14,6 @@ class Client
 		NICK_RECEIVED,
 		FULLY_REGISTERED
 	};
-
-  private:
 	std::string		_username;
 	std::string		_nickname;
 	std::string		_password;
