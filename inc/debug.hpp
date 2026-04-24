@@ -6,7 +6,7 @@
 /*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/22 10:14:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/23 17:15:23 by enzo             ###   ########lyon.fr   */
+/*   Updated: 2026/04/24 16:48:13 by enzo             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@
 #define WHITE     "\033[37m"
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x << RESET << newline;
+    std::cout << color << x <<newline;
 
 #endif // !DEBUG_HPP

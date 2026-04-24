@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "debug.hpp"
 #include <iostream>
 
 Server::Server()
@@ -7,12 +8,12 @@ Server::Server()
 	  _serverName("ircserv"),
 	  _password("")
 {
-	std::cout << "Server created: " << *this << std::endl;
+	// std::cout << GREEN "Server created: " RESET << *this << std::endl;
 }
 
 Server::~Server()
 {
-	std::cout << "Server destroyed: " << *this << std::endl;
+	// std::cout << RED "Server destroyed: " RESET << *this << std::endl;
 }
 
 Server::Server(Server const &original)
@@ -23,6 +24,7 @@ Server::Server(Server const &original)
 	  _clients(original._clients),
 	  _channels(original._channels)
 {
+	// std::cout << BLUE "Server copied: " RESET << *this << std::endl;
 }
 
 Server &Server::operator=(Server const &other)
@@ -35,6 +37,7 @@ Server &Server::operator=(Server const &other)
 		this->_password = other._password;
 		this->_clients = other._clients;
 		this->_channels = other._channels;
+		// std::cout << BLUE "Server assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }
@@ -78,6 +81,6 @@ void Server::handleJoin(Command const &cmd)
 
 std::ostream &operator<<(std::ostream &o, const Server &obj)
 {
-	return (o << "Server: " << obj.getServerName()
-			  << ": " << obj.getPort());
+	return (o << "Server name: " << obj.getServerName()
+			  << " port: " << obj.getPort());
 }

@@ -1,4 +1,6 @@
 #include "Channel.hpp"
+#include "debug.hpp"
+#include <iostream>
 
 Channel::Channel()
 	: _name(""),
@@ -6,10 +8,12 @@ Channel::Channel()
 	  _password(""),
 	  _mode(0)
 {
+	// std::cout << GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::~Channel()
 {
+	// std::cout << RED "Channel destroyed: " RESET << *this <<std::endl;
 }
 
 Channel::Channel(Channel const &original)
@@ -21,6 +25,7 @@ Channel::Channel(Channel const &original)
 	  _invited(original._invited),
 	  _mode(original._mode)
 {
+	// std::cout << BLUE "Channel copied: " RESET << *this <<std::endl;
 }
 
 Channel &Channel::operator=(Channel const &other)
@@ -34,6 +39,7 @@ Channel &Channel::operator=(Channel const &other)
 		this->_operators = other._operators;
 		this->_invited = other._invited;
 		this->_mode = other._mode;
+		// std::cout << BLUE "Channel assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }

@@ -1,11 +1,12 @@
 #include "Command.hpp"
+#include "debug.hpp"
 #include <iostream>
 
 Command::Command()
 	: _clientFd(-1),
 	  _commandType(EMPTY)
 {
-	std::cout << "Command created: " << *this << std::endl;
+	// std::cout << GREEN "Command created: " RESET << *this <<std::endl;
 }
 
 Command::Command(int clientFd, Command::commandType type, std::vector<std::string> const &params)
@@ -13,12 +14,12 @@ Command::Command(int clientFd, Command::commandType type, std::vector<std::strin
 	  _commandType(type),
 	  _params(params)
 {
-	std::cout << "Command created: " << *this << std::endl;
+	// std::cout << GREEN "Command created: " RESET << *this <<std::endl;
 }
 
 Command::~Command()
 {
-	std::cout << "Command destroyed: " << *this << std::endl;
+	// std::cout << RED "Command destroyed: " RESET << *this <<std::endl;
 }
 
 Command::Command(Command const &original)
@@ -26,7 +27,7 @@ Command::Command(Command const &original)
 	  _commandType(original._commandType),
 	  _params(original._params)
 {
-	std::cout << "Command copied: " << *this << std::endl;
+	// std::cout << BLUE "Command copied: " RESET << *this <<std::endl;
 }
 
 Command &Command::operator=(Command const &other)
@@ -36,6 +37,7 @@ Command &Command::operator=(Command const &other)
 		this->_clientFd = other._clientFd;
 		this->_commandType = other._commandType;
 		this->_params = other._params;
+		// std::cout << BLUE "Command assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }
