@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include <algorithm>
 #include "debug.hpp"
 #include <iostream>
 
@@ -8,12 +9,25 @@ Channel::Channel()
 	  _password(""),
 	  _mode(0)
 {
-	// std::cout << GREEN "Channel created: " RESET << *this <<std::endl;
+	// std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
+}
+
+Channel::Channel(std::string const &name)
+	: _name(name),
+	  _topic(""),
+	  _password(""),
+	  _mode(0)
+{
+	// std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::~Channel()
 {
-	// std::cout << RED "Channel destroyed: " RESET << *this <<std::endl;
+	std::cout << DEBUG RED "Channel destroyed: " RESET << *this <<std::endl;
+	for (size_t i = 0; i < _users.size(); ++i)
+	{
+		std::cout << DEBUG YELLOW "Removing user " RESET << _users[i] << " from channel " << _name << std::endl;
+	}
 }
 
 Channel::Channel(Channel const &original)
@@ -25,7 +39,7 @@ Channel::Channel(Channel const &original)
 	  _invited(original._invited),
 	  _mode(original._mode)
 {
-	// std::cout << BLUE "Channel copied: " RESET << *this <<std::endl;
+	// std::cout << DEBUG BLUE "Channel copied: " RESET << *this <<std::endl;
 }
 
 Channel &Channel::operator=(Channel const &other)
@@ -39,7 +53,7 @@ Channel &Channel::operator=(Channel const &other)
 		this->_operators = other._operators;
 		this->_invited = other._invited;
 		this->_mode = other._mode;
-		// std::cout << BLUE "Channel assigned: " RESET << *this << std::endl;
+		// std::cout << DEBUG BLUE "Channel assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }
@@ -87,4 +101,32 @@ std::vector<int> const &Channel::getInvited() const
 int Channel::getMode() const
 {
 	return (_mode);
+}
+
+void Channel::setTopic(std::string const &topic)
+{
+	this->_topic = topic;
+}
+
+void Channel::setPassword(std::string const &password)
+{
+	this->_password = password;
+}
+
+void Channel::setMode(int mode)
+{
+	this->_mode = mode;
+}
+
+void Channel::addUser(int clientFd)
+{
+	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())
+		this->_users.push_back(clientFd);
+}
+
+void Channel::removeUser(int clientFd)
+{
+	std::vector<int>::iterator it = std::find(this->_users.begin(), this->_users.end(), clientFd);
+	if (it != this->_users.end())
+		this->_users.erase(it);
 }

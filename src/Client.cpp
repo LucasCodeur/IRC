@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include "debug.hpp"
 #include <iostream>
+#include <string>
 
 Client::Client()
 	: _username(""),
@@ -10,12 +11,12 @@ Client::Client()
 	  _fd(-1),
 	  _authState(EMPTY)
 {
-	std::cout << GREEN "Client created: " RESET << *this <<std::endl;
+	std::cout << DEBUG GREEN "Client created: " RESET << *this <<std::endl;
 }
 
 Client::~Client()
 {
-	std::cout << RED "Client destroyed: " RESET << *this <<std::endl;
+	std::cout << DEBUG RED "Client destroyed: " RESET << *this <<std::endl;
 }
 
 Client::Client(Client const &original)
@@ -26,7 +27,7 @@ Client::Client(Client const &original)
 	  _fd(original._fd),
 	  _authState(original._authState)
 {
-	std::cout << BLUE "Client copied: " RESET << *this <<std::endl;
+	std::cout << DEBUG BLUE "Client copied: " RESET << *this <<std::endl;
 }
 
 Client &Client::operator=(Client const &other)
@@ -39,17 +40,44 @@ Client &Client::operator=(Client const &other)
 		this->_buf = other._buf;
 		this->_fd = other._fd;
 		this->_authState = other._authState;
-		std::cout << BLUE "Client assigned: " RESET << *this << std::endl;
+		std::cout << DEBUG BLUE "Client assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }
 
 std::ostream &operator<<(std::ostream &o, const Client &obj)
 {
+	std::string authState;
+	Client::authState currentState = obj.getAuthState();
+	
+	switch (obj.getAuthState()) 
+	{
+		case Client::EMPTY:
+		{
+			authState = "Empty";
+			break;
+		}
+		case Client::PASSWORD_RECEIVED:
+		{
+			authState = "Password received";
+			break;
+		}
+		case Client::NICK_RECEIVED:
+		{
+			authState = "Nick received";
+			break;
+		}	
+		case Client::FULLY_REGISTERED:
+		{
+			authState = "Fully registered";
+			break;
+		}
+	}
 	return (o << "Client: " << obj.getNickname() 
 			  << " (Username: " << obj.getUsername() 
 			  << ", FD: " << obj.getFd() 
-			  << ", AuthState: " << obj.getAuthState()
+			  << ", AuthState: " << authState
+			  << "(" << currentState << ")"
 			  << ")");
 }
 
@@ -80,4 +108,29 @@ int Client::getFd() const
 Client::authState Client::getAuthState() const
 {
 	return (_authState);
+}
+
+void Client::setFd(int fd)
+{
+	this->_fd = fd;
+}
+
+void Client::setUsername(std::string const &username)
+{
+	this->_username = username;
+}
+
+void Client::setNickname(std::string const &nickname)
+{
+	this->_nickname = nickname;
+}
+
+void Client::setPassword(std::string const &password)
+{
+	this->_password = password;
+}
+
+void Client::setAuthState(Client::authState state)
+{
+	this->_authState = state;
 }

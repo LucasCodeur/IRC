@@ -41,6 +41,7 @@ class Client
 	authState getAuthState() const;
 
 	// SETTERS
+	void setFd(int fd);
 	void setUsername(std::string const &username);
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);

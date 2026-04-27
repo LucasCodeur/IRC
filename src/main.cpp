@@ -3,26 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/24 16:52:06 by enzo             ###   ########lyon.fr   */
+/*   Updated: 2026/04/27 16:42:03 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 // #include "debug.hpp"
+#include "Client.hpp"
+#include "Command.hpp"
 #include "Server.hpp"
 #include "Channel.hpp"
 #include <iostream>
+#include <vector>
 
 int	main(void)
 {
 	Server server;
-	Server server2;
-	Channel channel;
-	server2 = server;
-	std::cout << server2 << std::endl;
-	std::cout << server << std::endl;
-	std::cout << channel << std::endl;
+	std::vector<std::string> param;
+	param.push_back("#Test");
+	Command cmd(1, Command::JOIN, param);
+	server.handleCommand(cmd);		
 	return (0);
 }

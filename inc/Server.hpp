@@ -32,7 +32,9 @@ class Server
 	int getFd() const;
 	std::string const &getServerName() const;
 	std::string const &getPassword() const;
-
+	std::map<int, Client> const &getClientmap() const;
+	std::map<std::string, Channel> const &getChanelmap() const;
+	
 	// METHODS
 	void handleCommand(Command const &cmd);
 

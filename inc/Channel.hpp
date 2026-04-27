@@ -19,6 +19,7 @@ class Channel
 	public:
 	// CONSTRUCTOR
 	Channel();
+	Channel(std::string const &name);
 	~Channel();
 	Channel(Channel const &original);
 
@@ -38,6 +39,10 @@ class Channel
 	void setTopic(std::string const &topic);
 	void setPassword(std::string const &password);
 	void setMode(int mode);
+
+	// METHODS
+	void addUser(int clientFd);
+	void removeUser(int clientFd);
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);
 
