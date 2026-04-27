@@ -85,7 +85,7 @@ void Server::handleJoin(Command const &cmd)
 		return;
 	}
 	if (cmd.getParams().size() > 1)
-	{
+	{	
 		std::cout << DEBUG RED "JOIN command has too many parameters" RESET << std::endl;
 		return;
 	}
@@ -96,7 +96,7 @@ void Server::handleJoin(Command const &cmd)
 	}
 	if (this->_channels.find(cmd.getParams()[0]) == this->_channels.end())
 	{
-		this->_channels[cmd.getParams()[0]] = Channel(cmd.getParams()[0]);
+		this->_channels.insert(std::make_pair(cmd.getParams()[0], Channel(cmd.getParams()[0])));
 		std::cout << DEBUG GREEN "Channel created: " RESET << cmd.getParams()[0] << std::endl;
 	}
 	this->_channels[cmd.getParams()[0]].addUser(cmd.getClientFd());

@@ -43,6 +43,11 @@ class Command
 	int getClientFd() const;
 	commandType getCommandType() const;
 	std::vector<std::string> const &getParams() const;
+
+	// SETTERS
+	void setClientFd(int clientFd);
+	void setCommandType(commandType type);
+	void setParams(std::vector<std::string> const &params);
 };
 std::ostream &operator<<(std::ostream &o, const Command &obj);
 

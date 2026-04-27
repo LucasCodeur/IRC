@@ -71,3 +71,18 @@ std::ostream &operator<<(std::ostream &o, const Command &obj)
 	o << "]";
 	return (o);
 }
+
+void Command::setClientFd(int fd)
+{
+	this->_clientFd = fd;
+}
+
+void Command::setCommandType(commandType type)
+{
+	this->_commandType = type;
+}
+
+void Command::setParams(std::vector<std::string> const &params)
+{
+	this->_params = params;
+}

@@ -9,7 +9,7 @@ Channel::Channel()
 	  _password(""),
 	  _mode(0)
 {
-	// std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
+	std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::Channel(std::string const &name)
@@ -18,16 +18,16 @@ Channel::Channel(std::string const &name)
 	  _password(""),
 	  _mode(0)
 {
-	// std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
+	std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::~Channel()
 {
-	std::cout << DEBUG RED "Channel destroyed: " RESET << *this <<std::endl;
 	for (size_t i = 0; i < _users.size(); ++i)
 	{
 		std::cout << DEBUG YELLOW "Removing user " RESET << _users[i] << " from channel " << _name << std::endl;
 	}
+	std::cout << DEBUG RED "Channel destroyed: " RESET << *this <<std::endl;
 }
 
 Channel::Channel(Channel const &original)
