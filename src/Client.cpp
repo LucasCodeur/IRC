@@ -45,38 +45,38 @@ Client &Client::operator=(Client const &other)
 	return (*this);
 }
 
-std::ostream &operator<<(std::ostream &o, const Client &obj)
+const char *Client::authStateToString(Client::authState state)
 {
-	std::string authState;
-	Client::authState currentState = obj.getAuthState();
-	
-	switch (obj.getAuthState()) 
+	switch (state)
 	{
-		case Client::EMPTY:
+		case EMPTY:
 		{
-			authState = "Empty";
-			break;
+			return ("Empty");
 		}
-		case Client::PASSWORD_RECEIVED:
+		case PASSWORD_RECEIVED:
 		{
-			authState = "Password received";
-			break;
+			return ("Password received");
 		}
-		case Client::NICK_RECEIVED:
+		case NICK_RECEIVED:
 		{
-			authState = "Nick received";
-			break;
-		}	
-		case Client::FULLY_REGISTERED:
+			return ("Nick received");
+		}
+		case FULLY_REGISTERED:
 		{
-			authState = "Fully registered";
-			break;
+			return ("Fully registered");
 		}
 	}
-	return (o << "Client: " << obj.getNickname() 
-			  << " (Username: " << obj.getUsername() 
-			  << ", FD: " << obj.getFd() 
-			  << ", AuthState: " << authState
+	return ("Unknown");
+}
+
+std::ostream &operator<<(std::ostream &o, const Client &obj)
+{
+	Client::authState currentState = obj.getAuthState();
+
+	return (o << "Client: " << obj.getNickname()
+			  << " (Username: " << obj.getUsername()
+			  << ", FD: " << obj.getFd()
+			  << ", AuthState: " << Client::authStateToString(currentState)
 			  << "(" << currentState << ")"
 			  << ")");
 }

@@ -46,6 +46,9 @@ class Client
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
 	void setAuthState(authState state);
+
+	// HELPERS
+	static const char *authStateToString(authState state);
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 
