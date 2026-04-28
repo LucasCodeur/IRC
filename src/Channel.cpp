@@ -132,5 +132,28 @@ void Channel::removeUser(int clientFd)
 {
 	std::vector<int>::iterator it = std::find(this->_users.begin(), this->_users.end(), clientFd);
 	if (it != this->_users.end())
+	{
 		this->_users.erase(it);
+	}
 }
+
+bool Channel::addOperator(int clientFd)
+{
+	if (std::find(this->_operators.begin(), this->_operators.end(), clientFd) == this->_operators.end())
+	{
+		this->_operators.push_back(clientFd);
+		return (true);
+	}
+	return (false);
+}
+
+bool Channel::removeOperator(int clientFd)
+{
+	if (std::find(this->_operators.begin(), this->_operators.end(), clientFd) != this->_operators.end())
+	{
+		this->_operators.erase(std::remove(this->_operators.begin(), this->_operators.end(), clientFd), this->_operators.end());
+		return (true);
+	}
+	return (false);
+}
+
