@@ -128,13 +128,15 @@ bool Channel::addUser(int clientFd)
 	return (false);
 }
 
-void Channel::removeUser(int clientFd)
+bool Channel::removeUser(int clientFd)
 {
 	std::vector<int>::iterator it = std::find(this->_users.begin(), this->_users.end(), clientFd);
 	if (it != this->_users.end())
 	{
 		this->_users.erase(it);
+		return (true);
 	}
+	return (false);
 }
 
 bool Channel::addOperator(int clientFd)

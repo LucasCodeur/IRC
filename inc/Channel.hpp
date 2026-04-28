@@ -42,7 +42,7 @@ class Channel
 
 	// METHODS
 	bool addUser(int clientFd);
-	void removeUser(int clientFd);
+	bool removeUser(int clientFd);
 	bool addOperator(int clientFd);
 	bool removeOperator(int clientFd);
 };
