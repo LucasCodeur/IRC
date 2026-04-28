@@ -6,122 +6,122 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/13 11:40:04 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/04/28 10:19:18 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include <sys/socket.h>
-#include <sys/types.h>
+#include <cstdlib>
+#include <netinet/in.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <stdarg.h>
-#include <sys/epoll.h>
+#include <poll.h>
 
-# define MAX_EVENTS 10
+# define MAX_EVENTS 3
 # define BUF_SIZE 200
 # define SERVER_PORT 6667
 
 int	main(void)
 {
-
-	int listen_sock, conn_sock, opt;
-	int	read_bytes;
-	struct sockaddr_in serv_addr;
-	char buf[BUF_SIZE];
-	int err, nfds;
-
-	struct epoll_event ev, events[MAX_EVENTS];
-	int epollfd;
-	if ((listen_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-	dprintf(2, "socket error\n");
-
-	bzero(&serv_addr, sizeof(serv_addr));
-
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = INADDR_ANY;
-	serv_addr.sin_port = htons(SERVER_PORT);
-
-	opt = 1;
-	if (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+	int listen_sock = socket(AF_INET, SOCK_STREAM, 0);
+	int client_sock;
+	struct sockaddr_in	listening_addr;
+	if (listen_sock < 0)
 	{
-		close(listen_sock);
-		perror("setsockopt error");
-		return (1);
-	}
-
-	if ((err = bind(listen_sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr))) < 0)
-	{
-		perror("bind error");
-		return (err);
-	}
-
-	if (listen(listen_sock, 10) < 0)
-	{
-		perror("listen error\n");
-		return (1);
-	}
-
-	bzero(buf, BUF_SIZE);
-	printf("Waiting for connection on port %d\n", SERVER_PORT);
-
-
-	epollfd = epoll_create1(0);
-	if (epollfd == -1)
-	{
-		perror("epoll_create1");
+		perror("socket");
 		exit(EXIT_FAILURE);
 	}
 
-	ev.events = EPOLLIN;
-	ev.data.fd = listen_sock;
-	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &ev) == -1)
+	int opt = 1;
+	setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int)); // set reuse address
+	
+	memset(&listening_addr, 0, sizeof(listening_addr));
+	listening_addr.sin_family = AF_INET;
+	listening_addr.sin_addr.s_addr = INADDR_ANY;
+	listening_addr.sin_port = htons(SERVER_PORT);
+
+	if (bind(listen_sock, (struct sockaddr *)&listening_addr, sizeof(listening_addr)))
 	{
-		perror("epoll_ctl: listen_sock");
+		perror("bind");
+		exit(EXIT_FAILURE);
+	}
+	
+	if (listen(listen_sock, MAX_EVENTS))
+	{
+		perror("listen");
 		exit(EXIT_FAILURE);
 	}
 
-	for (;;)
+	printf("waiting for connections...\n");
+
+	int nfds = 0;
+	int sock_count = 1;
+	struct pollfd fds[MAX_EVENTS];
+	memset(fds, 0, sizeof(fds));
+	fds[0].fd = listen_sock;
+	fds[0].events = POLLIN;
+
+	while (true)
 	{
-		nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
-		if (nfds == -1)
+		nfds = poll(fds, sock_count, -1);
+		if (nfds < 0)
 		{
-			perror("epoll_wait");
+			perror("poll");
 			exit(EXIT_FAILURE);
 		}
 
-		for (int n = 0; n < nfds; ++n)
+		for (int i = 0; i < sock_count; ++i)
 		{
-			if (events[n].data.fd == listen_sock)
+			if (fds[i].revents & POLLIN)
 			{
-				conn_sock = accept(listen_sock, (struct sockaddr *) NULL, NULL);
-				if (conn_sock == -1)
+				if (fds[i].fd == listen_sock)
 				{
-					perror("accept");
-					exit(EXIT_FAILURE);
+					client_sock = accept(fds[i].fd, NULL, NULL);
+					if (sock_count == MAX_EVENTS)
+					{
+						printf("refusing connection : max client count reached\n");
+						close(client_sock);
+						continue ;
+					}
+
+					if (client_sock < 0)
+					{
+						perror("accept");
+						exit(EXIT_FAILURE);
+					}
+					fds[sock_count].fd = client_sock;
+					fds[sock_count].events = POLLIN;
+					++sock_count;
+					printf("[%d]	Client connected\n", client_sock);
 				}
-			// setnonblocking(conn_sock);
-				ev.events = EPOLLIN | EPOLLET;
-				ev.data.fd = conn_sock;
-				if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1)
+				else
 				{
-					perror("epoll_ctl: conn_sock");
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				while ((read_bytes = read(conn_sock, buf, BUF_SIZE)))
-				{
-					buf[read_bytes - 1] = '\0';
-					printf("%d sent : %s\n", conn_sock, buf);
+					int		bytes_read = 0;
+					char	buffer[BUF_SIZE + 1];
+					memset(buffer, 0, BUF_SIZE + 1);
+					bytes_read = recv(fds[i].fd, buffer, BUF_SIZE, 0);
+					if (bytes_read <= 0)
+					{
+						if (bytes_read < 0)
+							perror("recv");
+						else
+							printf("[%d]	client disconnected\n", fds[i].fd);
+						close(fds[i].fd);
+						if (i < sock_count)
+							fds[i] = fds[sock_count - 1];
+						fds[sock_count - 1].fd = -1;
+						--sock_count;
+					}
+					else
+					{
+						buffer[bytes_read] = 0;
+						printf("[%d]	received %s\n", fds[i].fd, buffer);
+					}
 				}
 			}
 		}
 	}
-
 	return (0);
 }
