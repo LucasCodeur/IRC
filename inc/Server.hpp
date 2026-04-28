@@ -24,8 +24,6 @@ class Server
 	~Server();
 
 	// GETTERS
-
-	// GETTERS
 	int getPort() const;
 	int getFd() const;
 	std::string const &getServerName() const;
