@@ -37,6 +37,8 @@ class Server
 	void handleCommand(Command const &cmd);
 
 	private:
+	Server(Server const &original);
+	Server &operator=(Server const &other);
 	void handleJoin(Command const &cmd);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
