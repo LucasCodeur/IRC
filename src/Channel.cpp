@@ -39,7 +39,7 @@ Channel::Channel(Channel const &original)
 	  _invited(original._invited),
 	  _mode(original._mode)
 {
-	// std::cout << DEBUG BLUE "Channel copied: " RESET << *this <<std::endl;
+	std::cout << DEBUG BLUE "Channel copied: " RESET << *this <<std::endl;
 }
 
 Channel &Channel::operator=(Channel const &other)
@@ -118,10 +118,14 @@ void Channel::setMode(int mode)
 	this->_mode = mode;
 }
 
-void Channel::addUser(int clientFd)
+bool Channel::addUser(int clientFd)
 {
 	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())
+	{
 		this->_users.push_back(clientFd);
+		return (true);
+	}
+	return (false);
 }
 
 void Channel::removeUser(int clientFd)

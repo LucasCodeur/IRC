@@ -16,16 +16,14 @@ class Server
 	std::string						_serverName;
 	std::string						_password;
 	std::map<int, Client>			_clients;
-	std::map<std::string, Channel>	_channels;
+	std::map<std::string, Channel*>	_channels;
 
 	public:
 	// CONSTRUCTOR
 	Server();
 	~Server();
-	Server(Server const &original);
 
-	// OPERATOR
-	Server &operator=(Server const &other);
+	// GETTERS
 
 	// GETTERS
 	int getPort() const;
@@ -33,7 +31,7 @@ class Server
 	std::string const &getServerName() const;
 	std::string const &getPassword() const;
 	std::map<int, Client> const &getClientmap() const;
-	std::map<std::string, Channel> const &getChanelmap() const;
+	std::map<std::string, Channel*> const &getChanelmap() const;
 	
 	// METHODS
 	void handleCommand(Command const &cmd);

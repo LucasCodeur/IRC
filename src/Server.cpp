@@ -15,6 +15,8 @@ Server::Server()
 
 Server::~Server()
 {
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+		delete it->second;
 	std::cout << DEBUG RED "Server destroyed: " RESET << *this << std::endl;
 }
 
@@ -23,8 +25,7 @@ Server::Server(Server const &original)
 	  _fd(original._fd),
 	  _serverName(original._serverName),
 	  _password(original._password),
-	  _clients(original._clients),
-	  _channels(original._channels)
+	  _clients(original._clients)
 {
 	std::cout << DEBUG BLUE "Server copied: " RESET << *this << std::endl;
 }
@@ -38,7 +39,6 @@ Server &Server::operator=(Server const &other)
 		this->_serverName = other._serverName;
 		this->_password = other._password;
 		this->_clients = other._clients;
-		this->_channels = other._channels;
 		std::cout << DEBUG BLUE "Server assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
@@ -78,29 +78,27 @@ void Server::handleCommand(Command const &cmd)
 
 void Server::handleJoin(Command const &cmd)
 {
-	std::cout << DEBUG "handleJoin called"<< std::endl;
-	if (cmd.getParams().empty())
+	std::cout << DEBUG "handleJoin called" << std::endl;
+
+	std::vector<std::string> const &params = cmd.getParams();
+	if (params.size() != 1)
 	{
-		std::cout << DEBUG RED "JOIN command missing parameters" RESET << std::endl;
+		std::cout << DEBUG RED "JOIN: expected exactly 1 parameter" RESET << std::endl;
 		return;
 	}
-	if (cmd.getParams().size() > 1)
-	{	
-		std::cout << DEBUG RED "JOIN command has too many parameters" RESET << std::endl;
+
+	std::string const &channelName = params[0];
+	if (channelName[0] != '#')
+	{
+		std::cout << DEBUG RED "JOIN: invalid channel name" RESET << std::endl;
 		return;
 	}
-	if (cmd.getParams()[0][0] != '#') 
-	{
-		std::cout << DEBUG RED "JOIN command invalid channel name" RESET << std::endl;
-		return;
-	}
-	if (this->_channels.find(cmd.getParams()[0]) == this->_channels.end())
-	{
-		this->_channels.insert(std::make_pair(cmd.getParams()[0], Channel(cmd.getParams()[0])));
-		std::cout << DEBUG GREEN "Channel created: " RESET << cmd.getParams()[0] << std::endl;
-	}
-	this->_channels[cmd.getParams()[0]].addUser(cmd.getClientFd());
-	std::cout << DEBUG GREEN "Client " << cmd.getClientFd() << " joined channel " << cmd.getParams()[0] << RESET << std::endl;
+
+	std::map<std::string, Channel*>::iterator it = this->_channels.find(channelName);
+	if (it == this->_channels.end())
+		it = this->_channels.insert(std::make_pair(channelName, new Channel(channelName))).first;
+	if (it->second->addUser(cmd.getClientFd()))
+		std::cout << DEBUG GREEN "Client " << cmd.getClientFd() << " joined channel " << channelName << RESET << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &o, const Server &obj)

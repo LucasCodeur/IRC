@@ -26,7 +26,7 @@ int	main(void)
 	Command cmd1(1, Command::JOIN, param);	
 	Command cmd2(2, Command::JOIN, param);	
 	cmd1.setClientFd(1);
-	cmd1.setClientFd(2);
+	cmd2.setClientFd(2);
 	server.handleCommand(cmd1);
 	server.handleCommand(cmd2);		
 	return (0);
