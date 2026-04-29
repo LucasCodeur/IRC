@@ -86,3 +86,36 @@ void Command::setParams(std::vector<std::string> const &params)
 {
 	this->_params = params;
 }
+
+std::string Command::commandTypeToString() const
+{
+	switch (this->_commandType)
+	{
+		case EMPTY:
+			return ("EMPTY");
+		case JOIN:
+			return ("JOIN");
+		case PRIVMSG:
+			return ("PRIVMSG");
+		case KICK:
+			return ("KICK");
+		case INVITE:
+			return ("INVITE");
+		case TOPIC:
+			return ("TOPIC");
+		case MODE:
+			return ("MODE");
+		case WHO:
+			return ("WHO");
+		case PASS:
+			return ("PASS");
+		case NICK:
+			return ("NICK");
+		case USER:
+			return ("USER");
+		case PART:
+			return ("PART");
+		default:
+			return ("UNKNOWN");
+	}
+}

@@ -80,7 +80,11 @@ void Server::handleCommand(Command const &cmd)
 		case Command::JOIN:
 			this->handleJoin(cmd);
 			break;
+		case Command::EMPTY:
+			std::cout << DEBUG YELLOW "Received empty command from client " << cmd.getClientFd() << RESET << std::endl;
+			break;
 		default:
+			std::cout << cmd.commandTypeToString() << ": not handled for now !" << std::endl;
 			break;
 	}
 }
