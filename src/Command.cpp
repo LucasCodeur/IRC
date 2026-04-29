@@ -1,6 +1,7 @@
 #include "Command.hpp"
-#include "debug.hpp"
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 Command::Command()
 	: _clientFd(-1),
@@ -8,6 +9,39 @@ Command::Command()
 {
 	// std::cout << GREEN "Command created: " RESET << *this <<std::endl;
 }
+
+Command::Command(int clientFd, std::string str) : _clientFd(clientFd)
+{
+	const char *types[11] = {"JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
+
+	std::vector<std::string> commandTypes(types, types + COMMAND_TYPES_AMOUNT);
+	std::vector<std::string> formattedCommand;
+	std::stringstream ss(str);
+
+
+	std::string splitString;
+	while(getline(ss, splitString, ' '))
+		formattedCommand.push_back(splitString);
+	if (formattedCommand.size() <= 0)
+		throw EmptyCommandException();
+	std::vector<std::string> parameters(++formattedCommand.begin(), formattedCommand.end());
+	
+	for (size_t	i = 0; i < commandTypes.size(); ++i)
+	{
+	  // std::cout << commandTypes[i] << " vs " << formattedCommand[0] << std::endl;
+		if (formattedCommand[0] == commandTypes[i])
+		{
+			std::cout << "identified type : " << commandTypes[i] << std::endl;
+			this->_commandType = (commandType) i;
+			break ;
+		}
+		if (i == commandTypes.size() - 1)
+			throw UnknownCommandException();
+	}
+
+	this->_params = parameters;
+	}
+
 
 Command::Command(int clientFd, Command::commandType type, std::vector<std::string> const &params)
 	: _clientFd(clientFd),
@@ -29,6 +63,17 @@ Command::Command(Command const &original)
 {
 	// std::cout << BLUE "Command copied: " RESET << *this <<std::endl;
 }
+
+// EXCEPTIONS
+Command::UnknownCommandException::UnknownCommandException() : std::runtime_error("Unknown command type") {}
+Command::UnknownCommandException::~UnknownCommandException() throw() {}
+
+Command::EmptyCommandException::EmptyCommandException() : std::runtime_error("Empty command") {}
+Command::EmptyCommandException::~EmptyCommandException() throw() {}
+
+
+Command::IncorrectParametersException::IncorrectParametersException() : std::runtime_error("number of parameters incorrect") {}
+Command::IncorrectParametersException::~IncorrectParametersException() throw() {}
 
 Command &Command::operator=(Command const &other)
 {
@@ -71,3 +116,4 @@ std::ostream &operator<<(std::ostream &o, const Command &obj)
 	o << "]";
 	return (o);
 }
+

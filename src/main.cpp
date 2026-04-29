@@ -17,12 +17,27 @@
 
 int	main(void)
 {
-	Server server;
-	Server server2;
-	Channel channel;
-	server2 = server;
-	std::cout << server2 << std::endl;
-	std::cout << server << std::endl;
-	std::cout << channel << std::endl;
-	return (0);
+	try
+	{
+		Command c0(0, "MODE hi hello there");
+		std::cout << c0 << std::endl;
+		Command c1(0, "PRIVMSG");
+		std::cout << c1 << std::endl;
+		Command c2(0, "TOPIC");
+		std::cout << c2 << std::endl;
+		Command c3(0, "PART bonjour");
+		std::cout << c3 << std::endl;
+		Command c4(0, "PART");
+		std::cout << c4 << std::endl;
+		Command c5(0, "");
+		std::cout << c5 << std::endl;
+		Command c6(0, "none");
+		std::cout << c6 << std::endl;
+	}
+	catch (std::exception &e)
+	{
+		std::cerr <<" Caught : " << e.what() << std::endl;
+	}
+
+	
 }
