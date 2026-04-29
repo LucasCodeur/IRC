@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/27 17:08:06 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/04/29 13:00:30 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,15 @@
 #include "Command.hpp"
 #include "Server.hpp"
 #include "Channel.hpp"
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
-int	main(void)
+int	main(int ac, char** av)
 {
-	Server server;
+	if (ac != 3)
+		return 2;
+	Server server(std::atoi(av[1]), av[2]);
 	std::vector<std::string> param;
 	param.push_back("#Test");
 	Command cmd1(1, Command::JOIN, param);	

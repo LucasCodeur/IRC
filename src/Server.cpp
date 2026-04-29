@@ -13,6 +13,15 @@ Server::Server()
 	std::cout << DEBUG GREEN "Server created: " RESET << *this << std::endl;
 }
 
+Server::Server(int port, const std::string &password)
+	: _port(port),
+	  _fd(-1),
+	  _serverName("ircserv"),
+	  _password(password)
+{
+	std::cout << DEBUG GREEN "Server created: " RESET << *this << std::endl;
+} 
+
 Server::~Server()
 {
 	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
