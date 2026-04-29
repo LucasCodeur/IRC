@@ -81,20 +81,9 @@ void Server::handleJoin(Command const &cmd)
 	std::cout << DEBUG "handleJoin called" << std::endl;
 
 	std::vector<std::string> const &params = cmd.getParams();
-	if (params.size() != 1)
-	{
-		std::cout << DEBUG RED "JOIN: expected exactly 1 parameter" RESET << std::endl;
-		return;
-	}
-
 	std::string const &channelName = params[0];
-	if (channelName[0] != '#')
-	{
-		std::cout << DEBUG RED "JOIN: invalid channel name" RESET << std::endl;
-		return;
-	}
-
 	std::map<std::string, Channel*>::iterator it = this->_channels.find(channelName);
+	
 	if (it == this->_channels.end())
 		it = this->_channels.insert(std::make_pair(channelName, new Channel(channelName))).first;
 	if (it->second->addUser(cmd.getClientFd()))
