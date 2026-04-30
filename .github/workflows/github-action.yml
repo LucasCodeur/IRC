@@ -1,0 +1,62 @@
+name: IRC CI
+run-name: Compilation
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  Compilation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make g++
+
+      - name: Compile
+        run: |
+          echo "🔨 Compiling IRC..."
+          make
+          echo "✅ Compilation successful!"
+
+      - name: Startup
+        run: |
+          echo "🚀 Starting IRC..."
+          timeout 2s ./ircserv 6667 password || [ $? -eq 124 ]
+          echo "✅ IRC started successfully!"
+     
+      # Uncomment when parsing/server is merged
+
+      # - name: Test wrong argument count
+      #   run: |
+      #     echo "🔎 Testing wrong argument count..."
+      #     ./ircserv; [ $? -eq 2 ]
+      #     ./ircserv 6667; [ $? -eq 2 ]
+      #     echo "✅ Wrong argument count handled correctly!"
+      
+      # - name: Test wrong argument count
+      #   run: |
+      #     echo "🔎 Testing wrong argument count..."
+      #     ./ircserv; [ $? -eq 2 ]
+      #     ./ircserv 6667; [ $? -eq 2 ]
+      #     ./ircserv 6667 password idk; [ $? -eq 2 ]
+      #     echo "✅ Wrong argument count handled correctly!"
+
+      # - name: Test invalid port
+      #   run: |
+      #     echo "🔎 Testing invalid port..."
+      #     ./ircserv 0 password; [ $? -eq 1 ]
+      #     ./ircserv 99999 password; [ $? -eq 1 ]
+      #     echo "✅ Invalid port handled correctly!"
+
+       # - name: Test empty password
+      #   run: |
+      #     echo "🔎 Testing empty password..."
+      #     ./ircserv 6667 ""; [ $? -eq 1 ]
+      #     echo "✅ Empty password handled correctly!"
+
