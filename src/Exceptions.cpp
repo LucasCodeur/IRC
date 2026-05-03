@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Exceptions.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/03 14:20:44 by lud-adam         ###   ########.fr       */
+/*   Created: 2026/05/03 14:08:44 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/03 15:06:35 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "Exceptions.hpp"
 
-int	main(void)
+const char* socketFailed::what() const throw ()
 {
-	Server launcher;
+    return ("Socket failed\n");
+}
 
-	launcher.setServer();
-
-	return (0);
+const char* setSocketOptionFailed::what() const throw ()
+{
+    return ("Set socket option failed\n");
 }
