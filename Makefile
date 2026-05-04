@@ -21,6 +21,8 @@ P_OBJ = .obj/
 P_INC = inc/
 
 SRC = main.cpp \
+	  Server.cpp \
+	  Exceptions.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \

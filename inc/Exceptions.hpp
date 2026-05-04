@@ -28,4 +28,54 @@ class setSocketOptionFailed : public std::exception
         const char* what() const throw ();
 };
 
+class bindFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+class listenSocketFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+class epollCreateFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+class controlEpollFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+class acceptFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+
+class epollWaitFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+class sendFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
+
+class receiveDataFailed: public std::exception
+{
+    public:
+        const char* what() const throw ();
+};
+
 #endif
