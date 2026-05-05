@@ -11,12 +11,14 @@ Client::Client()
 	  _fd(-1),
 	  _authState(EMPTY)
 {
-	std::cout << DEBUG GREEN "Client created: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Client created: " RESET << *this <<std::endl;
 }
 
 Client::~Client()
 {
-	std::cout << DEBUG RED "Client destroyed: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG RED "Client destroyed: " RESET << *this <<std::endl;
 }
 
 Client::Client(Client const &original)
@@ -27,7 +29,8 @@ Client::Client(Client const &original)
 	  _fd(original._fd),
 	  _authState(original._authState)
 {
-	std::cout << DEBUG BLUE "Client copied: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG BLUE "Client copied: " RESET << *this <<std::endl;
 }
 
 Client &Client::operator=(Client const &other)
@@ -40,7 +43,8 @@ Client &Client::operator=(Client const &other)
 		this->_buf = other._buf;
 		this->_fd = other._fd;
 		this->_authState = other._authState;
-		std::cout << DEBUG BLUE "Client assigned: " RESET << *this << std::endl;
+		if (DEBUG == 1)
+			std::cout << DBUG BLUE "Client assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }

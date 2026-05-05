@@ -6,7 +6,8 @@ Command::Command()
 	: _clientFd(-1),
 	  _commandType(EMPTY)
 {
-	std::cout << DEBUG GREEN "Command created: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
 }
 
 Command::Command(int clientFd, Command::commandType type, std::vector<std::string> const &params)
@@ -14,12 +15,14 @@ Command::Command(int clientFd, Command::commandType type, std::vector<std::strin
 	  _commandType(type),
 	  _params(params)
 {
-	std::cout << DEBUG GREEN "Command created: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
 }
 
 Command::~Command()
 {
-	std::cout << DEBUG RED "Command destroyed: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG RED "Command destroyed: " RESET << *this <<std::endl;
 }
 
 Command::Command(Command const &original)
@@ -27,7 +30,8 @@ Command::Command(Command const &original)
 	  _commandType(original._commandType),
 	  _params(original._params)
 {
-	std::cout << DEBUG BLUE "Command copied: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG BLUE "Command copied: " RESET << *this <<std::endl;
 }
 
 Command &Command::operator=(Command const &other)
@@ -37,7 +41,8 @@ Command &Command::operator=(Command const &other)
 		this->_clientFd = other._clientFd;
 		this->_commandType = other._commandType;
 		this->_params = other._params;
-		std::cout << BLUE "Command assigned: " RESET << *this << std::endl;
+		if (DEBUG == 1)
+			std::cout << BLUE "Command assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }
@@ -61,7 +66,7 @@ std::ostream &operator<<(std::ostream &o, const Command &obj)
 {
 	std::vector<std::string> const &params = obj.getParams();
 
-	o << "Command: " << obj.getClientFd() << ", " << obj.getCommandType() << ", [";
+	o << "Command: clientFd " << obj.getClientFd() << ", " << obj.commandTypeToString() << ", [";
 	for (size_t i = 0; i < params.size(); ++i)
 	{
 		o << params[i];

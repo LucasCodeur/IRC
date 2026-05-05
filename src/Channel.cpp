@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "debug.hpp"
 #include <iostream>
+#include <ostream>
 
 Channel::Channel()
 	: _name(""),
@@ -9,7 +10,8 @@ Channel::Channel()
 	  _password(""),
 	  _mode(0)
 {
-	std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::Channel(std::string const &name)
@@ -18,16 +20,19 @@ Channel::Channel(std::string const &name)
 	  _password(""),
 	  _mode(0)
 {
-	std::cout << DEBUG GREEN "Channel created: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
 Channel::~Channel()
 {
 	for (size_t i = 0; i < _users.size(); ++i)
 	{
-		std::cout << DEBUG YELLOW "Removing user " RESET << _users[i] << " from channel " << _name << std::endl;
+		if (DEBUG == 1)
+			std::cout << DBUG YELLOW "Removing user " RESET << _users[i] << " from channel " << _name << std::endl;
 	}
-	std::cout << DEBUG RED "Channel destroyed: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG RED "Channel destroyed: " RESET << *this <<std::endl;
 }
 
 Channel::Channel(Channel const &original)
@@ -39,7 +44,8 @@ Channel::Channel(Channel const &original)
 	  _invited(original._invited),
 	  _mode(original._mode)
 {
-	std::cout << DEBUG BLUE "Channel copied: " RESET << *this <<std::endl;
+	if (DEBUG == 1)
+		std::cout << DBUG BLUE "Channel copied: " RESET << *this <<std::endl;
 }
 
 Channel &Channel::operator=(Channel const &other)
@@ -53,7 +59,8 @@ Channel &Channel::operator=(Channel const &other)
 		this->_operators = other._operators;
 		this->_invited = other._invited;
 		this->_mode = other._mode;
-		// std::cout << DEBUG BLUE "Channel assigned: " RESET << *this << std::endl;
+		if (DEBUG == 1)
+			std::cout << DBUG BLUE "Channel assigned: " RESET << *this << std::endl;
 	}
 	return (*this);
 }

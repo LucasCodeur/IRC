@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/22 10:14:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/27 16:17:07 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/05 15:35:33 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 #define DEBUG_HPP
 
 #include <iostream>
+#ifndef DEBUG
+#define DEBUG 0
+#endif //  !DEBUG
 
 #define RESET		"\033[0m"
 #define RED			"\033[31m"
@@ -23,7 +26,7 @@
 #define MAGENTA		"\033[35m"
 #define CYAN		"\033[36m"
 #define WHITE		"\033[37m"
-#define DEBUG		YELLOW "DEBUG " RESET
+#define DBUG		YELLOW "DEBUG " RESET
 
 #define PRINT(x, color, newline) \
     std::cout << color << x <<newline;
