@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 11:32:18 by lud-adam         ###   ########.fr       */
+/*   Created: 2026/05/06 11:26:18 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/06 11:28:57 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
-int	main(void)
+class client
 {
-	Server test;
+    public:
+        int client_sock;
+    private:
+};
 
-	test.launcherServer();
-
-	return (0);
-}
+# endif

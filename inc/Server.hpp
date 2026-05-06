@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/03 15:07:58 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 11:28:54 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ class Server
         struct sockaddr_in  addr; // contains the IP adress and port number to bind the socket.
         struct epoll_event  events[MAX_EVENTS];
         struct epoll_event  ev;
-        int server_sock; // fill descriptor of the servor
-        int client_sock; // fill descriptor of a client
+        int server_sock;
+        int client_sock;
         int opt;
 
     private :

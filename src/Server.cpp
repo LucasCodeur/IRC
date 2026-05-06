@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:50:09 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/03 15:09:00 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 11:31:29 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,37 @@ bool    Server::launcherServer(void)
         this->listenConnexionsEpoll();
 
         return (true);
+}
+
+/**
+ * @brief infinite loop that allows receiving and sending data between the different sockets contains in the ready list of epoll.
+ * @return
+ */
+void    Server::listenConnexionsEpoll(void)
+{
+    char buffer[1024];
+    int nfds;
+    socklen_t addrlen = sizeof(this->addr);
+    for (;;)
+    {
+        nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
+        for (int n = 0; n < nfds; ++n)
+        {
+            if (this->events[n].data.fd == this->server_sock)
+            {
+                this->client_sock = this->acceptConnexion(&addrlen);
+                this->setNonBlocking(this->client_sock);
+                this->ev.events = EPOLLIN | EPOLLET;
+                this->ev.data.fd = client_sock;
+                this->sendData("Hello from server");
+                this->controlEpoll(EPOLL_CTL_ADD, this->client_sock, &this->ev);
+                while (receiveData(buffer) > 0)
+                    std::cout << buffer << std::endl;
+            } /*else {
+            do_use_fd(events[n].data.fd);*/
+                       // }
+       }
+    }
 }
 
 /**
@@ -72,7 +103,7 @@ void     Server::setSocketOption(int socket_fd, int level, int option_name)
  */
 void    Server::bindSocket(void)
 {
-        if (bind(this->server_sock, (struct sockaddr*)&this->addr, sizeof(this->addr)) < 0)
+        if (bind(this->server_sock, reinterpret_cast<sockaddr*>(&this->addr), sizeof(this->addr)) < 0)
             throw bindFailed();
 }
 
@@ -172,39 +203,6 @@ void    Server::setAddr(void)
         this->addr.sin_family = AF_INET;
         this->addr.sin_addr.s_addr = INADDR_ANY;
         this->addr.sin_port = htons(PORT);
-}
-
-static int setnonblocking(int sock);
-
-/**
- * @brief infinite loop that allows receiving and sending data between the different sockets contains in the ready list of epoll.
- * @return
- */
-void    Server::listenConnexionsEpoll(void)
-{
-    char buffer[1024];
-    int nfds;
-    socklen_t addrlen = sizeof(this->addr);
-    for (;;)
-    {
-        nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
-        for (int n = 0; n < nfds; ++n)
-        {
-            if (this->events[n].data.fd == this->server_sock)
-            {
-                this->client_sock = this->acceptConnexion(&addrlen);
-                this->setNonBlocking(this->client_sock);
-                this->ev.events = EPOLLIN | EPOLLET;
-                this->ev.data.fd = client_sock;
-                this->sendData("Hello from server");
-                this->controlEpoll(EPOLL_CTL_ADD, this->client_sock, &this->ev);
-                while (receiveData(buffer) > 0)
-                    std::cout << buffer << std::endl;
-            } /*else {
-            do_use_fd(events[n].data.fd);*/
-                       // }
-       }
-    }
 }
 
 /**
