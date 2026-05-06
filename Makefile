@@ -29,6 +29,7 @@ SRC =	main.cpp \
 		Server.cpp \
 		Client.cpp \
 		Channel.cpp \
+		Exceptions.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
