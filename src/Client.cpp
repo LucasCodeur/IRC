@@ -1,50 +1,95 @@
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#define PORT 8080
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/06 14:08:10 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/06 14:08:13 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int main(int argc, char const* argv[])
+#include "Client.hpp"
+#include "debug.hpp"
+#include <iostream>
+
+Client::Client()
+	: _username(""),
+	  _nickname(""),
+	  _password(""),
+	  _buf(""),
+	  _fd(-1),
+	  _authState(EMPTY)
 {
-    int status, valread, client_fd;
-    struct sockaddr_in serv_addr;
-    char* hello = "Hello from client";
-    char buffer[1024] = { 0 };
-    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\n Socket creation error \n");
-        return -1;
-    }
+	std::cout << GREEN "Client created: " RESET << *this <<std::endl;
+}
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+Client::~Client()
+{
+	std::cout << RED "Client destroyed: " RESET << *this <<std::endl;
+}
 
-    // Convert IPv4 and IPv6 addresses from text to binary
-    // form
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
-        <= 0) {
-        printf(
-            "\nInvalid address/ Address not supported \n");
-        return -1;
-    }
+Client::Client(Client const &original)
+	: _username(original._username),
+	  _nickname(original._nickname),
+	  _password(original._password),
+	  _buf(original._buf),
+	  _fd(original._fd),
+	  _authState(original._authState)
+{
+	std::cout << BLUE "Client copied: " RESET << *this <<std::endl;
+}
 
-    if ((status
-         = connect(client_fd, (struct sockaddr*)&serv_addr,
-                   sizeof(serv_addr)))
-        < 0) {
-        printf("\nConnection Failed \n");
-        return -1;
-    }
-  
-    // subtract 1 for the null
-    // terminator at the end
-    send(client_fd, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
-    valread = read(client_fd, buffer,
-                   1024 - 1); 
-    printf("%s\n", buffer);
+Client &Client::operator=(Client const &other)
+{
+	if (this != &other)
+	{
+		this->_username = other._username;
+		this->_nickname = other._nickname;
+		this->_password = other._password;
+		this->_buf = other._buf;
+		this->_fd = other._fd;
+		this->_authState = other._authState;
+		std::cout << BLUE "Client assigned: " RESET << *this << std::endl;
+	}
+	return (*this);
+}
 
-    // closing the connected socket
-    close(client_fd);
-    return 0;
+std::ostream &operator<<(std::ostream &o, const Client &obj)
+{
+	return (o << "Client: " << obj.getNickname() 
+			  << " (Username: " << obj.getUsername() 
+			  << ", FD: " << obj.getFd() 
+			  << ", AuthState: " << obj.getAuthState()
+			  << ")");
+}
+
+std::string const &Client::getUsername() const
+{
+	return (_username);
+}
+std::string const &Client::getNickname() const
+{
+	return (_nickname);
+}
+
+std::string const &Client::getPassword() const
+{
+	return (_password);
+}
+
+std::string const &Client::getBuf() const
+{
+	return (_buf);
+}
+
+int Client::getFd() const
+{
+	return (_fd);
+}
+
+Client::authState Client::getAuthState() const
+{
+	return (_authState);
 }

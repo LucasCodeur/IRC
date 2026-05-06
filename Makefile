@@ -6,7 +6,7 @@
 #    By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/04/13 11:37:47 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/06 11:49:30 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ P_INC = inc/
 
 SRC = main.cpp \
 	  Server.cpp \
+	  Client.cpp \
 	  Exceptions.cpp \
 
 SRCS = \

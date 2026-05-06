@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 11:28:54 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 14:40:10 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@
 # define DEFAULT 0 
 
 #include "Client.hpp"
+// #include "Channel.hpp"
 
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <map>
 
 #include <ostream>
 #include <vector>
@@ -36,27 +38,32 @@ class Server
         bool    launcherServer(void);
 
     private :
-        std::vector<client> clients;
-        struct sockaddr_in  addr; // contains the IP adress and port number to bind the socket.
-        struct epoll_event  events[MAX_EVENTS];
-        struct epoll_event  ev;
-        int                 epollfd;
-        int                 server_sock;
-        int                 client_sock;
-        int                 opt;
-        int                 createSocket(int domain, int type_communication, int protocol);
-        int                 acceptConnexion(socklen_t* addrlen);
-        int                 epollWaitOperation(int max_events, int timeout);
-        int                 receiveData(char* buffer);
-        void                setSocketOption(int socket_fd, int level, int option_name);
-        void                bindSocket(void);
-        void                listenSocket(int sizeWaitingList);
-        void                setAddr(void);
-        void                setEpoll(int option);
-        void                controlEpoll(int op, int fd, struct epoll_event* event);
-        void                listenConnexionsEpoll(void);
-        void                sendData(std::string data);
-        void                setNonBlocking(int sock);
+        // int					_port;
+        // int					_fd;
+        std::string				_serverName;
+        std::string				_password;
+        std::map<int, Client>	_clients;
+        // std::map<std::string, Channel>	_channels;
+        struct sockaddr_in      _addr; // contains the IP adress and port number to bind the socket.
+        struct epoll_event      _events[MAX_EVENTS];
+        struct epoll_event      _ev;
+        int                     _epollfd;
+        int                     _server_sock;
+        int                     _client_sock;
+        int                     _opt;
+        int                     createSocket(int domain, int type_communication, int protocol);
+        int                     acceptConnexion(socklen_t* addrlen);
+        int                     epollWaitOperation(int max_events, int timeout);
+        int                     receiveData(char* buffer);
+        void                    setSocketOption(int socket_fd, int level, int option_name);
+        void                    bindSocket(void);
+        void                    listenSocket(int sizeWaitingList);
+        void                    setAddr(void);
+        void                    setEpoll(int option);
+        void                    controlEpoll(int op, int fd, struct epoll_event* event);
+        void                    listenConnexionsEpoll(void);
+        void                    sendData(int fd, std::string data);
+        void                    setNonBlocking(int sock);
 };
 
 #endif
