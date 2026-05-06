@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   debug.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/22 10:14:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/03/22 10:16:04 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/04/24 16:48:13 by enzo             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef DEBUG_HPP
+#define DEBUG_HPP
+
 #include <iostream>
 
 #define RESET     "\033[0m"
@@ -23,4 +25,6 @@
 #define WHITE     "\033[37m"
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x << RESET << newline;
+    std::cout << color << x <<newline;
+
+#endif // !DEBUG_HPP

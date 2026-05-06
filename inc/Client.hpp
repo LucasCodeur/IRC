@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:26:18 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 14:30:36 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 17:08:41 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Client
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
 	void setAuthState(authState state);
+	void setFd(int fd);
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 

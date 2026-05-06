@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:50:09 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 15:13:43 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 17:20:13 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void    Server::listenConnexionsEpoll(void)
             {
                 Client test;
 
-                this->_clients.insert(std::pair<int, Client>(this->acceptConnexion(&addrlen), test));
+                test.setFd(this->acceptConnexion(&addrlen));
                 this->setNonBlocking(test.getFd());
                 this->_ev.events = EPOLLIN | EPOLLET;
                 this->_ev.data.fd = test.getFd();
@@ -232,13 +232,88 @@ void Server::setNonBlocking(int sock)
         throw setnonblockingFailed();
 }
 
-Server::Server (void)
+Server::Server()
+	: _port(0),
+	  _fd(-1),
+	  _serverName("ircserv"),
+	  _password(""),
+          _opt(1)
 {
-    std::cout << "Server constructor called" << std::endl;
-    this->_opt = 1;
+	// std::cout << GREEN "Server created: " RESET << *this << std::endl;
 }
 
-Server::~Server (void)
+Server::~Server()
 {
-    std::cout << "Server deconstructor called" << std::endl;
+	// std::cout << RED "Server destroyed: " RESET << *this << std::endl;
+}
+
+Server::Server(Server const &original)
+	: _port(original._port),
+	  _fd(original._fd),
+	  _serverName(original._serverName),
+	  _password(original._password),
+	  _clients(original._clients),
+	  _channels(original._channels),
+	  _opt(original._opt)
+{
+	// std::cout << BLUE "Server copied: " RESET << *this << std::endl;
+}
+
+Server &Server::operator=(Server const &other)
+{
+	if (this != &other)
+	{
+		this->_port = other._port;
+		this->_fd = other._fd;
+		this->_serverName = other._serverName;
+		this->_password = other._password;
+		this->_clients = other._clients;
+		this->_channels = other._channels;
+                this->_opt = other._opt;
+		// std::cout << BLUE "Server assigned: " RESET << *this << std::endl;
+	}
+	return (*this);
+}
+
+int Server::getPort() const
+{
+	return (this->_port);
+}
+
+int Server::getFd() const
+{
+	return (this->_fd);
+}
+
+std::string const &Server::getServerName() const
+{
+	return (this->_serverName);
+}
+
+std::string const &Server::getPassword() const
+{
+	return (this->_password);
+}
+
+void Server::handleCommand(Command const &cmd)
+{
+	switch (cmd.getCommandType()) // TODO: will add all the commands later
+	{
+		case Command::JOIN:
+			this->handleJoin(cmd);
+			break;
+		default:
+			break;
+	}
+}
+
+void Server::handleJoin(Command const &cmd)
+{
+	(void)cmd;
+}
+
+std::ostream &operator<<(std::ostream &o, const Server &obj)
+{
+	return (o << "Server name: " << obj.getServerName()
+			  << " port: " << obj.getPort());
 }

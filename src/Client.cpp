@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 14:08:10 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 14:08:13 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 17:10:54 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,4 +92,9 @@ int Client::getFd() const
 Client::authState Client::getAuthState() const
 {
 	return (_authState);
+}
+
+void	Client::setFd(int fd)
+{
+	this->_fd = fd;
 }

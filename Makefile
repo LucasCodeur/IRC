@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+         #
+#    By: enzo <enzo@student.42lyon.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/06 11:49:30 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/06 17:00:16 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,10 +20,12 @@ P_SRC = src/
 P_OBJ = .obj/
 P_INC = inc/
 
-SRC = main.cpp \
-	  Server.cpp \
-	  Client.cpp \
-	  Exceptions.cpp \
+SRC =	main.cpp	\
+		Command.cpp \
+		Server.cpp	\
+		Client.cpp	\
+		Channel.cpp \
+		Exceptions.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \

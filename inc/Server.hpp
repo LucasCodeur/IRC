@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 14:40:10 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/06 17:20:57 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 # define DEFAULT 0 
 
 #include "Client.hpp"
-// #include "Channel.hpp"
+#include "Channel.hpp"
+#include "Command.hpp"
 
 #include <sys/epoll.h>
 #include <sys/socket.h>
@@ -30,25 +31,35 @@
 #include <ostream>
 #include <vector>
 
+
 class Server
 {
     public :
         Server(void);
+	Server(Server const &original);
+	Server &operator=(Server const &other);
         ~Server();
         bool    launcherServer(void);
 
+	// GETTERS
+	std::string const &getServerName() const;
+	std::string const &getPassword() const;
+	int getPort() const;
+	int getFd() const;
+	void                    handleJoin(Command const &cmd);
+	void                    handleCommand(Command const &cmd);
     private :
-        // int					_port;
-        // int					_fd;
+        int					_port;
+        int                                     _fd;
+        int                                     _server_sock;
         std::string				_serverName;
         std::string				_password;
         std::map<int, Client>	_clients;
-        // std::map<std::string, Channel>	_channels;
+        std::map<std::string, Channel>	_channels;
         struct sockaddr_in      _addr; // contains the IP adress and port number to bind the socket.
         struct epoll_event      _events[MAX_EVENTS];
         struct epoll_event      _ev;
         int                     _epollfd;
-        int                     _server_sock;
         int                     _client_sock;
         int                     _opt;
         int                     createSocket(int domain, int type_communication, int protocol);
@@ -64,6 +75,8 @@ class Server
         void                    listenConnexionsEpoll(void);
         void                    sendData(int fd, std::string data);
         void                    setNonBlocking(int sock);
+	private:
 };
+std::ostream &operator<<(std::ostream &o, const Server &obj);
 
 #endif
