@@ -115,6 +115,7 @@ void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
             throw controlEpollFailed();
 }
 
+
 int    Server::acceptConnexion(socklen_t* addrlen)
 {
     int fd = accept(this->server_sock, (struct sockaddr *)&this->addr, addrlen);
@@ -125,7 +126,6 @@ int    Server::acceptConnexion(socklen_t* addrlen)
 
 /**
  * @brief wrapper function of epoll_wait, wait for I/O events, block the current thread if there is no event available.
- * 
  * @param max_events the maximum number of events that might be returned.
  * @param timeout arguments specicies the number of milliseconds that epoll_wait() will block. 
  * We can see that like an operation in order to extract element inside the ready event list of epoll.
@@ -139,12 +139,22 @@ int    Server::epollWaitOperation(int max_events, int timeout)
     return (nfds);
 }
 
+/**
+ * @brief wrapper function of send(), allowing it to send data by the indicated socket.
+ * @param data, data to send.
+ * @return
+ */
 void    Server::sendData(std::string data)
 {
     if (send(client_sock, data.c_str(), strlen(data.c_str()), 0) < 0)
         throw sendFailed();
 }
 
+/**
+ * @brief wrapper function of recv(), allowing it to receive data by the indicated socket.
+ * @param buffer, allowing it to contain the received data.
+ * @return
+ */
 int    Server::receiveData(char* buffer)
 {
     int read = recv(client_sock, buffer, sizeof(buffer), 0);
@@ -153,6 +163,10 @@ int    Server::receiveData(char* buffer)
     return (read);
 }
 
+/**
+ * @brief function to set up the behavior of the socket.
+ * @return
+ */
 void    Server::setAddr(void)
 {
         this->addr.sin_family = AF_INET;
@@ -162,6 +176,10 @@ void    Server::setAddr(void)
 
 static int setnonblocking(int sock);
 
+/**
+ * @brief infinite loop that allows receiving and sending data between the different sockets contains in the ready list of epoll.
+ * @return
+ */
 void    Server::listenConnexionsEpoll(void)
 {
     char buffer[1024];
@@ -175,7 +193,7 @@ void    Server::listenConnexionsEpoll(void)
             if (this->events[n].data.fd == this->server_sock)
             {
                 this->client_sock = this->acceptConnexion(&addrlen);
-                setnonblocking(this->client_sock);
+                this->setNonBlocking(this->client_sock);
                 this->ev.events = EPOLLIN | EPOLLET;
                 this->ev.data.fd = client_sock;
                 this->sendData("Hello from server");
@@ -189,17 +207,22 @@ void    Server::listenConnexionsEpoll(void)
     }
 }
 
-static int setnonblocking(int sock)
+/**
+* @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
+* @return
+*/
+void Server::setNonBlocking(int sock)
 {
     int result;
     int flags;
 
     flags = ::fcntl(sock, F_GETFL, 0);
     if (flags == -1)
-        return -1;
+        throw setnonblockingFailed();
     flags |= O_NONBLOCK;
     result = fcntl(sock , F_SETFL , flags);
-    return (result);
+    if (result == -1)
+        throw setnonblockingFailed();
 }
 
 Server::Server (void)

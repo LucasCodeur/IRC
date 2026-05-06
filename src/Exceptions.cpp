@@ -22,12 +22,10 @@ const char* setSocketOptionFailed::what() const throw ()
     return ("Set socket option failed\n");
 }
 
-
 const char*  bindFailed::what() const throw ()
 {
         return ("Bind failed\n");
 };
-
 
 const char*  listenSocketFailed::what() const throw()
 {
@@ -62,4 +60,9 @@ const char*  sendFailed::what() const throw()
 const char*  receiveDataFailed::what() const throw()
 {
     return ("Receive Data Failed");
+}
+
+const char*  setnonblockingFailed::what() const throw()
+{
+    return ("Setnonblocking Failed");
 }

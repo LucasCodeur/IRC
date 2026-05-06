@@ -43,6 +43,7 @@ class Server
         int     epollWaitOperation(int max_events, int timeout);
         void    sendData(std::string data);
         int     receiveData(char* buffer);
+        void    setNonBlocking(int sock);
 
         struct sockaddr_in  addr; // contains the IP adress and port number to bind the socket.
         struct epoll_event  events[MAX_EVENTS];
