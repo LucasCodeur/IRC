@@ -1,16 +1,44 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
+#define COMMAND_TYPES_AMOUNT 11 // TODO: is it the right way to do this?
+
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 class Command
 {
+
+	class UnknownCommandException : public std::runtime_error
+	{
+		public:
+			UnknownCommandException();
+			UnknownCommandException(std::string msg);
+			~UnknownCommandException() throw();
+	};
+
+	class EmptyCommandException : public std::runtime_error
+	{
+		public:
+			EmptyCommandException();
+			EmptyCommandException(std::string msg);
+			~EmptyCommandException() throw();
+	};
+
+	class IncorrectParametersException : public std::runtime_error
+	{
+		public:
+			IncorrectParametersException();
+			IncorrectParametersException(std::string msg);
+			~IncorrectParametersException() throw();
+	};
+
 	public:
 	enum commandType
 	{
-		EMPTY,
+		EMPTY = 0,
 		JOIN,
 		PRIVMSG,
 		KICK,
@@ -32,6 +60,7 @@ class Command
 	public:
 	// CONSTRUCTOR
 	Command();
+	Command(int clientFd, std::string str);
 	Command(int clientFd, commandType type, std::vector<std::string> const &params);
 	~Command();
 	Command(Command const &original);
