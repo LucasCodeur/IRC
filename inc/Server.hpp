@@ -18,6 +18,7 @@
 # define MAX_WAITING_LIST 3
 # define TIMEOUT -1 
 # define DEFAULT 0 
+# define BUFFER_SIZE 1024
 
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -54,18 +55,16 @@ class Server
         int                                     _server_sock;
         std::string				_serverName;
         std::string				_password;
-        std::map<int, Client>	_clients;
-        std::map<std::string, Channel>	_channels;
+        std::map<int, Client>	                _clients;
+        std::map<std::string, Channel>	        _channels;
         struct sockaddr_in      _addr; // contains the IP adress and port number to bind the socket.
-        struct epoll_event      _events[MAX_EVENTS];
-        struct epoll_event      _ev;
+        struct epoll_event      _ev[MAX_EVENTS];
         int                     _epollfd;
-        int                     _client_sock;
         int                     _opt;
         int                     createSocket(int domain, int type_communication, int protocol);
         int                     acceptConnexion(socklen_t* addrlen);
         int                     epollWaitOperation(int max_events, int timeout);
-        int                     receiveData(char* buffer);
+        int                     receiveData(int socketfd, char* buffer);
         void                    setSocketOption(int socket_fd, int level, int option_name);
         void                    bindSocket(void);
         void                    listenSocket(int sizeWaitingList);

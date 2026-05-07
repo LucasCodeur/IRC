@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /**
  * @brief set up the server and launch it.
@@ -34,7 +35,7 @@ bool    Server::launcherServer(void)
         this->bindSocket();
         this->listenSocket(MAX_WAITING_LIST);
         this->setEpoll(DEFAULT);
-        this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev); 
+        this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
         this->listenConnexionsEpoll();
 
         return (true);
@@ -46,30 +47,61 @@ bool    Server::launcherServer(void)
  */
 void    Server::listenConnexionsEpoll(void)
 {
-    char buffer[1024];
-    int nfds;
+    char buffer[BUFFER_SIZE] = {"0"};
     socklen_t addrlen = sizeof(this->_addr);
+    int nfds = 1;
     for (;;)
     {
         nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
-        for (int n = 0; n < nfds; ++n)
+        for (int n = 0; n < nfds; n++)
         {
-            if (this->_events[n].data.fd == this->_server_sock)
+            Client test;
+            int fd;
+            if (this->_ev[n].data.fd == this->_server_sock)
             {
-                Client test;
-
-                test.setFd(this->acceptConnexion(&addrlen));
-                this->setNonBlocking(test.getFd());
-                this->_ev.events = EPOLLIN | EPOLLET;
-                this->_ev.data.fd = test.getFd();
-                this->sendData(test.getFd(), "Hello from server");
-                this->controlEpoll(EPOLL_CTL_ADD, test.getFd(), &this->_ev);
-                while (receiveData(buffer) > 0)
-                    std::cout << buffer << std::endl;
-            } /*else {
-            do_use_fd(events[n].data.fd);*/
-                       // }
+                fd = this->acceptConnexion(&addrlen);
+                this->setNonBlocking(fd);
+                test.setFd(fd);
+                this->_ev[n + 1].events = EPOLLIN | EPOLLET;
+                this->_ev[n + 1].data.fd = fd;
+                this->sendData(fd, "Hello from server");
+                this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
+                PRINT("Client connected: ", GREEN, "");
+                PRINT(fd, WHITE, "\n");
+                nfds++;
+            } 
+            else
+            {
+                fd = this->_ev[n].data.fd;
+                int bytes_read = receiveData(fd, buffer);
+                if (bytes_read <= 0)
+                {
+                    if (bytes_read < 0)
+                        perror("recv");
+                    else
+                    {
+                            PRINT("client disconnected: ", RED, "");
+                            PRINT(fd, RED, "\n");
+                            return ;
+                    }
+                    // close(fd);
+                    // if (n < nfds)
+                    //     this->_ev[n].data.fd = this->_ev[nfds - 1].data.fd;
+                    // this->_ev[nfds - 1].data.fd = -1;
+                    // nfds--;
+                }
+                else
+                {
+                    PRINT("received: ", GREEN, "");
+                    PRINT(fd, GREEN, "\n");
+                    PRINT(buffer, GREEN, "\n");
+                }
+            }
+            if (n != 0)
+                this->_clients.insert(std::pair<int, Client>(fd, test));
+            PRINT("Second for : ", BLUE, "\n");
        }
+            PRINT("first for : ", RED, "\n");
     }
 }
 
@@ -133,8 +165,8 @@ void    Server::setEpoll(int option)
         this->_epollfd = epoll_create1(option);
         if (this->_epollfd == -1)
             throw epollCreateFailed();
-        this->_ev.events = EPOLLIN;
-        this->_ev.data.fd = this->_server_sock;
+        this->_ev[0].events = EPOLLIN;
+        this->_ev[0].data.fd = this->_server_sock;
 }
 
 /**
@@ -151,9 +183,8 @@ void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
 
 /**
  * @brief wrapper function of accept(), allowing it to extracts the first connection request from the queue of pending connections for the listening socket.
- * @param
- * @param
- * @return
+ * @param addrlen  pointer to a variable that specifies the length of the adress structure.
+ * @return new file descriptor referring to the first connection request from th queue of pending connections for the listening socket.
  */
 int    Server::acceptConnexion(socklen_t* addrlen)
 {
@@ -172,7 +203,7 @@ int    Server::acceptConnexion(socklen_t* addrlen)
  */
 int    Server::epollWaitOperation(int max_events, int timeout)
 {
-    int nfds = epoll_wait(this->_epollfd, this->_events, max_events, timeout);
+    int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
     if (nfds < 0)
         throw epollWaitFailed();
     return (nfds);
@@ -195,9 +226,9 @@ void    Server::sendData(int fd, std::string data)
  * @param buffer, allowing it to contain the received data.
  * @return
  */
-int    Server::receiveData(char* buffer)
+int    Server::receiveData(int socketfd, char* buffer)
 {
-    int read = recv(this->_client_sock, buffer, sizeof(buffer), 0);
+    int read = recv(socketfd, buffer, BUFFER_SIZE, 0);
     if (read > 0)
         throw receiveDataFailed(); 
     return (read);
@@ -239,6 +270,7 @@ Server::Server()
 	  _password(""),
           _opt(1)
 {
+    	memset(this->_ev, 0, sizeof(this->_ev));
 	// std::cout << GREEN "Server created: " RESET << *this << std::endl;
 }
 
