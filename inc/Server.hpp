@@ -18,7 +18,7 @@
 # define MAX_WAITING_LIST 3
 # define TIMEOUT -1 
 # define DEFAULT 0 
-# define BUFFER_SIZE 1024
+# define BUFFER_SIZE 4096 
 
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -31,7 +31,6 @@
 
 #include <ostream>
 #include <vector>
-
 
 class Server
 {
@@ -64,7 +63,7 @@ class Server
         int                     createSocket(int domain, int type_communication, int protocol);
         int                     acceptConnexion(socklen_t* addrlen);
         int                     epollWaitOperation(int max_events, int timeout);
-        int                     receiveData(int socketfd, char* buffer);
+        void                    receiveData(int socketfd);
         void                    setSocketOption(int socket_fd, int level, int option_name);
         void                    bindSocket(void);
         void                    listenSocket(int sizeWaitingList);

@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <errno.h>
 
 /**
  * @brief set up the server and launch it.
@@ -47,61 +48,33 @@ bool    Server::launcherServer(void)
  */
 void    Server::listenConnexionsEpoll(void)
 {
-    char buffer[BUFFER_SIZE] = {"0"};
     socklen_t addrlen = sizeof(this->_addr);
     int nfds = 1;
+
     for (;;)
     {
         nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
         for (int n = 0; n < nfds; n++)
         {
-            Client test;
+            // Client test;
             int fd;
             if (this->_ev[n].data.fd == this->_server_sock)
             {
                 fd = this->acceptConnexion(&addrlen);
                 this->setNonBlocking(fd);
-                test.setFd(fd);
+                // test.setFd(fd);
                 this->_ev[n + 1].events = EPOLLIN | EPOLLET;
                 this->_ev[n + 1].data.fd = fd;
                 this->sendData(fd, "Hello from server");
                 this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
                 PRINT("Client connected: ", GREEN, "");
                 PRINT(fd, WHITE, "\n");
-                nfds++;
             } 
-            else
-            {
-                fd = this->_ev[n].data.fd;
-                int bytes_read = receiveData(fd, buffer);
-                if (bytes_read <= 0)
-                {
-                    if (bytes_read < 0)
-                        perror("recv");
-                    else
-                    {
-                            PRINT("client disconnected: ", RED, "");
-                            PRINT(fd, RED, "\n");
-                            return ;
-                    }
-                    // close(fd);
-                    // if (n < nfds)
-                    //     this->_ev[n].data.fd = this->_ev[nfds - 1].data.fd;
-                    // this->_ev[nfds - 1].data.fd = -1;
-                    // nfds--;
-                }
-                else
-                {
-                    PRINT("received: ", GREEN, "");
-                    PRINT(fd, GREEN, "\n");
-                    PRINT(buffer, GREEN, "\n");
-                }
-            }
-            if (n != 0)
-                this->_clients.insert(std::pair<int, Client>(fd, test));
-            PRINT("Second for : ", BLUE, "\n");
+            else if (this->_ev[n].events & EPOLLIN)
+                this->receiveData(this->_ev[n].data.fd);
+            // if (n != 0)
+                // this->_clients.insert(std::pair<int, Client>(fd, test));
        }
-            PRINT("first for : ", RED, "\n");
     }
 }
 
@@ -223,15 +196,43 @@ void    Server::sendData(int fd, std::string data)
 
 /**
  * @brief wrapper function of recv(), allowing it to receive data by the indicated socket.
- * @param buffer, allowing it to contain the received data.
+ * @param socketfd to receive data from this one.
  * @return
  */
-int    Server::receiveData(int socketfd, char* buffer)
+void    Server::receiveData(int socketfd)
 {
-    int read = recv(socketfd, buffer, BUFFER_SIZE, 0);
-    if (read > 0)
-        throw receiveDataFailed(); 
-    return (read);
+    int bytes_read;
+    char buffer[BUFFER_SIZE] = {"0"};
+
+    while (1)
+    {
+            bytes_read = recv(socketfd, buffer, sizeof(buffer), 0);
+            // PRINT("Bytes_read: ", BLUE, "");
+            // PRINT(bytes_read, WHITE, "\n");
+            if (bytes_read <= 0)
+                break ;
+            PRINT("received: ", GREEN, "");
+            PRINT(socketfd, GREEN, "\n");
+            PRINT(buffer, GREEN, "\n");
+    }
+    if (bytes_read <= 0)
+    {
+        if (bytes_read < 0)
+        {
+            // perror("recv");
+        }
+        else
+        {
+                PRINT("client disconnected: ", RED, "");
+                PRINT(socketfd, RED, "\n");
+                return ;
+        }
+        if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+        {
+            close(socketfd);
+            this->controlEpoll(EPOLL_CTL_DEL, socketfd, NULL);
+        }
+    }
 }
 
 /**
