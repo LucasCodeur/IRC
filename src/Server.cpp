@@ -56,24 +56,20 @@ void    Server::listenConnexionsEpoll(void)
         nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
         for (int n = 0; n < nfds; n++)
         {
-            // Client test;
             int fd;
             if (this->_ev[n].data.fd == this->_server_sock)
             {
                 fd = this->acceptConnexion(&addrlen);
                 this->setNonBlocking(fd);
-                // test.setFd(fd);
                 this->_ev[n + 1].events = EPOLLIN | EPOLLET;
                 this->_ev[n + 1].data.fd = fd;
-                this->sendData(fd, "Hello from server");
+                this->sendData(fd, "Welcome to the IRC SERVER");
                 this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
                 PRINT("Client connected: ", GREEN, "");
                 PRINT(fd, WHITE, "\n");
             } 
             else if (this->_ev[n].events & EPOLLIN)
                 this->receiveData(this->_ev[n].data.fd);
-            // if (n != 0)
-                // this->_clients.insert(std::pair<int, Client>(fd, test));
        }
     }
 }
@@ -201,6 +197,10 @@ void    Server::sendData(int fd, std::string data)
  */
 void    Server::receiveData(int socketfd)
 {
+    Client temp;
+
+    temp.setFd(socketfd);
+    this->_clients.insert(std::pair<int, Client>(socketfd, temp));
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
 
@@ -217,20 +217,13 @@ void    Server::receiveData(int socketfd)
     }
     if (bytes_read <= 0)
     {
-        if (bytes_read < 0)
-        {
-            // perror("recv");
-        }
-        else
-        {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(socketfd, RED, "\n");
-                return ;
-        }
         if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
         {
+            PRINT("client disconnected: ", RED, "");
+            PRINT(socketfd, RED, "\n");
             close(socketfd);
             this->controlEpoll(EPOLL_CTL_DEL, socketfd, NULL);
+            return ;
         }
     }
 }
