@@ -15,6 +15,7 @@
 **/compile_commands.json 
 
 **/*.clang
+**/*.clangd
 **/*.code
 **/*.vscode
 **/*.cache
