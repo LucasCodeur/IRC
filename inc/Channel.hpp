@@ -19,6 +19,7 @@ class Channel
 	public:
 	// CONSTRUCTOR
 	Channel();
+	Channel(std::string const &name, std::string const &password);
 	Channel(std::string const &name);
 	~Channel();
 	Channel(Channel const &original);

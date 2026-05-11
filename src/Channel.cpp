@@ -24,6 +24,16 @@ Channel::Channel(std::string const &name)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
 
+Channel::Channel(std::string const &name, std::string const &password)
+	: _name(name),
+	  _topic(""),
+	  _password(password),
+	  _mode(0)
+{
+	if (DEBUG == 1)
+		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
+}
+
 Channel::~Channel()
 {
 	for (size_t i = 0; i < _users.size(); ++i)
@@ -67,11 +77,12 @@ Channel &Channel::operator=(Channel const &other)
 
 std::ostream &operator<<(std::ostream &o, const Channel &obj)
 {
-	return (o << "Channel: " << obj.getName() 
-			  << " (Topic: " << obj.getTopic()
+	return (o << "Channel: " << obj.getName()
+			  << " Topic: " << obj.getTopic()
+			  << " Password: '" << obj.getPassword() << "'"
 			  << ", Users: " << obj.getUsers().size()
 			  << ", Operators: " << obj.getOperators().size()
-			  << ", Invited: " << obj.getInvited().size() 
+			  << ", Invited: " << obj.getInvited().size()
 			  << ", Mode: " << obj.getMode() << ")");
 }
 

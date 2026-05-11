@@ -1,15 +1,45 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Command.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/07 16:06:35 by kbarru            #+#    #+#             */
+/*   Updated: 2026/05/07 16:10:13 by kbarru           ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
 #define COMMAND_TYPES_AMOUNT 11 // TODO: is it the right way to do this?
 
 #include <ostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
+#include "Server.hpp"
 
 class Command
 {
+
+
+	public:
+	enum commandType
+	{
+		EMPTY = 0,
+		JOIN, // Enzo
+		PRIVMSG,
+		KICK,
+		INVITE,
+		TOPIC, // Killian
+		MODE, // Killian
+		WHO, // Enzo
+		PASS, // Lucas
+		NICK, // Lucas
+		USER, // Lucas
+		PART // Enzo
+	};
 
 	class UnknownCommandException : public std::runtime_error
 	{
@@ -35,34 +65,10 @@ class Command
 			~IncorrectParametersException() throw();
 	};
 
-	public:
-	enum commandType
-	{
-		EMPTY = 0,
-		JOIN,
-		PRIVMSG,
-		KICK,
-		INVITE,
-		TOPIC,
-		MODE,
-		WHO,
-		PASS,
-		NICK,
-		USER,
-		PART
-	};
-
-	private:
-	int							_clientFd;
-	commandType					_commandType;
-	std::vector<std::string>	_params;
-
-	public:
 	// CONSTRUCTOR
 	Command();
-	Command(int clientFd, std::string str);
-	Command(int clientFd, commandType type, std::vector<std::string> const &params);
-	~Command();
+	Command(int clientFd, commandType type, std::vector<std::vector<std::string> > const &params);
+	virtual ~Command();
 	Command(Command const &original);
 
 	// OPERATOR
@@ -71,15 +77,27 @@ class Command
 	// GETTERS
 	int getClientFd() const;
 	commandType getCommandType() const;
-	std::vector<std::string> const &getParams() const;
+	std::vector<std::vector<std::string> > const &getParams() const;
 
 	// SETTERS
 	void setClientFd(int clientFd);
 	void setCommandType(commandType type);
-	void setParams(std::vector<std::string> const &params);
+	void setParams(std::vector<std::vector<std::string> > const &params);
 
 	// HELPER
 	std::string commandTypeToString() const;
+
+	// METHODS
+	virtual void	execute(Server &server) const = 0;
+	
+
+private:
+	int							_clientFd;
+	commandType					_commandType;
+
+protected:
+	std::vector<std::vector<std::string> >	_params;
+
 };
 std::ostream &operator<<(std::ostream &o, const Command &obj);
 

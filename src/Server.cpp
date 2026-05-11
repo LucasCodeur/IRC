@@ -6,13 +6,16 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:50:09 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 15:16:08 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/07 16:45:14 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "debug.hpp"
 #include "Server.hpp"
 #include "Exceptions.hpp"
+#include "Command.hpp"
+#include "Server.hpp"
+#include "debug.hpp"
 
 #include <netinet/in.h>
 #include <stdlib.h>
@@ -21,10 +24,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "Server.hpp"
-#include "debug.hpp"
 #include <iostream>
 #include <string>
+#include <utility>
 
 /**
  * @brief set up the server and launch it.
@@ -230,7 +232,6 @@ void Server::setNonBlocking(int sock)
 
 Server::Server()
 	:
-	  _opt(1),
 	  _port(0),
 	  _fd(-1),
 	  _serverName("ircserv"),
@@ -313,38 +314,25 @@ std::string const &Server::getPassword() const
 	return (this->_password);
 }
 
-void Server::handleCommand(Command const &cmd)
+std::map<std::string, Channel *> const &Server::getChannelMap() const
 {
-	switch (cmd.getCommandType()) // TODO: will add all the commands later
-	{
-		case Command::JOIN:
-			this->handleJoin(cmd);
-			break;
-		case Command::EMPTY:
-			std::cout << DBUG YELLOW "Received empty command from client " << cmd.getClientFd() << RESET << std::endl;
-			break;
-		default:
-			std::cout << cmd.commandTypeToString() << ": not handled for now !" << std::endl;
-			break;
-	}
+        return (this->_channels);
 }
 
-void Server::handleJoin(Command const &cmd)
+std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(std::string name, std::string password)
 {
-	std::vector<std::string> const &params = cmd.getParams();
-	std::string const &channelName = params[0];
-	std::map<std::string, Channel*>::iterator it = this->_channels.find(channelName);
-	
-	if (it == this->_channels.end())
-		it = this->_channels.insert(std::make_pair(channelName, new Channel(channelName))).first;
-	if (it->second->addUser(cmd.getClientFd()))
-	{
-		if (DEBUG == 1)
-			std::cout << DBUG GREEN "Client " << cmd.getClientFd() << " joined channel " << channelName << RESET << std::endl;
-	}
-	else
-		if (DEBUG == 1)
-			std::cout << DBUG YELLOW "Client " << cmd.getClientFd() << " can't join channel " << channelName << " allready in it" << RESET << std::endl;
+        Channel *newChan = new Channel(name, password);
+
+        std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
+        std::map<std::string, Channel *> it;
+        pair = this->_channels.insert(std::make_pair(name, newChan));
+        std::cout << DBUG GREEN "Created channel : " RESET << name << std::endl;
+        return (pair);
+}
+
+std::map<int, Client> const &Server::getClientmap() const
+{
+        return (this->_clients);
 }
 
 std::ostream &operator<<(std::ostream &o, const Server &obj)

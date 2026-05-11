@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/06 11:28:54 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/07 16:13:16 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 #include <ostream>
 #include <string>
 #include "Channel.hpp"
-#include "Command.hpp"
 #include "Client.hpp"
 
 #include <ostream>
@@ -69,10 +68,10 @@ class Server
 	std::string const &getServerName() const;
 	std::string const &getPassword() const;
 	std::map<int, Client> const &getClientmap() const;
-	std::map<std::string, Channel*> const &getChanelmap() const;
+	std::map<std::string, Channel*> const &getChannelMap() const;
 	
 	// METHODS
-	void handleCommand(Command const &cmd);
+        std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
 
     private :
 		int								_port;
@@ -82,7 +81,6 @@ class Server
 		std::map<int, Client>			_clients;
 		Server(Server const &original);
 		Server &operator=(Server const &other);
-		void handleJoin(Command const &cmd);
 		std::map<std::string, Channel*>	_channels;
 		int epollfd;
 };

@@ -4,6 +4,8 @@
 #include <sstream>
 #include <stdexcept>
 
+/* === CONSTRUCTOR === */
+
 Command::Command()
 	: _clientFd(-1),
 	  _commandType(EMPTY)
@@ -12,40 +14,7 @@ Command::Command()
 		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
 }
 
-Command::Command(int clientFd, std::string str) : _clientFd(clientFd)
-{
-	const char *types[11] = {"JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
-
-	std::vector<std::string> commandTypes(types, types + COMMAND_TYPES_AMOUNT);
-	std::vector<std::string> formattedCommand;
-	std::stringstream ss(str);
-
-
-	std::string splitString;
-	while(getline(ss, splitString, ' '))
-		formattedCommand.push_back(splitString);
-	if (formattedCommand.size() <= 0)
-		throw EmptyCommandException();
-	std::vector<std::string> parameters(++formattedCommand.begin(), formattedCommand.end());
-	
-	for (size_t	i = 0; i < commandTypes.size(); ++i)
-	{
-	  // std::cout << commandTypes[i] << " vs " << formattedCommand[0] << std::endl;
-		if (formattedCommand[0] == commandTypes[i])
-		{
-			std::cout << "identified type : " << commandTypes[i] << std::endl;
-			this->_commandType = (commandType) i;
-			break ;
-		}
-		if (i == commandTypes.size() - 1)
-			throw UnknownCommandException();
-	}
-
-	this->_params = parameters;
-	}
-
-
-Command::Command(int clientFd, Command::commandType type, std::vector<std::string> const &params)
+Command::Command(int clientFd, Command::commandType type, std::vector<std::vector<std::string> > const &params)
 	: _clientFd(clientFd),
 	  _commandType(type),
 	  _params(params)
@@ -69,16 +38,7 @@ Command::Command(Command const &original)
 		std::cout << DBUG BLUE "Command copied: " RESET << *this <<std::endl;
 }
 
-// EXCEPTIONS
-Command::UnknownCommandException::UnknownCommandException() : std::runtime_error("Unknown command type") {}
-Command::UnknownCommandException::~UnknownCommandException() throw() {}
-
-Command::EmptyCommandException::EmptyCommandException() : std::runtime_error("Empty command") {}
-Command::EmptyCommandException::~EmptyCommandException() throw() {}
-
-
-Command::IncorrectParametersException::IncorrectParametersException() : std::runtime_error("number of parameters incorrect") {}
-Command::IncorrectParametersException::~IncorrectParametersException() throw() {}
+/* === OPERATOR OVERRIDE === */
 
 Command &Command::operator=(Command const &other)
 {
@@ -93,6 +53,30 @@ Command &Command::operator=(Command const &other)
 	return (*this);
 }
 
+std::ostream &operator<<(std::ostream &o, const Command &obj)
+{
+	std::vector<std::vector<std::string> > const &params = obj.getParams();
+
+	o << "Command: clientFd " << obj.getClientFd() << ", " << obj.commandTypeToString() << ", args : ";
+	for (size_t i = 0; i < params.size(); ++i)
+	{
+		std::cout << "[" ;
+		for (size_t j = 0; j < params[i].size(); ++j)
+		{
+		o << params[i][j];
+		if (j < params[i].size() - 1)
+			o << ", ";
+		}
+		o << "]";
+		if (i < params.size() - 1)
+			o << ", ";
+	}
+
+	return (o);
+}
+
+/* === GETTERS === */
+
 int Command::getClientFd() const
 {
 	return (_clientFd);
@@ -103,25 +87,12 @@ Command::commandType Command::getCommandType() const
 	return (_commandType);
 }
 
-std::vector<std::string> const &Command::getParams() const
+std::vector<std::vector<std::string> > const &Command::getParams() const
 {
 	return (_params);
 }
 
-std::ostream &operator<<(std::ostream &o, const Command &obj)
-{
-	std::vector<std::string> const &params = obj.getParams();
-
-	o << "Command: clientFd " << obj.getClientFd() << ", " << obj.commandTypeToString() << ", [";
-	for (size_t i = 0; i < params.size(); ++i)
-	{
-		o << params[i];
-		if (i < params.size() - 1)
-			o << ", ";
-	}
-	o << "]";
-	return (o);
-}
+/* === SETTERS === */
 
 void Command::setClientFd(int fd)
 {
@@ -133,10 +104,12 @@ void Command::setCommandType(commandType type)
 	this->_commandType = type;
 }
 
-void Command::setParams(std::vector<std::string> const &params)
+void Command::setParams(std::vector<std::vector<std::string> > const &params)
 {
 	this->_params = params;
 }
+
+/* === HELPERS === */
 
 std::string Command::commandTypeToString() const
 {
@@ -170,3 +143,16 @@ std::string Command::commandTypeToString() const
 			return ("UNKNOWN");
 	}
 }
+
+/* === EXCEPTIONS === */
+
+Command::UnknownCommandException::UnknownCommandException() : std::runtime_error("Unknown command type") {}
+Command::UnknownCommandException::~UnknownCommandException() throw() {}
+
+Command::EmptyCommandException::EmptyCommandException() : std::runtime_error("Empty command") {}
+Command::EmptyCommandException::~EmptyCommandException() throw() {}
+
+
+Command::IncorrectParametersException::IncorrectParametersException() : std::runtime_error("number of parameters incorrect") {}
+Command::IncorrectParametersException::IncorrectParametersException(std::string msg) : std::runtime_error(msg) {}
+Command::IncorrectParametersException::~IncorrectParametersException() throw() {}

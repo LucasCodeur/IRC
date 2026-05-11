@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/05 17:07:45 by enchevri         ###   ########lyon.fr    #
+#    Updated: 2026/05/07 17:04:11 by kbarru           ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ MAKEFLAGS += -j
 CC = c++
 CC_DEBUG = g++
 CFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
-CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g3 -D DEBUG=1
+CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
 NAME = ircserv
 NAME_DEBUG = ircserv_debug
 P_SRC = src/
@@ -30,6 +30,8 @@ SRC =	main.cpp \
 		Client.cpp \
 		Channel.cpp \
 		Exceptions.cpp \
+		CommandFactory.cpp \
+		JoinCommand.cpp
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
