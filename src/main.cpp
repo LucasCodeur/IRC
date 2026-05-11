@@ -21,6 +21,7 @@ int	main(int argc, char* argv[])
 		return 2;
 	Server test;
 
+	test.launcherServer();
 	Command *join1 = CommandFactory::createCommand(1, "JOIN #protectedchan password");
 	Command *join2 = CommandFactory::createCommand(2, "JOIN #protectedchan incorrect");
 	Command *join3 = CommandFactory::createCommand(3, "JOIN #protectedchan");

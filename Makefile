@@ -24,10 +24,10 @@ P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
 P_INC = inc/
 
-SRC =	main.cpp \
+SRC =	main.cpp	\
 		Command.cpp \
-		Server.cpp \
-		Client.cpp \
+		Server.cpp	\
+		Client.cpp	\
 		Channel.cpp \
 		Exceptions.cpp \
 		CommandFactory.cpp \

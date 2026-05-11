@@ -18,7 +18,8 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include "Server.hpp"
+
+class Server;
 
 class Command
 {
