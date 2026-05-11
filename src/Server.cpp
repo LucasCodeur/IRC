@@ -78,6 +78,7 @@ void    Server::listenConnexionsEpoll(void)
  * @brief wrapper function of socket(), allows creating a socket.
  * @param domain, integer that allows specifying communication domain in order to choose the protocol.
  * @param type_communication, TCP or UDP.
+ * @param protocol value to choose the protocol (IP).
  * @return socket descriptor.
  */
 int    Server::createSocket(int domain, int type_communication, int protocol)
@@ -139,9 +140,11 @@ void    Server::setEpoll(int option)
 }
 
 /**
- * @brief wrapper function of epoll_ctl(), control inferface for an epoll file descriptor.
+ * @brief wrapper function of epoll_ctl(), control inferface for an epoll file descriptor, allows to add, modify
+ * or remove entries in the interest list of the epoll().
  * @param op request that the operation op be performed for the target file descriptor.
  * @param fd file descriptor targeted, in order to apply an operation on it. 
+ * @param event, data structure that contains information about possible events with epoll.
  * @return
  */
 void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
@@ -153,7 +156,7 @@ void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
 /**
  * @brief wrapper function of accept(), allowing it to extracts the first connection request from the queue of pending connections for the listening socket.
  * @param addrlen  pointer to a variable that specifies the length of the adress structure.
- * @return new file descriptor referring to the first connection request from th queue of pending connections for the listening socket.
+ * @return new file descriptor referring to the first connection request from the queue of pending connections for the listening socket.
  */
 int    Server::acceptConnexion(socklen_t* addrlen)
 {
@@ -223,7 +226,6 @@ void    Server::receiveData(int socketfd)
             PRINT(socketfd, RED, "\n");
             close(socketfd);
             this->controlEpoll(EPOLL_CTL_DEL, socketfd, NULL);
-            return ;
         }
     }
 }
