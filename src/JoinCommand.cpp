@@ -6,7 +6,7 @@
 /*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:14:43 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/07 17:05:44 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/11 11:59:33 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ JoinCommand::JoinCommand(const int clientFd, const enum Command::commandType typ
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > JoinCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
+	if (type != JOIN)
+		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 	
 	std::vector<std::string> channels = params.front();
 	std::vector<std::string> keys;
