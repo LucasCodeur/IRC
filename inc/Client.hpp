@@ -29,6 +29,9 @@ class Client
 
 	private:
 	std::string		_username;
+	std::string		_hostname;
+	std::string		_realname;
+	std::string		_servername;
 	std::string		_nickname;
 	std::string		_password;
 	std::string		_buf;

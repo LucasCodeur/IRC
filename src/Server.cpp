@@ -15,7 +15,6 @@
 #include "Command.hpp"
 #include "Server.hpp"
 
-
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/socket.h>
