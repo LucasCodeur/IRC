@@ -1,7 +1,7 @@
 #include "CommandFactory.hpp"
 #include "JoinCommand.hpp"
+#include "PartCommand.hpp"
 #include "Command.hpp"
-#include <iostream>
 #include <sstream>
 #include "string.h"
 
@@ -35,16 +35,16 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 
 	creators[0] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
-	// creators[1] = &CommandFactory::createPrivmsgCommand;
-	// creators[2] = &CommandFactory::createKickCommand;
-	// creators[3] = &CommandFactory::createInviteCommand;
-	// creators[4] = &CommandFactory::createTopicCommand;
-	// creators[5] = &CommandFactory::createModeCommand;
-	// creators[6] = &CommandFactory::createWhoCommand;
-	// creators[7] = &CommandFactory::createPassCommand;
-	// creators[8] = &CommandFactory::createNickCommand;
-	// creators[9] = &CommandFactory::createUserCommand;
-	// creators[10] = &CommandFactory::createPartCommand;
+	// creators[2] = &CommandFactory::createPrivmsgCommand;
+	// creators[3] = &CommandFactory::createKickCommand;
+	// creators[4] = &CommandFactory::createInviteCommand;
+	// creators[5] = &CommandFactory::createTopicCommand;
+	// creators[6] = &CommandFactory::createModeCommand;
+	// creators[7] = &CommandFactory::createWhoCommand;
+	// creators[8] = &CommandFactory::createPassCommand;
+	// creators[9] = &CommandFactory::createNickCommand;
+	// creators[10] = &CommandFactory::createUserCommand;
+	creators[11] = &CommandFactory::createPartCommand;
 
 	std::vector<std::string> commandTypes(types, types + COMMAND_TYPES_AMOUNT);
 	std::vector<std::string> formattedCommand;
@@ -127,7 +127,7 @@ Command *CommandFactory::createJoinCommand(const int clientFd, const enum Comman
 // 	return (new UserCommand(clientFd, type, params));
 // }
 
-// Command *createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new PartCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+{
+	return (new PartCommand(clientFd, type, params));
+}

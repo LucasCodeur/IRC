@@ -1,7 +1,7 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#define COMMAND_TYPES_AMOUNT 11 // TODO: is it the right way to do this?
+#define COMMAND_TYPES_AMOUNT 12 // TODO: is it the right way to do this?
 
 #include <ostream>
 #include <string>

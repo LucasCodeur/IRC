@@ -31,7 +31,8 @@ SRC =	main.cpp	\
 		Channel.cpp \
 		Exceptions.cpp \
 		CommandFactory.cpp \
-		JoinCommand.cpp
+		JoinCommand.cpp \
+		PartCommand.cpp
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
