@@ -56,7 +56,7 @@ void    Server::listenConnexionsEpoll(void)
     socklen_t addrlen = sizeof(this->_addr);
     int nfds = 1;
 
-    for (;;)
+    while (true) 
     {
         nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
         for (int n = 0; n < nfds; n++)

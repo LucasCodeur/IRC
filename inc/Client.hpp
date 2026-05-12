@@ -33,7 +33,7 @@ class Client
 	std::string		_realname;
 	std::string		_servername;
 	std::string		_nickname;
-	std::string		_password;
+	std::string		_password; // take off
 	std::string		_buf;
 	int				_fd;
 	authState		_authState;
