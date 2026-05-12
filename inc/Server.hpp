@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/07 16:13:16 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/12 19:47:27 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 #include <string>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include <stdlib.h>
 
 #include <ostream>
 #include <vector>
@@ -46,19 +47,19 @@ class Server
         Server(int port, const std::string &password);
 	Server &operator=(Server const &other);
         ~Server();
-        bool    launcherServer(void);
-	int getPort() const;
-	int getFd() const;
-        int getOpt() const;
-	std::string const &getServerName() const;
-	std::string const &getPassword() const;
-	std::map<int, Client> const &getClientmap() const;
+        bool                                                        launcherServer(std::string port, std::string password);
+	int                                                         getPort() const;
+	int                                                         getFd() const;
+        int                                                         getOpt() const;
+	std::string const                                           &getServerName() const;
+	std::string const                                           &getPassword() const;
+	std::map<int, Client> const                                 &getClientmap() const;
+	std::map<std::string, Channel*> const                       &getChannelMap() const;
 	
 	// METHODS
         std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
-	void                    handleJoin(Command const &cmd);
-	void                    handleCommand(Command const &cmd);
-	std::map<std::string, Channel*> const &getChannelMap() const;
+	void                                                        handleJoin(Command const &cmd);
+	void                                                        handleCommand(Command const &cmd);
     private :
         int					_port;
         int                                     _fd;
@@ -84,6 +85,7 @@ class Server
         void                    listenConnexionsEpoll(void);
         void                    sendData(int fd, std::string data);
         void                    setNonBlocking(int sock);
+        bool                    convertPort(std::string port);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
 

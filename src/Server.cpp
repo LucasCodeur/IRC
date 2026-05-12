@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:50:09 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/07 16:45:14 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/12 20:00:37 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,46 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
-
-#include <iostream>
-#include <string>
 #include <utility>
 #include <stdio.h>
 #include <errno.h>
+
+#include <iostream>
+#include <string>
+#include <sstream>
 
 /**
  * @brief set up the server and launch it.
  * @return true if no errors occur.
  */
-bool    Server::launcherServer(void)
+bool    Server::launcherServer(std::string port, std::string password)
 {
-        this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
-        this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
-        this->setAddr();
-        this->bindSocket();
-        this->listenSocket(MAX_WAITING_LIST);
-        this->setEpoll(DEFAULT);
-        this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
-        this->listenConnexionsEpoll();
+    this->convertPort(port);
+    this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
+    this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
+    this->setAddr();
+    this->bindSocket();
+    this->listenSocket(MAX_WAITING_LIST);
+    this->setEpoll(DEFAULT);
+    this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
+    this->listenConnexionsEpoll();
 
-        return (true);
+    return (true);
+}
+
+/**
+ * @brief method to check if the port is correct and convert this one.
+ * @param port string to convert into number.
+ * @return true if the port is correct or false if not the case.
+ */
+bool    Server::convertPort(std::string port)
+{
+    std::stringstream ss(port);
+    if (ss.fail() == true)
+        throw badCharactersInsidePort();
+    ss >> this->_port;
+    PRINT(this->_port, BLUE, "\n");
+    return (true);
 }
 
 /**

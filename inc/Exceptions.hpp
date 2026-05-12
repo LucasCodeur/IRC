@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 14:02:20 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/03 15:06:29 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/12 20:00:33 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,18 @@ class setnonblockingFailed: public std::exception
 {
     public:
         const char* what() const throw ();
+};
+
+class passwordNotCorrect: public std::exception
+{
+    public:
+        const char* what() const throw();
+};
+
+class badCharactersInsidePort: public std::exception
+{
+    public:
+        const char* what() const throw();
 };
 
 #endif

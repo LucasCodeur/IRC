@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 14:08:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/03 15:06:35 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/12 19:54:37 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,14 @@ const char*  receiveDataFailed::what() const throw()
 const char*  setnonblockingFailed::what() const throw()
 {
     return ("Setnonblocking Failed");
+}
+
+const char* passwordNotCorrect::what() const throw()
+{
+    return ("Password does not correspond to the server");
+}
+
+const char* badCharactersInsidePort::what() const throw()
+{
+    return ("Characters in port are not correct");
 }

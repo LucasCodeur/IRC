@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/11 15:56:05 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/12 19:28:44 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,25 @@
 #include "Server.hpp"
 #include <iostream>
 
+static void	testJoinCommand();
+
 int	main(int argc, char* argv[])
 {
 	(void)argv;
 	if (argc != 3)
 		return 2;
+
+
 	Server test;
 
-	test.launcherServer();
+	test.launcherServer(argv[1], argv[2]);
+	
+	return (0);
+}
+
+static void	testJoinCommand()
+{
+	Server test;
 	Command *join1 = CommandFactory::createCommand(1, "JOIN #protectedchan password");
 	Command *join2 = CommandFactory::createCommand(2, "JOIN #protectedchan incorrect");
 	Command *join3 = CommandFactory::createCommand(3, "JOIN #protectedchan");
@@ -72,7 +83,4 @@ int	main(int argc, char* argv[])
 		std::cout << *it << ";";
 	std::cout << std::endl;
 
-	// test.launcherServer();
-
-	return (0);
 }
