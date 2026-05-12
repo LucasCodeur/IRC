@@ -373,4 +373,3 @@ std::ostream &operator<<(std::ostream &o, const Server &obj)
 	return (o << "Server name: " << obj.getServerName()
 			  << " port: " << obj.getPort());
 }
-
