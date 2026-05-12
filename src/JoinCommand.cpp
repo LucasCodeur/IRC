@@ -76,12 +76,19 @@ void JoinCommand::execute(Server &server) const
 		if (key_it != keys.end())
 			providedPassword = *key_it++;
 
-		if (distChan_it->second->getPassword() == providedPassword) // if password correct
+		if (distChan_it->second->getPassword() == "") // if no password required
+		{
+			std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
+			distChan_it->second->addUser(this->getClientFd());
+		}
+		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
 			std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with correct pass '" << providedPassword << "'" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
 		}
-		else // provided password incorrect OR password provided for non-password channel
-			std::cout << DBUG << this->getClientFd() << RED " could NOT join : " << *chan_it << " auth failure '" << providedPassword << "'" << RESET << std::endl;
+		else // if password incorrect
+		{
+			std::cout << DBUG << this->getClientFd() << RED " failed to join " << *chan_it << " with incorrect pass '" << providedPassword << "'" RESET << std::endl;
+		}
 	}
 }
