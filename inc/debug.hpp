@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   debug.hpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/22 10:14:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/05 15:35:33 by enchevri         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
@@ -29,6 +17,6 @@
 #define DBUG		YELLOW "DEBUG " RESET
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x <<newline;
+    std::cout << color << x <<newline << RESET;
 
 #endif // !DEBUG_HPP
