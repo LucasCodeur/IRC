@@ -1,0 +1,16 @@
+#ifndef NUMERIC_REPLIES_HPP
+# define NUMERIC_REPLIES_HPP
+
+# define ERR_NOSUCHNICK 401
+
+# define ERR_NEEDMOREPARAMS 461
+# define ERR_NOTONCHANNEL 442
+# define ERR_CHANOPRIVSNEEDED 482
+
+# define RPL_TOPIC 332
+# define RPL_NOTOPIC 331
+
+# define LF "\r"
+# define CR "\n"
+
+#endif
