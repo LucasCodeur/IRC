@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/13 10:20:29 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/13 11:27:17 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,12 +31,13 @@ P_OBJ_DEBUG = .obj_debug/
 P_INC = inc/
 
 SRC =			main.cpp	\
-				Command.cpp \
 				Client.cpp	\
 				Channel.cpp \
 				Exceptions.cpp \
+				Command.cpp \
 				CommandFactory.cpp \
-				JoinCommand.cpp
+				JoinCommand.cpp \
+				PassCommand.cpp
 
 SRC_SERVER =	Server.cpp	\
 				checkServer.cpp \

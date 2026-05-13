@@ -2,6 +2,7 @@
 #include "Exceptions.hpp"
 #include "Command.hpp"
 #include "Server.hpp"
+#include "CommandFactory.hpp"
 
 #include <cctype>
 #include <netinet/in.h>
@@ -214,14 +215,18 @@ void    Server::receiveData(int socketfd)
 
     while (1)
     {
-            bytes_read = recv(socketfd, buffer, sizeof(buffer), 0);
-            // PRINT("Bytes_read: ", BLUE, "");
-            // PRINT(bytes_read, WHITE, "\n");
-            if (bytes_read <= 0)
-                break ;
-            PRINT("received: ", GREEN, "");
-            PRINT(socketfd, GREEN, "\n");
-            PRINT(buffer, GREEN, "\n");
+        Command* command;
+        bytes_read = recv(socketfd, buffer, sizeof(buffer), 0);
+        // PRINT("Bytes_read: ", BLUE, "");
+        // PRINT(bytes_read, WHITE, "\n");
+        if (bytes_read <= 0)
+            break ;
+        
+        command = CommandFactory::createCommand(socketfd, buffer);
+        command->execute(*this);
+        PRINT("received: ", GREEN, "");
+        PRINT(socketfd, GREEN, "\n");
+        PRINT(buffer, GREEN, "\n");
     }
     if (bytes_read <= 0)
     {

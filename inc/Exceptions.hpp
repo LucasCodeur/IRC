@@ -90,4 +90,10 @@ class badRangePort: public std::exception
         const char* what() const throw();
 };
 
+// class badTypeCommand: public std::exception
+// {
+//     public:
+//         const char* what() const throw();
+// }
+
 #endif

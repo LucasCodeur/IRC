@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Exceptions.cpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/03 14:08:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 10:29:19 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Exceptions.hpp"
 
 const char* socketFailed::what() const throw ()
@@ -81,3 +69,8 @@ const char* badRangePort::what() const throw()
 {
     return ("Port bad range");
 }
+
+// const char* badTypeCommand::what() const throw()
+// {
+//     return ("Bad type command");
+// }
