@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:50:09 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/12 20:00:37 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/13 10:21:26 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Command.hpp"
 #include "Server.hpp"
 
+#include <cctype>
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -36,7 +37,15 @@
  */
 bool    Server::launcherServer(std::string port, std::string password)
 {
-    this->convertPort(port);
+    try 
+    {
+        this->convertPort(port);
+    }
+    catch (std::exception &e)
+    {
+        PRINT(e.what(), RED, "\n");
+        return false;
+    }
     this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
     this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
     this->setAddr();
@@ -46,21 +55,6 @@ bool    Server::launcherServer(std::string port, std::string password)
     this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
     this->listenConnexionsEpoll();
 
-    return (true);
-}
-
-/**
- * @brief method to check if the port is correct and convert this one.
- * @param port string to convert into number.
- * @return true if the port is correct or false if not the case.
- */
-bool    Server::convertPort(std::string port)
-{
-    std::stringstream ss(port);
-    if (ss.fail() == true)
-        throw badCharactersInsidePort();
-    ss >> this->_port;
-    PRINT(this->_port, BLUE, "\n");
     return (true);
 }
 

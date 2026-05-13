@@ -76,3 +76,9 @@ const char* badCharactersInsidePort::what() const throw()
 {
     return ("Characters in port are not correct");
 }
+
+const char* badRangePort::what() const throw()
+{
+    return ("Port bad range");
+}
+
