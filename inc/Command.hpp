@@ -97,6 +97,7 @@ private:
 
 protected:
 	std::vector<std::vector<std::string> >	_params;
+	std::string								_mainContent; // used for message content, topic etc.
 
 };
 std::ostream &operator<<(std::ostream &o, const Command &obj);
