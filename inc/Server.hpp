@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 14:54:55 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/12 19:47:27 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/13 10:30:19 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ class Server
         void                    sendData(int fd, std::string data);
         void                    setNonBlocking(int sock);
         bool                    convertPort(std::string port);
+        void                    check_password(std::string& password);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
 

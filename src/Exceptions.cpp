@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 14:08:44 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/12 19:54:37 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/13 10:29:19 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,4 +81,3 @@ const char* badRangePort::what() const throw()
 {
     return ("Port bad range");
 }
-

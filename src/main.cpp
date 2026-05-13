@@ -6,12 +6,14 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 10:09:04 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/13 10:36:46 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CommandFactory.hpp"
 #include "Server.hpp"
+#include "debug.hpp"
+
 #include <iostream>
 
 // static void	testJoinCommand();
@@ -24,7 +26,7 @@ int	main(int argc, char* argv[])
 
 
 	Server test;
-
+	PRINT(argv[2], RED, "\n");
 	test.launcherServer(argv[1], argv[2]);
 	
 	return (0);

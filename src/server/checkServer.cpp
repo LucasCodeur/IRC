@@ -6,13 +6,14 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 09:58:12 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 09:58:53 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/13 10:41:52 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Exceptions.hpp"
 #include "debug.hpp"
+#include <cctype>
 #include <sstream>
 
 static bool check_port(std::string& port);
@@ -35,7 +36,6 @@ bool    Server::convertPort(std::string port)
     if (1023 >= this->_port || this->_port >= 49152)
         throw badRangePort();
 
-    PRINT(this->_port, BLUE, "\n");
     return (true);
 }
 
@@ -53,4 +53,19 @@ static bool check_port(std::string& port)
             return (false);
     }
     return (true);
+}
+
+/**
+* @brief function to check if password is correct.
+* @param password string to check.
+* @return
+*/
+void    Server::check_password(std::string& password)
+{
+    int size = password.size();
+    for (int i = 0; i < size; i++) 
+    {
+        if (std::isspace(password[i]))
+            throw passwordNotCorrect();
+    }
 }
