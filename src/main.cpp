@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 10:36:46 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "CommandFactory.hpp"
 #include "Server.hpp"
 #include "debug.hpp"
@@ -32,8 +20,7 @@ int	main(int argc, char* argv[])
 	return (0);
 }
 
-// static void	testJoinCommand()
-// {
+// static void	testJoinCommand() {
 // 	Server test;
 // 	Command *join1 = CommandFactory::createCommand(1, "JOIN #protectedchan password");
 // 	Command *join2 = CommandFactory::createCommand(2, "JOIN #protectedchan incorrect");
