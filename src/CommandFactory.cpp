@@ -32,6 +32,7 @@ std::vector<std::string> split(std::string str,   char delimiter)
 
 Command *CommandFactory::createCommand(const int clientFd, const std::string str)
 {
+	std::cout << "Command :" << str << std::endl;
 	const char *types[12] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
 
 	Command *(*creators[12])(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
@@ -56,7 +57,14 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 
 	std::string splitString;
 	while(getline(ss, splitString, ' '))
+	{
+		std::cout << "splitstring :" << splitString << std::endl;
+		std::cout << "splitstring : size: " << splitString.size() << std::endl;
+		size_t pos = splitString.find(" ");
+		if (pos != std::string::npos)
+            splitString.erase(pos, pos);
 		formattedCommand.push_back(splitString);
+	}
 	if (formattedCommand.size() <= 0)
 		throw Command::EmptyCommandException();
 	std::vector<std::vector<std::string> > parameters;

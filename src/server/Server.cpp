@@ -15,6 +15,7 @@
 #include <utility>
 #include <stdio.h>
 #include <errno.h>
+#include <bits/stdc++.h>
 
 #include <iostream>
 #include <string>
@@ -29,13 +30,13 @@ bool    Server::launcherServer(std::string port, std::string password)
     {
         this->convertPort(port);
         this->check_password(password);
+        this->_password = password;
     }
     catch (std::exception &e)
     {
         PRINT(e.what(), RED, "\n");
         return (false);
     }
-
     this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
     this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
     this->setAddr();
@@ -199,45 +200,87 @@ void    Server::sendData(int fd, std::string data)
         throw sendFailed();
 }
 
+
+static std::string    extractCommand(std::string& buffer);
+
 /**
- * @brief wrapper function of recv(), allowing it to receive data by the indicated socket.
+ * @brief wrapper function of recv(), allowing it to receive data by the indicated file descriptor.
  * @param socketfd to receive data from this one.
  * @return
  */
-void    Server::receiveData(int socketfd)
+void    Server::receiveData(int clientFd)
 {
     Client temp;
 
-    temp.setFd(socketfd);
-    this->_clients.insert(std::pair<int, Client>(socketfd, temp));
+    temp.setFd(clientFd);
+    this->_clients.insert(std::pair<int, Client>(clientFd, temp));
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
+    std::string stringBuf;
+    std::string strCommand;
 
     while (1)
     {
         Command* command;
-        bytes_read = recv(socketfd, buffer, sizeof(buffer), 0);
-        // PRINT("Bytes_read: ", BLUE, "");
-        // PRINT(bytes_read, WHITE, "\n");
-        if (bytes_read <= 0)
-            break ;
-        
-        command = CommandFactory::createCommand(socketfd, buffer);
-        command->execute(*this);
+        bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
+        buffer[bytes_read] = '\0';
         PRINT("received: ", GREEN, "");
-        PRINT(socketfd, GREEN, "\n");
+        PRINT(clientFd, GREEN, "\n");
         PRINT(buffer, GREEN, "\n");
-    }
-    if (bytes_read <= 0)
-    {
-        if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+        stringBuf += buffer;
+        strCommand = extractCommand(stringBuf);
+        memset(buffer, 0, BUFFER_SIZE);
+        try
         {
-            PRINT("client disconnected: ", RED, "");
-            PRINT(socketfd, RED, "\n");
-            close(socketfd);
-            this->controlEpoll(EPOLL_CTL_DEL, socketfd, NULL);
+            command = CommandFactory::createCommand(clientFd, strCommand);
+            command->execute(*this);
+        }
+        catch(Command::UnknownCommandException& e)
+        {
+            std::cout << "Caught: " << e.what();
+            continue ;
+        }
+        catch(std::exception& e)
+        {
+            std::cout << "Caught: " << e.what();
+            return ; //FIXME: Maybe take off the client instead.
+        }
+        if (bytes_read <= 0)
+        {
+            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+            {
+                PRINT("client disconnected: ", RED, "");
+                PRINT(clientFd, RED, "\n");
+                close(clientFd);
+                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+            }
         }
     }
+}
+
+/**
+ * @brief function to extract a valid command from the buffer.
+ * @param buffer, string to extract the command.
+ * @return a valid command.
+ */
+static std::string    extractCommand(std::string& buffer)
+{
+    std::string     res;
+    size_t          pos = buffer.find("\n");
+
+    while (1)
+    {
+        if (pos != std::string::npos)
+        {
+            res = buffer.substr(0, pos);
+            buffer.erase(0, pos);
+            break ;
+        }
+    }
+
+    PRINT("STR COMMAND: ", YELLOW, "");
+    PRINT(res, RED, "\n");
+    return (res);
 }
 
 /**

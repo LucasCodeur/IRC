@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   PassCommand.hpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 19:10:38 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 11:40:28 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef PASS_COMMAND_HPP
 # define PASS_COMMAND_HPP
 
@@ -25,8 +13,8 @@ class PassCommand : public Command
 		void	execute(Server &server) const;
 
 	private:
-		static const unsigned int min_params = 2;
-		static const unsigned int max_params = 2;
+		static const unsigned int min_params = 1;
+		static const unsigned int max_params = 1;
 };
 
 #endif
