@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/13 11:27:17 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/17 11:52:18 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,8 @@ SRC =			main.cpp	\
 				PassCommand.cpp
 
 SRC_SERVER =	Server.cpp	\
-				checkServer.cpp \
+				CheckServer.cpp \
+				ServerSideProcessing.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \

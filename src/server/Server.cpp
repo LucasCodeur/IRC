@@ -2,7 +2,6 @@
 #include "Exceptions.hpp"
 #include "Command.hpp"
 #include "Server.hpp"
-#include "CommandFactory.hpp"
 
 #include <cctype>
 #include <netinet/in.h>
@@ -13,9 +12,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <utility>
-#include <stdio.h>
-#include <errno.h>
-#include <bits/stdc++.h>
 
 #include <iostream>
 #include <string>
@@ -70,7 +66,7 @@ void    Server::listenConnexionsEpoll(void)
                 this->setNonBlocking(fd);
                 this->_ev[n + 1].events = EPOLLIN | EPOLLET;
                 this->_ev[n + 1].data.fd = fd;
-                this->sendData(fd, "Welcome to the IRC SERVER");
+                this->sendData(fd, "Welcome to the IRC SERVER\n");
                 this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
                 PRINT("Client connected: ", GREEN, "");
                 PRINT(fd, WHITE, "\n");
@@ -198,89 +194,6 @@ void    Server::sendData(int fd, std::string data)
 {
     if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
         throw sendFailed();
-}
-
-
-static std::string    extractCommand(std::string& buffer);
-
-/**
- * @brief wrapper function of recv(), allowing it to receive data by the indicated file descriptor.
- * @param socketfd to receive data from this one.
- * @return
- */
-void    Server::receiveData(int clientFd)
-{
-    Client temp;
-
-    temp.setFd(clientFd);
-    this->_clients.insert(std::pair<int, Client>(clientFd, temp));
-    int bytes_read;
-    char buffer[BUFFER_SIZE] = {"0"};
-    std::string stringBuf;
-    std::string strCommand;
-
-    while (1)
-    {
-        Command* command;
-        bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
-        buffer[bytes_read] = '\0';
-        PRINT("received: ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
-        PRINT(buffer, GREEN, "\n");
-        stringBuf += buffer;
-        strCommand = extractCommand(stringBuf);
-        memset(buffer, 0, BUFFER_SIZE);
-        try
-        {
-            command = CommandFactory::createCommand(clientFd, strCommand);
-            command->execute(*this);
-        }
-        catch(Command::UnknownCommandException& e)
-        {
-            std::cout << "Caught: " << e.what();
-            continue ;
-        }
-        catch(std::exception& e)
-        {
-            std::cout << "Caught: " << e.what();
-            return ; //FIXME: Maybe take off the client instead.
-        }
-        if (bytes_read <= 0)
-        {
-            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
-            {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
-                close(clientFd);
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-            }
-        }
-    }
-}
-
-/**
- * @brief function to extract a valid command from the buffer.
- * @param buffer, string to extract the command.
- * @return a valid command.
- */
-static std::string    extractCommand(std::string& buffer)
-{
-    std::string     res;
-    size_t          pos = buffer.find("\n");
-
-    while (1)
-    {
-        if (pos != std::string::npos)
-        {
-            res = buffer.substr(0, pos);
-            buffer.erase(0, pos);
-            break ;
-        }
-    }
-
-    PRINT("STR COMMAND: ", YELLOW, "");
-    PRINT(res, RED, "\n");
-    return (res);
 }
 
 /**
