@@ -49,6 +49,7 @@ class Client
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
 	void setAuthState(authState state);
+	void setRealname(std::string const &realname);
 
 	// HELPERS
 	static const char *authStateToString(authState state);

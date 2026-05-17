@@ -16,10 +16,10 @@ static std::string    extractCommand(std::string& buffer);
  */
 void    Server::receiveData(int clientFd)
 {
-    // Client temp;
-    //
-    // temp.setFd(clientFd);
-    // this->_clients.insert(std::pair<int, Client>(clientFd, temp));
+    Client* temp = new Client; 
+
+    temp->setFd(clientFd);
+    this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
     std::string stringBuf;

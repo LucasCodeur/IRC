@@ -1,20 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   UserCommand.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/11 15:53:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/11 17:28:03 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <utility>
-#include <iostream>
 #include "Command.hpp"
-#include "debug.hpp"
 #include "UserCommand.hpp"
+#include "debug.hpp"
+#include "Exceptions.hpp"
+
 
 UserCommand::UserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(clientFd, type, params)
 {
@@ -24,13 +12,18 @@ UserCommand::UserCommand(const int clientFd, const enum Command::commandType typ
 		throw Command::IncorrectParametersException("Too much parameters");
 	if (type != USER)
 		throw UnknownCommandException(); //FIXME: use appropriate exception for this
+}
+
+UserCommand::~UserCommand() {};
+
+void	UserCommand::execute(Server& server) const
+{
+	std::map<int, Client*>::const_iterator it = server.getClientmap().find(this->getClientFd());
 	
-	std::vector<std::string> channels = params.front();
-	std::vector<std::string> keys;
-	if (params.size() == UserCommand::max_params)
-		keys = params.back();
-	else //NOTE: no keys provided; creating dummy keys vector so execute() has something to parse
-		this->_params.push_back(std::vector<std::string>());
-	if (channels.size() < keys.size())
-		throw Command::IncorrectParametersException("More keys than channels");
+	it->second->setUsername(this->_params[0][0]);
+	it->second->setRealname(this->_params[0][3]);
+
+	std::string message = "User information complete successfully\n";
+	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
+		throw sendFailed();
 }

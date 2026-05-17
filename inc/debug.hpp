@@ -2,6 +2,8 @@
 #define DEBUG_HPP
 
 #include <iostream>
+#include <vector>
+
 #ifndef DEBUG
 #define DEBUG 0
 #endif
@@ -19,4 +21,5 @@
 #define PRINT(x, color, newline) \
     std::cout << color << x << RESET <<newline;
 
+void print_vec(const std::vector<std::vector<std::string> > params);
 #endif

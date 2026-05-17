@@ -17,8 +17,8 @@ private:
 	// Command	*createModeCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createWhoCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	static Command	*createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
-	// Command	*createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
-	// Command	*createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
+	static Command	*createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	// Command	*createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 };
 

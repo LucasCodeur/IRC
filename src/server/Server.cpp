@@ -324,7 +324,7 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
         return (pair);
 }
 
-std::map<int, Client> const &Server::getClientmap() const
+std::map<int, Client*> const &Server::getClientmap() const
 {
         return (this->_clients);
 }

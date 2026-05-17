@@ -41,7 +41,7 @@ class Server
         int                                                         getOpt() const;
 	std::string const                                           &getServerName() const;
 	std::string const                                           &getPassword() const;
-	std::map<int, Client> const                                 &getClientmap() const;
+	std::map<int, Client* > const                               &getClientmap() const;
 	std::map<std::string, Channel*> const                       &getChannelMap() const;
 	
 	// METHODS
@@ -54,7 +54,7 @@ class Server
         int                                     _server_sock;
         std::string				_serverName;
         std::string				_password;
-        std::map<int, Client>	                _clients;
+        std::map<int, Client*>	                _clients;
         std::map<std::string, Channel*>	        _channels;
         struct sockaddr_in      _addr; // contains the IP adress and port number to bind the socket.
         struct epoll_event      _ev[MAX_EVENTS];

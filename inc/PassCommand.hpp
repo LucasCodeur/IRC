@@ -11,7 +11,6 @@ class PassCommand : public Command
 		~PassCommand();
 
 		void	execute(Server &server) const;
-
 	private:
 		static const unsigned int min_params = 1;
 		static const unsigned int max_params = 1;
