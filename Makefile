@@ -37,7 +37,9 @@ SRC =			main.cpp	\
 				Command.cpp \
 				CommandFactory.cpp \
 				JoinCommand.cpp \
-				PassCommand.cpp
+				PassCommand.cpp \
+				NickCommand.cpp \
+				UserCommand.cpp \
 
 SRC_SERVER =	Server.cpp	\
 				CheckServer.cpp \
