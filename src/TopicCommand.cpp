@@ -52,7 +52,8 @@ void TopicCommand::execute(Server &server) const
 	}
 	else if (this->_newTopic.empty())
 	{
-		responseStream << RPL_NOTOPIC << this->_targetChannel << ":No topic is set" << LF << CR ;
+		this->returnErrorReply(RPL_NOTOPIC, "", server);
+		// responseStream << RPL_NOTOPIC << this->_targetChannel << ":No topic is set" << LF << CR ;
 	}
 	else
 	{

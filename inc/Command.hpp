@@ -78,6 +78,7 @@ class Command
 
 	// METHODS
 	virtual void	execute(Server &server) const = 0;
+	void			returnErrorReply(int errNum, std::string param, Server &server) const;
 	
 
 private:
