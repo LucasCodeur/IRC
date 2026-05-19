@@ -46,6 +46,8 @@ class Channel
 	bool removeUser(int clientFd);
 	bool addOperator(int clientFd);
 	bool removeOperator(int clientFd);
+	bool isOp(int clientFd);
+	bool isOnChan(int clientFd);
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);
 

@@ -1,3 +1,4 @@
+#include "CommandFactory.hpp"
 #include "Server.hpp"
 #include "CommandFactory.hpp"
 #include "Command.hpp"

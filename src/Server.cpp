@@ -250,7 +250,9 @@ void Server::setNonBlocking(int sock)
     flags |= O_NONBLOCK;
     result = fcntl(sock , F_SETFL , flags);
     if (result == -1)
+    {
         throw setnonblockingFailed();
+    }
 }
 
 Server::Server()

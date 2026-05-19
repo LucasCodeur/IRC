@@ -1,5 +1,6 @@
 #include "CommandFactory.hpp"
 #include "JoinCommand.hpp"
+#include "TopicCommand.hpp"
 #include "PartCommand.hpp"
 #include "Command.hpp"
 #include <sstream>
@@ -38,6 +39,16 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	// creators[2] = &CommandFactory::createPrivmsgCommand;
 	// creators[3] = &CommandFactory::createKickCommand;
 	// creators[4] = &CommandFactory::createInviteCommand;
+	creators[5] = &CommandFactory::createTopicCommand;
+	// creators[6] = &CommandFactory::createModeCommand;
+	// creators[7] = &CommandFactory::createWhoCommand;
+	// creators[8] = &CommandFactory::createPassCommand;
+	// creators[9] = &CommandFactory::createNickCommand;
+	// creators[10] = &CommandFactory::createUserCommand;
+	// creators[11] = &CommandFactory::createPartCommand;
+	// creators[2] = &CommandFactory::createPrivmsgCommand;
+	// creators[3] = &CommandFactory::createKickCommand;
+	// creators[4] = &CommandFactory::createInviteCommand;
 	// creators[5] = &CommandFactory::createTopicCommand;
 	// creators[6] = &CommandFactory::createModeCommand;
 	// creators[7] = &CommandFactory::createWhoCommand;
@@ -46,12 +57,22 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	// creators[10] = &CommandFactory::createUserCommand;
 	creators[11] = &CommandFactory::createPartCommand;
 
-	std::vector<std::string> commandTypes(types, types + COMMAND_TYPES_AMOUNT);
-	std::vector<std::string> formattedCommand;
-	std::stringstream ss(str);
-	size_t	type;
+	std::vector<std::string>	commandTypes(types, types + COMMAND_TYPES_AMOUNT);
+	std::vector<std::string>	formattedCommand;
+	std::string					mainContent = "";
+	std::string					splitString;
+	size_t						type;
 
-	std::string splitString;
+	size_t	colon_pos = str.find(':');
+	if (colon_pos != str.npos)
+		mainContent = str.substr(colon_pos + 1);
+	
+	std::vector<std::string> mainContentContainer;
+	mainContentContainer.push_back(mainContent);
+
+
+	std::stringstream ss(str.substr(0, colon_pos));
+
 	while(getline(ss, splitString, ' '))
 		formattedCommand.push_back(splitString);
 	if (formattedCommand.size() <= 0)
@@ -62,6 +83,9 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	{
 		parameters.push_back(split(*it, ','));
 	}
+
+	if (!mainContent.empty())
+		parameters.push_back(mainContentContainer);
 
 	for (type = 0; type < commandTypes.size(); ++type)
 	{
@@ -92,10 +116,10 @@ Command *CommandFactory::createJoinCommand(const int clientFd, const enum Comman
 // 	return (new InviteCommand(clientFd, type, params));
 // }
 
-// Command *createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new TopicCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+{
+	return (new TopicCommand(clientFd, type, params));
+}
 
 // Command *createKickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
 // {
