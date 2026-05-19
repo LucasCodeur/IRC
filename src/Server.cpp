@@ -352,6 +352,17 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
         return (pair);
 }
 
+void Server::removeChannel(const std::string &name)
+{
+	std::map<std::string, Channel *>::iterator it = this->_channels.find(name);
+	if (it != this->_channels.end())
+	{
+		delete it->second;
+		this->_channels.erase(it);
+		std::cout << DBUG RED "Deleted channel : " RESET << name << std::endl;
+	}
+}
+
 std::map<int, Client> const &Server::getClientmap() const
 {
         return (this->_clients);

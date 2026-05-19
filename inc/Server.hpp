@@ -43,7 +43,8 @@ class Server
 	std::map<int, Client> const &getClientmap() const;
 	
 	// METHODS
-        std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
+    std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
+	void					removeChannel(const std::string &name);
 	void                    handleJoin(Command const &cmd);
 	void                    handleCommand(Command const &cmd);
 	std::map<std::string, Channel*> const &getChannelMap() const;
