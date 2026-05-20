@@ -12,7 +12,7 @@ public:
 
 	
 private:
-	// Command	*createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<<std::string> > params) const;
+	static Command	*createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	static Command	*createJoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	// Command	*createKickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createModeCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
@@ -20,7 +20,7 @@ private:
 	// Command	*createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
-	// Command	*createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
+	static Command	*createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 };
 
 #endif

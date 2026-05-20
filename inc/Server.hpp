@@ -43,10 +43,12 @@ class Server
 	std::map<int, Client> const &getClientmap() const;
 	
 	// METHODS
-        std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
+    std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
+	void					removeChannel(const std::string &name);
 	void                    handleJoin(Command const &cmd);
 	void                    handleCommand(Command const &cmd);
 	std::map<std::string, Channel*> const &getChannelMap() const;
+        void                    sendData(int fd, std::string data);
     private :
         int					_port;
         int                                     _fd;
@@ -70,7 +72,6 @@ class Server
         void                    setEpoll(int option);
         void                    controlEpoll(int op, int fd, struct epoll_event* event);
         void                    listenConnexionsEpoll(void);
-        void                    sendData(int fd, std::string data);
         void                    setNonBlocking(int sock);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);

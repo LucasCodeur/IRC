@@ -250,7 +250,9 @@ void Server::setNonBlocking(int sock)
     flags |= O_NONBLOCK;
     result = fcntl(sock , F_SETFL , flags);
     if (result == -1)
+    {
         throw setnonblockingFailed();
+    }
 }
 
 Server::Server()
@@ -350,6 +352,17 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
         pair = this->_channels.insert(std::make_pair(name, newChan));
         std::cout << DBUG GREEN "Created channel : " RESET << name << std::endl;
         return (pair);
+}
+
+void Server::removeChannel(const std::string &name)
+{
+	std::map<std::string, Channel *>::iterator it = this->_channels.find(name);
+	if (it != this->_channels.end())
+	{
+		delete it->second;
+		this->_channels.erase(it);
+		std::cout << DBUG RED "Deleted channel : " RESET << name << std::endl;
+	}
 }
 
 std::map<int, Client> const &Server::getClientmap() const

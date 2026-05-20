@@ -1,5 +1,7 @@
 #include "Command.hpp"
 #include "debug.hpp"
+#include "Server.hpp"
+#include "NumericReplies.h"
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -107,6 +109,34 @@ void Command::setCommandType(commandType type)
 void Command::setParams(std::vector<std::vector<std::string> > const &params)
 {
 	this->_params = params;
+}
+
+void	Command::returnErrorReply(int n, std::string param, Server &server) const
+{
+    std::stringstream reply;
+    reply << n;
+    switch (n)
+	{
+        case 421: // Unknown Command
+            reply << param << ": Unknown Command" << "\r\n";
+            break;
+		case ERR_NOSUCHCHANNEL:
+			reply << param << ":No such channel" << "\r\n";
+			break;
+		case ERR_NOTONCHANNEL:
+			reply << param << ": You're not on that channel" << "\r\n";
+			break;
+		case ERR_NEEDMOREPARAMS:
+			reply << param << ": Not enough parameters" << "\r\n";
+			break;
+        case 431:
+            reply << ": No nickname given" << "\r\n";
+            break;
+		case RPL_NOTOPIC:
+		default:
+            reply << "Internal server error" << "\r\n";
+	}
+    server.sendData(this->_clientFd, reply.str());
 }
 
 /* === HELPERS === */

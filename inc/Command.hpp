@@ -1,7 +1,7 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#define COMMAND_TYPES_AMOUNT 11 // TODO: is it the right way to do this?
+#define COMMAND_TYPES_AMOUNT 12 // TODO: is it the right way to do this?
 
 #include <ostream>
 #include <string>
@@ -78,6 +78,7 @@ class Command
 
 	// METHODS
 	virtual void	execute(Server &server) const = 0;
+	void			returnErrorReply(int errNum, std::string param, Server &server) const;
 	
 
 private:

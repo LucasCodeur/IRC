@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/07 17:04:11 by kbarru           ###   ########lyon.fr    #
+#    Updated: 2026/05/19 14:26:12 by enchevri         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,9 @@ SRC =	main.cpp	\
 		Channel.cpp \
 		Exceptions.cpp \
 		CommandFactory.cpp \
-		JoinCommand.cpp
+		JoinCommand.cpp \
+		PartCommand.cpp \
+		TopicCommand.cpp
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
