@@ -120,6 +120,15 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
         case 421: // Unknown Command
             reply << param << ": Unknown Command" << "\r\n";
             break;
+		case ERR_NOSUCHCHANNEL:
+			reply << param << ":No such channel" << "\r\n";
+			break;
+		case ERR_NOTONCHANNEL:
+			reply << param << ": You're not on that channel" << "\r\n";
+			break;
+		case ERR_NEEDMOREPARAMS:
+			reply << param << ": Not enough parameters" << "\r\n";
+			break;
         case 431:
             reply << ": No nickname given" << "\r\n";
             break;
