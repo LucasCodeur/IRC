@@ -3,7 +3,7 @@
 #include "Command.hpp"
 #include "Server.hpp"
 
-
+#include <cctype>
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -11,29 +11,38 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <utility>
 
 #include <iostream>
 #include <string>
-#include <utility>
-#include <stdio.h>
-#include <errno.h>
 
 /**
  * @brief set up the server and launch it.
  * @return true if no errors occur.
  */
-bool    Server::launcherServer(void)
+bool    Server::launcherServer(std::string port, std::string password)
 {
-        this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
-        this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
-        this->setAddr();
-        this->bindSocket();
-        this->listenSocket(MAX_WAITING_LIST);
-        this->setEpoll(DEFAULT);
-        this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
-        this->listenConnexionsEpoll();
+    try 
+    {
+        this->convertPort(port);
+        this->check_password(password);
+        this->_password = password;
+    }
+    catch (std::exception &e)
+    {
+        PRINT(e.what(), RED, "\n");
+        return (false);
+    }
+    this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
+    this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
+    this->setAddr();
+    this->bindSocket();
+    this->listenSocket(MAX_WAITING_LIST);
+    this->setEpoll(DEFAULT);
+    this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
+    this->listenConnexionsEpoll();
 
-        return (true);
+    return (true);
 }
 
 /**
@@ -45,7 +54,7 @@ void    Server::listenConnexionsEpoll(void)
     socklen_t addrlen = sizeof(this->_addr);
     int nfds = 1;
 
-    for (;;)
+    while (true) 
     {
         nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
         for (int n = 0; n < nfds; n++)
@@ -57,7 +66,7 @@ void    Server::listenConnexionsEpoll(void)
                 this->setNonBlocking(fd);
                 this->_ev[n + 1].events = EPOLLIN | EPOLLET;
                 this->_ev[n + 1].data.fd = fd;
-                this->sendData(fd, "Welcome to the IRC SERVER");
+                this->sendData(fd, "Welcome to the IRC SERVER\n");
                 this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
                 PRINT("Client connected: ", GREEN, "");
                 PRINT(fd, WHITE, "\n");
@@ -188,43 +197,6 @@ void    Server::sendData(int fd, std::string data)
 }
 
 /**
- * @brief wrapper function of recv(), allowing it to receive data by the indicated socket.
- * @param socketfd to receive data from this one.
- * @return
- */
-void    Server::receiveData(int socketfd)
-{
-    Client temp;
-
-    temp.setFd(socketfd);
-    this->_clients.insert(std::pair<int, Client>(socketfd, temp));
-    int bytes_read;
-    char buffer[BUFFER_SIZE] = {"0"};
-
-    while (1)
-    {
-            bytes_read = recv(socketfd, buffer, sizeof(buffer), 0);
-            // PRINT("Bytes_read: ", BLUE, "");
-            // PRINT(bytes_read, WHITE, "\n");
-            if (bytes_read <= 0)
-                break ;
-            PRINT("received: ", GREEN, "");
-            PRINT(socketfd, GREEN, "\n");
-            PRINT(buffer, GREEN, "\n");
-    }
-    if (bytes_read <= 0)
-    {
-        if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
-        {
-            PRINT("client disconnected: ", RED, "");
-            PRINT(socketfd, RED, "\n");
-            close(socketfd);
-            this->controlEpoll(EPOLL_CTL_DEL, socketfd, NULL);
-        }
-    }
-}
-
-/**
  * @brief function to set up the behavior of the socket.
  * @return
  */
@@ -232,7 +204,7 @@ void    Server::setAddr(void)
 {
         this->_addr.sin_family = AF_INET;
         this->_addr.sin_addr.s_addr = INADDR_ANY;
-        this->_addr.sin_port = htons(PORT);
+        this->_addr.sin_port = htons(this->_port);
 }
 
 /**
@@ -365,7 +337,7 @@ void Server::removeChannel(const std::string &name)
 	}
 }
 
-std::map<int, Client> const &Server::getClientmap() const
+std::map<int, Client*> const &Server::getClientmap() const
 {
         return (this->_clients);
 }
@@ -375,4 +347,3 @@ std::ostream &operator<<(std::ostream &o, const Server &obj)
 	return (o << "Server name: " << obj.getServerName()
 			  << " port: " << obj.getPort());
 }
-

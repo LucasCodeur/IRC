@@ -117,9 +117,9 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
     reply << n;
     switch (n)
 	{
-        case 421: // Unknown Command
-            reply << param << ": Unknown Command" << "\r\n";
-            break;
+		case ERR_UNKNOWNCOMMAND: // Unknown Command
+			reply << param << ": Unknown Command" << "\r\n";
+			break;
 		case ERR_NOSUCHCHANNEL:
 			reply << param << ":No such channel" << "\r\n";
 			break;
@@ -129,12 +129,17 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
 		case ERR_NEEDMOREPARAMS:
 			reply << param << ": Not enough parameters" << "\r\n";
 			break;
-        case 431:
-            reply << ": No nickname given" << "\r\n";
-            break;
+		case ERR_NONICKNAMEGIVEN:
+			reply << ": No nickname given" << "\r\n";
+			break;
+		case ERR_CHANOPRIVSNEEDED:
+			reply <<":You're not channel operator" << "\r\n";
+			break;
 		case RPL_NOTOPIC:
+			reply <<":error message not written" << "\r\n"; //TODO: this
+			break;
 		default:
-            reply << "Internal server error" << "\r\n";
+			reply << "Internal server error" << "\r\n";
 	}
     server.sendData(this->_clientFd, reply.str());
 }

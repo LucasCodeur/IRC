@@ -72,4 +72,28 @@ class setnonblockingFailed: public std::exception
         const char* what() const throw ();
 };
 
+class passwordNotCorrect: public std::exception
+{
+    public:
+        const char* what() const throw();
+};
+
+class badCharactersInsidePort: public std::exception
+{
+    public:
+        const char* what() const throw();
+};
+
+class badRangePort: public std::exception
+{
+    public:
+        const char* what() const throw();
+};
+
+// class badTypeCommand: public std::exception
+// {
+//     public:
+//         const char* what() const throw();
+// }
+
 #endif

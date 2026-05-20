@@ -6,37 +6,51 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/19 14:26:12 by enchevri         ###   ########lyon.fr    #
+#    Updated: 2026/05/20 16:34:08 by enchevri         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
 MAKEFLAGS += -j
 
 .PHONY : all clean fclean re debug
+
 CC = c++
 CC_DEBUG = g++
+
 CFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
 CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
+
 NAME = ircserv
 NAME_DEBUG = ircserv_debug
+
 P_SRC = src/
+P_SRC_SERVER = $(P_SRC)server/
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
+
 P_INC = inc/
 
-SRC =	main.cpp	\
-		Command.cpp \
-		Server.cpp	\
-		Client.cpp	\
-		Channel.cpp \
-		Exceptions.cpp \
-		CommandFactory.cpp \
-		JoinCommand.cpp \
-		PartCommand.cpp \
-		TopicCommand.cpp
+SRC =			main.cpp	\
+				Client.cpp	\
+				Channel.cpp \
+				Exceptions.cpp \
+				Command.cpp \
+				CommandFactory.cpp \
+				JoinCommand.cpp \
+				PassCommand.cpp \
+				NickCommand.cpp \
+				UserCommand.cpp \
+				PartCommand.cpp \
+				TopicCommand.cpp
+
+
+SRC_SERVER =	Server.cpp	\
+				CheckServer.cpp \
+				ServerSideProcessing.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
+	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
 INCS = $(addprefix $(P_INC), $(INC)) \
 

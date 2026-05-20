@@ -1,10 +1,16 @@
 #include "CommandFactory.hpp"
 #include "JoinCommand.hpp"
 #include "TopicCommand.hpp"
+#include "PassCommand.hpp"
+#include "NickCommand.hpp"
+#include "UserCommand.hpp"
 #include "PartCommand.hpp"
 #include "Command.hpp"
 #include <sstream>
 #include "string.h"
+
+#include <iostream>
+#include <sstream>
 
 CommandFactory::CommandFactory() {}
 
@@ -30,6 +36,7 @@ std::vector<std::string> split(std::string str,   char delimiter)
 
 Command *CommandFactory::createCommand(const int clientFd, const std::string str)
 {
+	std::cout << "Command :" << str << std::endl;
 	const char *types[12] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
 
 	Command *(*creators[12])(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
@@ -40,6 +47,16 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	// creators[3] = &CommandFactory::createKickCommand;
 	// creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
+	// creators[6] = &CommandFactory::createModeCommand;
+	// creators[7] = &CommandFactory::createWhoCommand;
+	creators[8] = &CommandFactory::createPassCommand;
+	creators[9] = &CommandFactory::createNickCommand;
+	creators[10] = &CommandFactory::createUserCommand;
+	// creators[11] = &CommandFactory::createPartCommand;
+	// creators[2] = &CommandFactory::createPrivmsgCommand;
+	// creators[3] = &CommandFactory::createKickCommand;
+	// creators[4] = &CommandFactory::createInviteCommand;
+	// creators[5] = &CommandFactory::createTopicCommand;
 	// creators[6] = &CommandFactory::createModeCommand;
 	// creators[7] = &CommandFactory::createWhoCommand;
 	// creators[8] = &CommandFactory::createPassCommand;
@@ -74,7 +91,12 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	std::stringstream ss(str.substr(0, colon_pos));
 
 	while(getline(ss, splitString, ' '))
+	{
+		size_t pos = splitString.find(" ");
+		if (pos != std::string::npos)
+			splitString.erase(pos, pos);
 		formattedCommand.push_back(splitString);
+	}
 	if (formattedCommand.size() <= 0)
 		throw Command::EmptyCommandException();
 	std::vector<std::vector<std::string> > parameters;
@@ -99,7 +121,6 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	}
 	throw Command::UnknownCommandException();
 }
-
 
 Command *CommandFactory::createJoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 {
@@ -136,20 +157,20 @@ Command *CommandFactory::createTopicCommand(const int clientFd, const enum Comma
 // 	return (new WhoCommand(clientFd, type, params));
 // }
 
-// Command *createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new PassCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+{
+	return (new PassCommand(clientFd, type, params));
+}
 
-// Command *createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new NickCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+{
+	return (new NickCommand(clientFd, type, params));
+}
 
-// Command *createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new UserCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+{
+	return (new UserCommand(clientFd, type, params));
+}
 
 Command *CommandFactory::createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 {
