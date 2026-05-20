@@ -7,10 +7,10 @@
 class PartCommand : public Command
 {
 public:
-	PartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	PartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	~PartCommand();
 
-	void	execute(Server &server) const;
+	void	execute() const;
 
 private:
 	static const unsigned int min_params = 1;

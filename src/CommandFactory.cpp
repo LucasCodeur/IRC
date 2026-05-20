@@ -173,7 +173,7 @@ Command *CommandFactory::createUserCommand(Server *server, const int clientFd, c
 	return (new UserCommand(server, clientFd, type, params));
 }
 
-Command *CommandFactory::createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createPartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 {
-	return (new PartCommand(clientFd, type, params));
+	return (new PartCommand(server, clientFd, type, params));
 }

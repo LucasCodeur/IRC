@@ -6,8 +6,8 @@
 
 void launchCmd(unsigned int fd, const std::string& cmd, Server& server)
 {
-	Command* command = CommandFactory::createCommand(fd, cmd);
-	command->execute(server);
+	Command* command = CommandFactory::createCommand(&server, fd, cmd);
+	command->execute();
 	delete command;
 }
 

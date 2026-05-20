@@ -7,21 +7,21 @@
 #include "PartCommand.hpp"
 #include "NumericReplies.h"
 
-PartCommand::PartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(clientFd, type, params)
+PartCommand::PartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < PartCommand::min_params)
-		throw Command::IncorrectParametersException("Not enough parameters"); //FIXME: send 461 ERR_NEEDMOREPARAMS to client
+		server->sendData(ERR_NEEDMOREPARAMS, ""); //FIXME: send 461 ERR_NEEDMOREPARAMS to client
 	if (type != PART)
 		throw UnknownCommandException();
 }
 
 PartCommand::~PartCommand() {}
 
-void PartCommand::execute(Server &server) const
+void PartCommand::execute() const
 {
 	const std::vector<std::string> &params = this->_params.front();
 
-	const std::map<std::string, Channel*> &chanMap = server.getChannelMap();
+	const std::map<std::string, Channel*> &chanMap = this->_server->getChannelMap();
 
 	const int fd = this->getClientFd();
 
@@ -35,17 +35,17 @@ void PartCommand::execute(Server &server) const
 			else
 			{
 				std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " trying to send 442 ERR_NOTONCHANNEL" << RESET << std::endl;
-				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), server);
+				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), *this->_server);
 			}
 				if (it->second->getUsers().empty())
 			{
 				std::cout << DBUG << "deleting empty channel " << it->first << std::endl;
-				server.removeChannel(it->first);
+				this->_server->removeChannel(it->first);
 			}
 		}
 		else
 		{
-			this->returnErrorReply(403, params[i], server);
+			this->returnErrorReply(403, params[i], *this->_server);
 			// std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " channel not found" << RESET << std::endl; //FIXME: send 403 ERR_NOSUCHCHANNEL to client
 		}
 	}
