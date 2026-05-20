@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "TopicCommand.hpp"
-#include "debug.hpp"
 #include "NumericReplies.h"
 #include <iostream>
 #include <sstream>
@@ -53,14 +52,12 @@ void TopicCommand::execute(Server &server) const
 	else if (this->_newTopic.empty())
 	{
 		this->returnErrorReply(RPL_NOTOPIC, "", server);
-		// responseStream << RPL_NOTOPIC << this->_targetChannel << ":No topic is set" << LF << CR ;
 	}
 	else
 	{
 		if (!distTargetChannel->isOp(this->getClientFd()))
 		{
-			responseStream << ERR_CHANOPRIVSNEEDED << this->_targetChannel << ":You're not channel operator" << LF << CR ;
-			server.sendData(this->getClientFd(), responseStream.str());
+			this->returnErrorReply(ERR_CHANOPRIVSNEEDED, "", server);
 		}
 		else
 		{
