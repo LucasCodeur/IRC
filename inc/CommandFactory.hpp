@@ -8,18 +8,18 @@ class CommandFactory
 public:
 	CommandFactory();
 	virtual ~CommandFactory() = 0;
-	static Command *createCommand(const int clientFd, const std::string str);
+	static Command *createCommand(Server *server, const int clientFd, const std::string str);
 
 private:
-	static Command	*createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
-	static Command	*createJoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createTopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createJoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	// Command	*createKickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createModeCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
 	// Command	*createWhoCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) const;
-	static Command	*createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
-	static Command	*createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
-	static Command	*createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
-	static Command	*createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createPassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createNickCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createUserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createPartCommand(Server *server,const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 };
 
 #endif

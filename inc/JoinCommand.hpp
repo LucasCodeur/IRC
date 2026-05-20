@@ -7,10 +7,10 @@
 class JoinCommand : public Command
 {
 public:
-	JoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	JoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	~JoinCommand();
 
-	void	execute(Server &server) const;
+	void	execute() const;
 
 private:
 	static const unsigned int min_params = 1;

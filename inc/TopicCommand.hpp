@@ -6,7 +6,7 @@
 /*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:38:09 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/11 11:40:56 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/20 15:21:41 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ class TopicCommand : public Command
 {
 
 public:
-	TopicCommand(const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params);
+	TopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params);
 	~TopicCommand();
 
-	void	execute(Server &server) const;
+	void	execute() const;
 
 private:
 	static const unsigned int min_params = 1;

@@ -4,7 +4,7 @@
 #include "debug.hpp"
 #include "JoinCommand.hpp"
 
-JoinCommand::JoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(clientFd, type, params)
+JoinCommand::JoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < JoinCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
@@ -38,12 +38,12 @@ JoinCommand::~JoinCommand() {}
 // NOTE: separate password verification logic? Maybe in Server class?
 // NOTE: separate channel creation ?
 // TODO: replace raw channel.addUser with dedicated USER command (could check if user is already in there etc.)
-void JoinCommand::execute(Server &server) const
+void JoinCommand::execute() const
 {
 	std::vector<std::string> keys = this->_params.back();
 	std::vector<std::string> channels = this->_params.front();
 
-	std::map<std::string, Channel *> channelMap = server.getChannelMap();
+	std::map<std::string, Channel *> channelMap = _server->getChannelMap();
 
 	std::vector<std::string>::iterator key_it = keys.begin();
 	std::vector<std::string>::iterator chan_it;
@@ -58,12 +58,12 @@ void JoinCommand::execute(Server &server) const
 			std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
 
 			if (key_it != keys.end())
-				pair = server.addChannel(*chan_it, *key_it);
+				pair = _server->addChannel(*chan_it, *key_it);
 			else
-				pair = server.addChannel(*chan_it, "");
+				pair = _server->addChannel(*chan_it, "");
 		}
 
-		std::map<std::string, Channel *> channelMap = server.getChannelMap();
+		std::map<std::string, Channel *> channelMap = _server->getChannelMap();
 		distChan_it = channelMap.find(*chan_it);
 
 		if (distChan_it == channelMap.end()) // FIXME: should probably throw there

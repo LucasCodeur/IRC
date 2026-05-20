@@ -33,18 +33,18 @@ int	main(int argc, char* argv[])
 
 // static void	testJoinCommand() {
 // 	Server test;
-// 	Command *join1 = CommandFactory::createCommand(1, "JOIN #protectedchan password");
-// 	Command *join2 = CommandFactory::createCommand(2, "JOIN #protectedchan incorrect");
-// 	Command *join3 = CommandFactory::createCommand(3, "JOIN #protectedchan");
-// 	Command *join4 = CommandFactory::createCommand(4, "JOIN #publicchan");
-// 	Command *join5 = CommandFactory::createCommand(5, "JOIN #publicchan");
-// 	Command *join6 = CommandFactory::createCommand(6, "JOIN #publicchan unnecessaryPassword");
-// 	Command *join7 = CommandFactory::createCommand(7, "JOIN #protectedchan password");
+// 	Command *join1 = CommandFactory::createCommand(&test, 1, "JOIN #protectedchan password");
+// 	Command *join2 = CommandFactory::createCommand(&test, 2, "JOIN #protectedchan incorrect");
+// 	Command *join3 = CommandFactory::createCommand(&test, 3, "JOIN #protectedchan");
+// 	Command *join4 = CommandFactory::createCommand(&test, 4, "JOIN #publicchan");
+// 	Command *join5 = CommandFactory::createCommand(&test, 5, "JOIN #publicchan");
+// 	Command *join6 = CommandFactory::createCommand(&test, 6, "JOIN #publicchan unnecessaryPassword");
+// 	Command *join7 = CommandFactory::createCommand(&test, 7, "JOIN #protectedchan password");
 //
 // 	try
 // 	{
 // 		Command *join8 = CommandFactory::createCommand(7, "JOIN #protectedchan password, password2"); // should throw
-// 		join8->execute(test);
+// 		join8->execute();
 // 	}
 // 	catch (std::exception &e)
 // 	{
@@ -54,25 +54,25 @@ int	main(int argc, char* argv[])
 // 	// NOTE: memory gestion : should commands be deleted on execution?
 // 	// NOTE: should the factory allocate the commands into a container? cf. resource ownership
 //
-// 	join1->execute(test);
+// 	join1->execute();
 // 	delete join1;
 //
-// 	join2->execute(test);
+// 	join2->execute();
 // 	delete join2;
 //
-// 	join3->execute(test);
+// 	join3->execute();
 // 	delete join3;
 //
-// 	join4->execute(test);
+// 	join4->execute();
 // 	delete join4;
 //
-// 	join5->execute(test);
+// 	join5->execute();
 // 	delete join5;
 //
-// 	join6->execute(test);
+// 	join6->execute();
 // 	delete join6;
 //
-// 	join7->execute(test);
+// 	join7->execute();
 // 	delete join7;
 //
 //
