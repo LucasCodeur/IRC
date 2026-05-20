@@ -128,6 +128,7 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
 			break;
 		case RPL_NOTOPIC:
 			reply <<":error message not written" << "\r\n"; //TODO: this
+			break;
 		default:
 			reply << "Internal server error" << "\r\n";
 	}
