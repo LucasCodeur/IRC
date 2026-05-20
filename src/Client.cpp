@@ -138,3 +138,10 @@ void Client::setAuthState(Client::authState state)
 {
 	this->_authState = state;
 }
+
+void Client::setRealname(std::string const &realname)
+{
+	this->_realname = realname;
+}
+
+

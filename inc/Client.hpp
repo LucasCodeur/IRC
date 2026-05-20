@@ -17,8 +17,11 @@ class Client
 
 	private:
 	std::string		_username;
+	std::string		_hostname;
+	std::string		_realname;
+	std::string		_servername;
 	std::string		_nickname;
-	std::string		_password;
+	std::string		_password; // take off
 	std::string		_buf;
 	int				_fd;
 	authState		_authState;
@@ -46,6 +49,7 @@ class Client
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
 	void setAuthState(authState state);
+	void setRealname(std::string const &realname);
 
 	// HELPERS
 	static const char *authStateToString(authState state);

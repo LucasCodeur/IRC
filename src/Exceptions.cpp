@@ -54,3 +54,23 @@ const char*  setnonblockingFailed::what() const throw()
 {
     return ("Setnonblocking Failed");
 }
+
+const char* passwordNotCorrect::what() const throw()
+{
+    return ("Password does not correspond to the server");
+}
+
+const char* badCharactersInsidePort::what() const throw()
+{
+    return ("Characters in port are not correct");
+}
+
+const char* badRangePort::what() const throw()
+{
+    return ("Port bad range");
+}
+
+// const char* badTypeCommand::what() const throw()
+// {
+//     return ("Bad type command");
+// }

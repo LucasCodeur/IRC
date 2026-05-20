@@ -22,9 +22,9 @@
 #include <string>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include <stdlib.h>
 
 #include <ostream>
-#include <vector>
 
 class Server
 {
@@ -34,27 +34,27 @@ class Server
         Server(int port, const std::string &password);
 	Server &operator=(Server const &other);
         ~Server();
-        bool    launcherServer(void);
-	int getPort() const;
-	int getFd() const;
-        int getOpt() const;
-	std::string const &getServerName() const;
-	std::string const &getPassword() const;
-	std::map<int, Client> const &getClientmap() const;
+        bool                                                        launcherServer(std::string port, std::string password);
+	int                                                         getPort() const;
+	int                                                         getFd() const;
+    int                                                         getOpt() const;
+	std::string const                                           &getServerName() const;
+	std::string const                                           &getPassword() const;
+	std::map<int, Client* > const                               &getClientmap() const;
+	std::map<std::string, Channel*> const                       &getChannelMap() const;
 	
 	// METHODS
-        std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
+    std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
 	void                    handleJoin(Command const &cmd);
 	void                    handleCommand(Command const &cmd);
-	std::map<std::string, Channel*> const &getChannelMap() const;
-        void                    sendData(int fd, std::string data);
+    void                    sendData(int fd, std::string data);
     private :
         int					_port;
         int                                     _fd;
         int                                     _server_sock;
         std::string				_serverName;
         std::string				_password;
-        std::map<int, Client>	                _clients;
+        std::map<int, Client*>	                _clients;
         std::map<std::string, Channel*>	        _channels;
         struct sockaddr_in      _addr; // contains the IP adress and port number to bind the socket.
         struct epoll_event      _ev[MAX_EVENTS];
@@ -72,6 +72,8 @@ class Server
         void                    controlEpoll(int op, int fd, struct epoll_event* event);
         void                    listenConnexionsEpoll(void);
         void                    setNonBlocking(int sock);
+        bool                    convertPort(std::string port);
+        void                    check_password(std::string& password);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
 

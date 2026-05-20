@@ -2,12 +2,14 @@
 #define DEBUG_HPP
 
 #include <iostream>
+#include <vector>
+
 #ifndef DEBUG
 #define DEBUG 0
-#endif //  !DEBUG
+#endif
 
 #define RESET		"\033[0m"
-#define RED			"\033[31m"
+#define RED		"\033[31m"
 #define GREEN		"\033[32m"
 #define YELLOW		"\033[33m"
 #define BLUE		"\033[34m"
@@ -17,6 +19,7 @@
 #define DBUG		YELLOW "DEBUG " RESET
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x <<newline;
+    std::cout << color << x << RESET <<newline;
 
-#endif // !DEBUG_HPP
+void print_vec(const std::vector<std::vector<std::string> > params);
+#endif
