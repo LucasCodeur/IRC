@@ -23,6 +23,9 @@ Client::~Client()
 
 Client::Client(Client const &original)
 	: _username(original._username),
+	  _hostname(original._hostname),
+	  _realname(original._realname),
+	  _servername(original._servername),
 	  _nickname(original._nickname),
 	  _password(original._password),
 	  _buf(original._buf),
@@ -39,6 +42,8 @@ Client &Client::operator=(Client const &other)
 	{
 		this->_username = other._username;
 		this->_nickname = other._nickname;
+		this->_realname = other._realname;
+		this->_servername = other._servername;
 		this->_password = other._password;
 		this->_buf = other._buf;
 		this->_fd = other._fd;
