@@ -30,18 +30,18 @@ class Server
 {
     public :
         Server(void);
-	Server(Server const &original);
+		Server(Server const &original);
         Server(int port, const std::string &password);
-	Server &operator=(Server const &other);
+		Server &operator=(Server const &other);
         ~Server();
         bool                                                        launcherServer(std::string port, std::string password);
-	int                                                         getPort() const;
-	int                                                         getFd() const;
-    int                                                         getOpt() const;
-	std::string const                                           &getServerName() const;
-	std::string const                                           &getPassword() const;
-	std::map<int, Client* > const                               &getClientmap() const;
-	std::map<std::string, Channel*> const                       &getChannelMap() const;
+		int                                                         getPort() const;
+		int                                                         getFd() const;
+    	int                                                         getOpt() const;
+		std::string const                                           &getServerName() const;
+		std::string const                                           &getPassword() const;
+		std::map<int, Client* > const                               &getClientmap() const;
+		std::map<std::string, Channel*> const                       &getChannelMap() const;
 	
 	// METHODS
     std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);

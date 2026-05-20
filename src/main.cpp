@@ -11,11 +11,6 @@ void launchCmd(unsigned int fd, const std::string& cmd, Server& server)
 	delete command;
 }
 
-
-#include <iostream>
-
-// static void	testJoinCommand();
-
 int	main(int argc, char* argv[])
 {
 	(void)argv;

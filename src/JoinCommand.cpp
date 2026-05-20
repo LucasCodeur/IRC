@@ -43,33 +43,35 @@ void JoinCommand::execute() const
 	std::vector<std::string> keys = this->_params.back();
 	std::vector<std::string> channels = this->_params.front();
 
-	std::map<std::string, Channel *> channelMap = _server->getChannelMap();
+	std::map<std::string, Channel *> const &channelMap = this->_server->getChannelMap();
 
-	std::vector<std::string>::iterator key_it = keys.begin();
+	std::vector<std::string>::const_iterator key_it = keys.begin();
 	std::vector<std::string>::iterator chan_it;
 
 	std::string providedPassword = "";
 
 	for (chan_it = channels.begin(); chan_it != channels.end(); ++chan_it)
 	{
-		std::map<std::string, Channel *>::iterator distChan_it = channelMap.find(*chan_it);
+		std::map<std::string, Channel *>::const_iterator distChan_it = channelMap.find(*chan_it);
 		if (distChan_it == channelMap.end()) // channel creation
 		{
 			std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
 
 			if (key_it != keys.end())
-				pair = _server->addChannel(*chan_it, *key_it);
+				pair = this->_server->addChannel(*chan_it, *key_it);
 			else
-				pair = _server->addChannel(*chan_it, "");
-		}
-
-		std::map<std::string, Channel *> channelMap = _server->getChannelMap();
-		distChan_it = channelMap.find(*chan_it);
-
-		if (distChan_it == channelMap.end()) // FIXME: should probably throw there
-		{
-			std::cerr << "Error : channel could not be created" << std::endl;
-			return ;
+				pair = this->_server->addChannel(*chan_it, "");
+			distChan_it = channelMap.find(*chan_it);
+			if (distChan_it == channelMap.end()) // FIXME: should probably throw there
+			{
+				std::cerr << "Error : channel could not be created" << std::endl;
+				return ;
+			}
+			distChan_it->second->addUser(this->getClientFd());
+			distChan_it->second->setOperator(this->getClientFd());
+			if (key_it != keys.end())
+				key_it++;
+			continue ;
 		}
 
 		providedPassword = "";

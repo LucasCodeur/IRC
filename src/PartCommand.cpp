@@ -34,7 +34,7 @@ void PartCommand::execute() const
 				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
 			else
 			{
-				std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " trying to send 442 ERR_NOTONCHANNEL" << RESET << std::endl;
+				// std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " trying to send 442 ERR_NOTONCHANNEL" << RESET << std::endl;
 				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), *this->_server);
 			}
 				if (it->second->getUsers().empty())
@@ -45,7 +45,7 @@ void PartCommand::execute() const
 		}
 		else
 		{
-			this->returnErrorReply(403, params[i], *this->_server);
+			this->returnErrorReply(ERR_NOSUCHCHANNEL, params[i], *this->_server);
 			// std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " channel not found" << RESET << std::endl; //FIXME: send 403 ERR_NOSUCHCHANNEL to client
 		}
 	}

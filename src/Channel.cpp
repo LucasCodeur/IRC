@@ -157,7 +157,7 @@ bool Channel::removeUser(int clientFd)
 	return (false);
 }
 
-bool Channel::addOperator(int clientFd)
+bool Channel::setOperator(int clientFd)
 {
 	if (std::find(this->_operators.begin(), this->_operators.end(), clientFd) == this->_operators.end())
 	{

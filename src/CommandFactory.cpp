@@ -52,26 +52,6 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
-	// creators[11] = &CommandFactory::createPartCommand;
-	// creators[2] = &CommandFactory::createPrivmsgCommand;
-	// creators[3] = &CommandFactory::createKickCommand;
-	// creators[4] = &CommandFactory::createInviteCommand;
-	// creators[5] = &CommandFactory::createTopicCommand;
-	// creators[6] = &CommandFactory::createModeCommand;
-	// creators[7] = &CommandFactory::createWhoCommand;
-	// creators[8] = &CommandFactory::createPassCommand;
-	// creators[9] = &CommandFactory::createNickCommand;
-	// creators[10] = &CommandFactory::createUserCommand;
-	// creators[11] = &CommandFactory::createPartCommand;
-	// creators[2] = &CommandFactory::createPrivmsgCommand;
-	// creators[3] = &CommandFactory::createKickCommand;
-	// creators[4] = &CommandFactory::createInviteCommand;
-	// creators[5] = &CommandFactory::createTopicCommand;
-	// creators[6] = &CommandFactory::createModeCommand;
-	// creators[7] = &CommandFactory::createWhoCommand;
-	// creators[8] = &CommandFactory::createPassCommand;
-	// creators[9] = &CommandFactory::createNickCommand;
-	// creators[10] = &CommandFactory::createUserCommand;
 	creators[11] = &CommandFactory::createPartCommand;
 
 	std::vector<std::string>	commandTypes(types, types + COMMAND_TYPES_AMOUNT);
