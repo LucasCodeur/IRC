@@ -77,10 +77,7 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	for (type = 0; type < commandTypes.size(); ++type)
 	{
 		if (formattedCommand[0] == commandTypes[type])
-		{
 			return (*creators[type])(clientFd, (enum Command::commandType)type, parameters);
-			break ;
-		}
 		if (type == commandTypes.size() - 1)
 			throw Command::UnknownCommandException();
 	}

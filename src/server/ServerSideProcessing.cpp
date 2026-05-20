@@ -16,10 +16,13 @@ static std::string    extractCommand(std::string& buffer);
  */
 void    Server::receiveData(int clientFd)
 {
-    Client* temp = new Client; 
-
-    temp->setFd(clientFd);
-    this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
+    std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+    if (it == this->_clients.end())
+    {
+        Client* temp = new Client; 
+        temp->setFd(clientFd);
+        this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
+    }
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
     std::string stringBuf;
@@ -46,11 +49,11 @@ void    Server::receiveData(int clientFd)
             std::cout << "Caught: " << e.what() << std::endl;
             continue ;
         }
-        catch(Command::EmptyCommandException& e)
-        {
-            std::cout << "Caught: " << e.what() << std::endl;
-            return ;
-        }
+        // catch(Command::EmptyCommandException& e)
+        // {
+        //     std::cout << "Caught: " << e.what() << std::endl;
+        //     return ;
+        // }
         catch(std::exception& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
@@ -66,6 +69,8 @@ void    Server::receiveData(int clientFd)
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
             }
         }
+        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        print_info_client(*(it->second));
     }
 }
 

@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/17 11:52:18 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/20 11:40:35 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,7 @@ SRC =			main.cpp	\
 				PassCommand.cpp \
 				NickCommand.cpp \
 				UserCommand.cpp \
+				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\
 				CheckServer.cpp \

@@ -114,6 +114,22 @@ Client::authState Client::getAuthState() const
 	return (_authState);
 }
 
+std::string const &Client::getHostname() const
+{
+	return (this->_hostname);
+}
+
+std::string const &Client::getRealname() const
+{
+	return (this->_realname);
+}
+
+
+std::string const &Client::getServername() const
+{
+	return (this->_servername);
+}
+
 void Client::setFd(int fd)
 {
 	this->_fd = fd;
@@ -143,5 +159,3 @@ void Client::setRealname(std::string const &realname)
 {
 	this->_realname = realname;
 }
-
-
