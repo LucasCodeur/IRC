@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Command.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/20 15:19:02 by kbarru            #+#    #+#             */
+/*   Updated: 2026/05/20 15:54:14 by kbarru           ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Command.hpp"
 #include "debug.hpp"
 #include "Server.hpp"
@@ -8,18 +20,12 @@
 
 /* === CONSTRUCTOR === */
 
-Command::Command()
-	: _clientFd(-1),
-	  _commandType(EMPTY)
-{
-	if (DEBUG == 1)
-		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
-}
-
-Command::Command(int clientFd, Command::commandType type, std::vector<std::vector<std::string> > const &params)
-	: _clientFd(clientFd),
+Command::Command(Server *server, int clientFd, Command::commandType type, std::vector<std::vector<std::string> > const &params)
+	:
+	  _clientFd(clientFd),
 	  _commandType(type),
-	  _params(params)
+	  _params(params),
+	  _server(server)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
@@ -32,9 +38,11 @@ Command::~Command()
 }
 
 Command::Command(Command const &original)
-	: _clientFd(original._clientFd),
+	:
+	  _clientFd(original._clientFd),
 	  _commandType(original._commandType),
-	  _params(original._params)
+	  _params(original._params),
+	  _server(original._server)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG BLUE "Command copied: " RESET << *this <<std::endl;
@@ -46,6 +54,7 @@ Command &Command::operator=(Command const &other)
 {
 	if (this != &other)
 	{
+		this->_server = other._server;
 		this->_clientFd = other._clientFd;
 		this->_commandType = other._commandType;
 		this->_params = other._params;
@@ -114,7 +123,7 @@ void Command::setParams(std::vector<std::vector<std::string> > const &params)
 void	Command::returnErrorReply(int n, std::string param, Server &server) const
 {
     std::stringstream reply;
-    reply << n;
+    reply << ":" << n << " ";
     switch (n)
 	{
 		case ERR_UNKNOWNCOMMAND: // Unknown Command
@@ -128,6 +137,9 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
 			break;
 		case RPL_NOTOPIC:
 			reply <<":error message not written" << "\r\n"; //TODO: this
+			break;
+		case ERR_ERRUNKNOWNMODE:
+			reply << param << ": is unknown mode char to me" << "\r\n"; //TODO: this
 			break;
 		default:
 			reply << "Internal server error" << "\r\n";

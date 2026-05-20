@@ -1,35 +1,51 @@
 #include "ModeCommand.hpp"
+#include "Command.hpp"
 #include "NumericReplies.h"
-#include <sstream>
+#include <iostream>
 
-ModeCommand::ModeCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+ModeCommand::ModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
-	std::string possibleModes = "itkol";
-	std::string possibleOperations = "+-";
-
-	std::ostringstream response;
-
 	std::string	targetChannel = params.front().front();
-	std::string modeEdition = params.front()[1];
+	std::string	modeEdition = params.front()[1];
+
+	this->operationChar = params.front()[1][0];
+
 	if (params.size() < ModeCommand::min_params)
-		throw Command::IncorrectParametersException("Not enough parameters");
-	else if (params.size() > ModeCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
-	else if (type != MODE)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
-	else if (modeEdition.length() < 2 || modeEdition.length() > 2 || possibleOperations.find(modeEdition[0]) == possibleOperations.npos)
+		this->returnErrorReply(ERR_NEEDMOREPARAMS, "MODE", *_server);
+
+	else if (modeEdition.length() < 2 || modeEdition.length() > 2)
 		throw Command::IncorrectParametersException(); //TODO: same
-	else if (possibleModes.find(modeEdition[0]) == possibleModes.npos)
-	{
-			response << ERR_UNKNOWNMODE << " " << modeEdition[0] << ":is unknown mode char to me" << LF CR;
-			throw Command::IncorrectParametersException();
-	}
+	
 
 }
 
 ModeCommand::~ModeCommand() {}
 
-void ModeCommand::execute(Server &server) const
+void ModeCommand::execute() const
 {
 
+	std::string		possibleOperations = "+-";
+	std::string		possibleModes = "itkol";
+	unsigned int	operation;
+
+	for (size_t	i = 0; i < possibleModes.length(); ++i)
+	{
+		operation = i;
+		if (operationChar[0] == possibleOperations[i])
+			break;
+	}
+
+	std::cerr << "Current operation : " << operation << std::endl;
+
+	if (operation == UNKNOWNMODE)
+	{
+		this->returnErrorReply(ERR_UNKNOWNMODE, this->operationChar, *_server);
+		return ;
+	}
+
+	if (possibleModes.find(operationChar) == possibleModes.npos)
+	{
+		this->returnErrorReply(ERR_UNKNOWNMODE , operationChar, *_server);
+		return;
+	}
 }

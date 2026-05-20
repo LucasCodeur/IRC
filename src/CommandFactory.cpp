@@ -33,12 +33,12 @@ std::vector<std::string> split(std::string str,   char delimiter)
 	return v;
 }
 
-Command *CommandFactory::createCommand(const int clientFd, const std::string str)
+Command *CommandFactory::createCommand(Server *server, const int clientFd, const std::string str)
 {
 	std::cout << "Command :" << str << std::endl;
 	const char *types[12] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
 
-	Command *(*creators[12])(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
+	Command *(*creators[12])(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
 
 	creators[0] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
@@ -92,7 +92,7 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	{
 		if (formattedCommand[0] == commandTypes[type])
 		{
-			return (*creators[type])(clientFd, (enum Command::commandType)type, parameters);
+			return (*creators[type])(server, clientFd, (enum Command::commandType)type, parameters);
 			break ;
 		}
 		if (type == commandTypes.size() - 1)
@@ -101,9 +101,10 @@ Command *CommandFactory::createCommand(const int clientFd, const std::string str
 	throw Command::UnknownCommandException();
 }
 
-Command *CommandFactory::createJoinCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+
+Command *CommandFactory::createJoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 {
-	return (new JoinCommand(clientFd, type, params));
+	return (new JoinCommand(server, clientFd, type, params));
 }
 
 // Command *createPrivmsgCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
@@ -116,9 +117,9 @@ Command *CommandFactory::createJoinCommand(const int clientFd, const enum Comman
 // 	return (new InviteCommand(clientFd, type, params));
 // }
 
-Command *CommandFactory::createTopicCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
 {
-	return (new TopicCommand(clientFd, type, params));
+	return (new TopicCommand(server, clientFd, type, params));
 }
 
 // Command *createKickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
@@ -136,19 +137,19 @@ Command *CommandFactory::createTopicCommand(const int clientFd, const enum Comma
 // 	return (new WhoCommand(clientFd, type, params));
 // }
 
-Command *CommandFactory::createPassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+Command *CommandFactory::createPassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
 {
-	return (new PassCommand(clientFd, type, params));
+	return (new PassCommand(server, clientFd, type, params));
 }
 
-Command *CommandFactory::createNickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+Command *CommandFactory::createNickCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
 {
-	return (new NickCommand(clientFd, type, params));
+	return (new NickCommand(server, clientFd, type, params));
 }
 
-Command *CommandFactory::createUserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createUserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 {
-	return (new UserCommand(clientFd, type, params));
+	return (new UserCommand(server, clientFd, type, params));
 }
 
 // Command *createPartCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)

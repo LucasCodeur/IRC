@@ -6,7 +6,7 @@
 /*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:55:35 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/11 12:07:00 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/20 15:22:39 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <sstream>
 
-TopicCommand::TopicCommand(const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params) : Command(clientFd, type, params)
+TopicCommand::TopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < min_params)
 		throw IncorrectParametersException("Not enough parameters");
@@ -35,11 +35,11 @@ TopicCommand::TopicCommand(const int clientFd, const enum Command::commandType t
 
 TopicCommand::~TopicCommand() {}
 
-void TopicCommand::execute(Server &server) const
+void TopicCommand::execute() const
 {
 	std::ostringstream responseStream;
 
-	std::map<std::string, Channel *> channels = server.getChannelMap();
+	std::map<std::string, Channel *> channels = _server->getChannelMap();
 	Channel *distTargetChannel = channels.find(this->_targetChannel)->second;
 
 	std::map<std::string, Channel*>::iterator distChanIt = channels.find(this->_targetChannel);
@@ -51,13 +51,13 @@ void TopicCommand::execute(Server &server) const
 	}
 	else if (this->_newTopic.empty())
 	{
-		this->returnErrorReply(RPL_NOTOPIC, "", server);
+		this->returnErrorReply(RPL_NOTOPIC, "", *_server);
 	}
 	else
 	{
 		if (!distTargetChannel->isOp(this->getClientFd()))
 		{
-			this->returnErrorReply(ERR_CHANOPRIVSNEEDED, "", server);
+			this->returnErrorReply(ERR_CHANOPRIVSNEEDED, "", *_server);
 		}
 		else
 		{
@@ -66,5 +66,5 @@ void TopicCommand::execute(Server &server) const
 		}
 
 	}
-	server.sendData(this->getClientFd() , responseStream.str());
+	_server->sendData(this->getClientFd() , responseStream.str());
 }

@@ -4,7 +4,7 @@
 #include "PassCommand.hpp"
 #include "Exceptions.hpp"
 
-PassCommand::PassCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(clientFd, type, params)
+PassCommand::PassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < PassCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
@@ -16,7 +16,7 @@ PassCommand::PassCommand(const int clientFd, const enum Command::commandType typ
 
 PassCommand::~PassCommand() {};
 
-void	PassCommand::execute(Server& server) const
+void	PassCommand::execute() const
 {
 	// std::cout << "Inside execute pass command\n" << std::endl;
 	std::string password = this->_params[0][0];
@@ -25,7 +25,7 @@ void	PassCommand::execute(Server& server) const
 	// std::cout << "server pass_word: " << server.getPassword() << std::endl;
 	// std::cout << "size: " << server.getPassword().size() << std::endl;
 
-	if (password != server.getPassword())
+	if (password != _server->getPassword())
 	{
 		// std::cout << "problem password not correct" << std::endl;
 		throw passwordNotCorrect();

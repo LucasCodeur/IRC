@@ -8,10 +8,10 @@
 class NickCommand : public Command
 {
 	public:
-		NickCommand(const int ClientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+		NickCommand(Server *server, const int ClientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 		~NickCommand();
 
-		void	execute(Server& server) const;
+		void	execute() const;
 	private:
 		static const unsigned int min_params = 1;
 		static const unsigned int max_params = 1;
