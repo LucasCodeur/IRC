@@ -1,17 +1,15 @@
 #ifndef REPLY_BUILDER_HPP
 # define REPLY_BUILDER_HPP
 
-#include <vector>
 #include <iostream>
 
-class Reply_builder
+class ReplyBuilder
 {
 	public:
-			
-	private:
-		unsigned int				numeric;
-		std::vector<std::string>	params;
-		std::string					message;
+		ReplyBuilder(std::string numeric, std::string nickname);
+		virtual void buildPrefixe() const = 0;
+		virtual void buildNumeric() const = 0;
+		virtual void buildNickname() const = 0;
 };
 
 #endif
