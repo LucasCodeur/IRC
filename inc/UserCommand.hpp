@@ -19,10 +19,10 @@
 class UserCommand : public Command
 {
 	public:
-		UserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+		UserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 		~UserCommand();
 
-		void	execute(Server &server) const;
+		void	execute() const;
 
 	private:
 		static const unsigned int min_params = 4;

@@ -177,3 +177,12 @@ bool Channel::removeOperator(int clientFd)
 	return (false);
 }
 
+bool Channel::isOp(int clientFd)
+{
+	return (std::find(this->_operators.begin(), this->_operators.end(), clientFd) != this->_operators.end());
+}
+
+bool Channel::isOnChan(int clientFd)
+{
+	return (std::find(this->_users.begin(), this->_users.end(), clientFd) != this->_users.end());
+}

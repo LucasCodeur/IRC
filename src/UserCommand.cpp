@@ -4,7 +4,7 @@
 #include "Exceptions.hpp"
 
 
-UserCommand::UserCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(clientFd, type, params)
+UserCommand::UserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < UserCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
@@ -16,9 +16,9 @@ UserCommand::UserCommand(const int clientFd, const enum Command::commandType typ
 
 UserCommand::~UserCommand() {};
 
-void	UserCommand::execute(Server& server) const
+void	UserCommand::execute() const
 {
-	std::map<int, Client*>::const_iterator it = server.getClientmap().find(this->getClientFd());
+	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
 	
 	it->second->setUsername(this->_params[0][0]);
 	it->second->setRealname(this->_params[3][0]);

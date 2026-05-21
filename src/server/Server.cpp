@@ -204,7 +204,7 @@ void    Server::setAddr(void)
 {
         this->_addr.sin_family = AF_INET;
         this->_addr.sin_addr.s_addr = INADDR_ANY;
-        this->_addr.sin_port = htons(PORT);
+        this->_addr.sin_port = htons(this->_port);
 }
 
 /**
@@ -222,7 +222,9 @@ void Server::setNonBlocking(int sock)
     flags |= O_NONBLOCK;
     result = fcntl(sock , F_SETFL , flags);
     if (result == -1)
+    {
         throw setnonblockingFailed();
+    }
 }
 
 Server::Server()

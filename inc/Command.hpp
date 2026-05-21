@@ -55,8 +55,7 @@ class Command
 	};
 
 	// CONSTRUCTOR
-	Command();
-	Command(int clientFd, commandType type, std::vector<std::vector<std::string> > const &params);
+	Command(Server *server, int clientFd, commandType type, std::vector<std::vector<std::string> > const &params);
 	virtual ~Command();
 	Command(Command const &original);
 
@@ -77,15 +76,18 @@ class Command
 	std::string commandTypeToString() const;
 
 	// METHODS
-	virtual void	execute(Server &server) const = 0;
+	virtual void	execute() const = 0;
+	void			returnErrorReply(int errNum, std::string param, Server &server) const;
 	
 
 private:
+	Command();
 	int							_clientFd;
 	commandType					_commandType;
 
 protected:
 	std::vector<std::vector<std::string> >	_params;
+	Server									*_server;
 
 };
 std::ostream &operator<<(std::ostream &o, const Command &obj);

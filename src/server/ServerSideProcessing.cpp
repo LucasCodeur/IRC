@@ -41,8 +41,8 @@ void    Server::receiveData(int clientFd)
         memset(buffer, 0, BUFFER_SIZE);
         try
         {
-            command = CommandFactory::createCommand(clientFd, strCommand);
-            command->execute(*this);
+            command = CommandFactory::createCommand(this, clientFd, strCommand);
+            command->execute();
         }
         catch(Command::UnknownCommandException& e)
         {
