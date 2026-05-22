@@ -41,14 +41,10 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 
 	Command *(*creators[12])(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
 
-	creators[0] = NULL;
+	for (int i = 0; i < 12; i++)
+		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
-	// creators[2] = &CommandFactory::createPrivmsgCommand;
-	// creators[3] = &CommandFactory::createKickCommand;
-	// creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
-	// creators[6] = &CommandFactory::createModeCommand;
-	// creators[7] = &CommandFactory::createWhoCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
@@ -93,8 +89,9 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	{
 		if (formattedCommand[0] == commandTypes[type])
 		{
+			if (creators[type] == NULL)
+				throw Command::UnknownCommandException();
 			return (*creators[type])(server, clientFd, (enum Command::commandType)type, parameters);
-			break ;
 		}
 		if (type == commandTypes.size() - 1)
 			throw Command::UnknownCommandException();

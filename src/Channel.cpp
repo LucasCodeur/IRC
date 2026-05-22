@@ -2,7 +2,10 @@
 #include <algorithm>
 #include "debug.hpp"
 #include <iostream>
+#include <string>
 #include <ostream>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 Channel::Channel()
 	: _name(""),
@@ -136,6 +139,11 @@ void Channel::setMode(int mode)
 	this->_mode = mode;
 }
 
+/**
+ * @brief Adds a user to the channel if they are not already present. Sends a JOIN message to all other users in the channel.
+ * @param clientFd the file descriptor of the user to add.
+ * @return true if the user was successfully added, false if the user was already in the channel.
+ */
 bool Channel::addUser(int clientFd)
 {
 	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())
@@ -185,4 +193,21 @@ bool Channel::isOp(int clientFd)
 bool Channel::isOnChan(int clientFd)
 {
 	return (std::find(this->_users.begin(), this->_users.end(), clientFd) != this->_users.end());
+}
+
+void Channel::sendMessageToAll(const std::string &message) const
+{
+	for (size_t i = 0; i < this->_users.size(); ++i)
+	{
+		send(this->_users[i], message.c_str(), message.size(), 0);
+	}
+}
+
+void Channel::sendMessageToAllOther(const std::string &message, int senderFd) const
+{
+	for (size_t i = 0; i < this->_users.size(); ++i)
+	{
+		if (this->_users[i] != senderFd)
+			send(this->_users[i], message.c_str(), message.size(), 0);
+	}
 }

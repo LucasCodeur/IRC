@@ -48,6 +48,9 @@ class Channel
 	bool removeOperator(int clientFd);
 	bool isOp(int clientFd);
 	bool isOnChan(int clientFd);
+	void sendMessageToAll(const std::string &message) const;
+	void sendMessageToAllOther(const std::string &message, int senderFd) const;
+
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);
 

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Command.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/20 15:19:02 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/20 15:54:14 by kbarru           ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Command.hpp"
 #include "debug.hpp"
 #include "Server.hpp"
@@ -123,7 +111,7 @@ void Command::setParams(std::vector<std::vector<std::string> > const &params)
 void	Command::returnErrorReply(int n, std::string param, Server &server) const
 {
     std::stringstream reply;
-    reply << ":" << n << " ";
+    reply << ":ircserv " << n << " ";
     switch (n)
 	{
 		case ERR_UNKNOWNCOMMAND: // Unknown Command
@@ -147,8 +135,11 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
 		case RPL_NOTOPIC:
 			reply <<":error message not written" << "\r\n"; //TODO: this
 			break;
-		case ERR_ERRUNKNOWNMODE:
+		case ERR_UNKNOWNMODE:
 			reply << param << ": is unknown mode char to me" << "\r\n"; //TODO: this
+			break;
+		case ERR_BADCHANNELKEY:
+			reply << param << ": Cannot join channel (+k) - bad key" << "\r\n"; //TODO: this
 			break;
 		default:
 			reply << "Internal server error" << "\r\n";

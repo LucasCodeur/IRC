@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <vector>
 #include "Command.hpp"
 #include "debug.hpp"
@@ -31,22 +32,26 @@ void PartCommand::execute() const
 		if (it != chanMap.end())
 		{
 			if (it->second->removeUser(fd))
+			{
 				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
-			else
-			{
-				// std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " trying to send 442 ERR_NOTONCHANNEL" << RESET << std::endl;
-				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), *this->_server);
-			}
+				std::stringstream ss;
+				ss << ":" << this->_server->getClientNickname(fd) << " PART " << it->first << "\r\n";
+				send(fd, ss.str().c_str(), ss.str().size(), 0); //TODO: change after the builder is done
+				it->second->sendMessageToAll(ss.str()); //TODO: change after the builder is done
 				if (it->second->getUsers().empty())
+				{
+					std::cout << DBUG << "deleting empty channel " << it->first << std::endl;
+					this->_server->removeChannel(it->first);
+				}
+			}
+			else // if user was not on channel
 			{
-				std::cout << DBUG << "deleting empty channel " << it->first << std::endl;
-				this->_server->removeChannel(it->first);
+				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), *this->_server); //TODO: change after the builder is done
 			}
 		}
-		else
+		else // if channel does not exist
 		{
-			this->returnErrorReply(ERR_NOSUCHCHANNEL, params[i], *this->_server);
-			// std::cout << DBUG << fd << RED " could NOT leave : " << params[i] << " channel not found" << RESET << std::endl; //FIXME: send 403 ERR_NOSUCHCHANNEL to client
+			this->returnErrorReply(ERR_NOSUCHCHANNEL, params[i], *this->_server); //TODO: change after the builder is done
 		}
 	}
 }

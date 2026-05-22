@@ -1,8 +1,10 @@
 #include <utility>
 #include <iostream>
+#include <sstream>
 #include "Command.hpp"
 #include "debug.hpp"
 #include "JoinCommand.hpp"
+#include "NumericReplies.h"
 
 JoinCommand::JoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
@@ -69,6 +71,11 @@ void JoinCommand::execute() const
 			}
 			distChan_it->second->addUser(this->getClientFd());
 			distChan_it->second->setOperator(this->getClientFd());
+			{
+				std::stringstream joinMsg;
+				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
+				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+			}
 			if (key_it != keys.end())
 				key_it++;
 			continue ;
@@ -80,17 +87,31 @@ void JoinCommand::execute() const
 
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
-			std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
+			if (DEBUG)
+				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
+			{
+				std::stringstream joinMsg;
+				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
+				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+			}
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
-			std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with correct pass '" << providedPassword << "'" RESET << std::endl;
+			if (DEBUG)
+				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with correct pass '" << providedPassword << "'" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
+			{
+				std::stringstream joinMsg;
+				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
+				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+			}
 		}
 		else // if password incorrect
 		{
-			std::cout << DBUG << this->getClientFd() << RED " failed to join " << *chan_it << " with incorrect pass '" << providedPassword << "'" RESET << std::endl;
+			std::stringstream ss;
+			ss << this->_server->getClientNickname(this->getClientFd()) << " " << *chan_it;
+			this->returnErrorReply(ERR_BADCHANNELKEY, ss.str(), *this->_server);//TODO: change after the builder is done
 		}
 	}
 }

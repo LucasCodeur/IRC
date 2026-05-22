@@ -42,6 +42,8 @@ class Server
 		std::string const                                           &getPassword() const;
 		std::map<int, Client* > const                               &getClientmap() const;
 		std::map<std::string, Channel*> const                       &getChannelMap() const;
+		std::string const 											getClientNickname(int clientFd) const;
+
 	
 	// METHODS
     std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
