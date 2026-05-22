@@ -85,7 +85,7 @@ static std::string    extractCommand(std::string& buffer)
     // PRINT(pos, RED, "\n");
     if (pos != 0)
     {
-        res = buffer.substr(0, pos - 1);
+        res = buffer.substr(0, pos);
         buffer.erase(0, pos + 1);
     }
     // PRINT("STR COMMAND: ", YELLOW, "");
