@@ -41,7 +41,8 @@ SRC =			main.cpp	\
 				NickCommand.cpp \
 				UserCommand.cpp \
 				PartCommand.cpp \
-				TopicCommand.cpp
+				TopicCommand.cpp \
+				PrivmsgCommand.cpp
 
 
 SRC_SERVER =	Server.cpp	\

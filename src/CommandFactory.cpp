@@ -5,6 +5,7 @@
 #include "NickCommand.hpp"
 #include "UserCommand.hpp"
 #include "PartCommand.hpp"
+#include "PrivmsgCommand.hpp"
 #include "Command.hpp"
 #include <sstream>
 #include "string.h"
@@ -44,6 +45,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	for (int i = 0; i < 12; i++)
 		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
+	creators[2] = &CommandFactory::createPrivmsgCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
@@ -105,10 +107,10 @@ Command *CommandFactory::createJoinCommand(Server *server, const int clientFd, c
 	return (new JoinCommand(server, clientFd, type, params));
 }
 
-// Command *createPrivmsgCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new PrivmsgCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createPrivmsgCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+{
+	return (new PrivmsgCommand(server, clientFd, type, params));
+}
 
 // Command *createInviteCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
 // {
