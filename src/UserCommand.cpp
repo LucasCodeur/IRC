@@ -36,4 +36,8 @@ void	UserCommand::execute() const
 	std::string message = "User information complete successfully\n";
 	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
 		throw sendFailed();
+	//	WARN: EXEMPLE
+	// std::string reply;
+	// reply = server.reply_builder(info);
+	// send(reply);
 }

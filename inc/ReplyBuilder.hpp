@@ -3,13 +3,24 @@
 
 #include <iostream>
 
-class ReplyBuilder
+class reply 
 {
-	public:
-		ReplyBuilder(std::string numeric, std::string nickname);
-		virtual void buildPrefixe() const = 0;
-		virtual void buildNumeric() const = 0;
-		virtual void buildNickname() const = 0;
+	std::string prefixe;
+	std::string numeric;
+	std::string params;
+	std::string message;
+	std::string crln;
+};
+
+class replyBuilder
+{
+	public: 
+		replyBuilder&			AddPrefixe();
+		replyBuilder&			AddNumeric();
+		virtual replyBuilder&	AddMessage() = 0;
+		virtual replyBuilder&	AddParams() = 0;
+		virtual replyBuilder&	AddCrln();
+		reply product;
 };
 
 #endif
