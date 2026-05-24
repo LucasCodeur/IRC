@@ -37,7 +37,7 @@ class Server
         bool                                                        launcherServer(std::string port, std::string password);
 	int                                                         getPort() const;
 	int                                                         getFd() const;
-    int                                                         getOpt() const;
+        int                                                         getOpt() const;
 	std::string const                                           &getServerName() const;
 	std::string const                                           &getPassword() const;
 	std::map<int, Client* > const                               &getClientmap() const;

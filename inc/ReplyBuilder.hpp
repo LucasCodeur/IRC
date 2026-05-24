@@ -2,25 +2,42 @@
 # define REPLY_BUILDER_HPP
 
 #include <iostream>
+# define SERVERNAME "irc_server"
+# define PREFIX_MARKER ":"
+# define SPACE " "
 
 class reply 
 {
-	std::string prefixe;
-	std::string numeric;
-	std::string params;
-	std::string message;
-	std::string crln;
+	public:
+		std::string prefixe;
+		std::string numeric;
+		std::string params;
+		std::string message;
+		std::string crln;
 };
 
-class replyBuilder
+class ReplyBuilder
 {
 	public: 
-		replyBuilder&			AddPrefixe();
-		replyBuilder&			AddNumeric();
-		virtual replyBuilder&	AddMessage() = 0;
-		virtual replyBuilder&	AddParams() = 0;
-		virtual replyBuilder&	AddCrln();
-		reply product;
+		ReplyBuilder();
+		ReplyBuilder(std::string params);
+		ReplyBuilder&	addPrefixe();
+		ReplyBuilder&	addNumeric(std::string numeric);
+		ReplyBuilder&	addMessage(std::string message);
+		ReplyBuilder&	addParams(std::string params);
+		ReplyBuilder&	addCrln();
+		std::string		getReply();
+	private:
+		reply _reply;
+};
+
+class Director
+{
+	public:
+		ReplyBuilder*	builder;
+		void			setBuilderType(ReplyBuilder* builder);
+		std::string		rplWelcome(std::string client);
+		std::string		rplYourhost(std::string client);
 };
 
 #endif

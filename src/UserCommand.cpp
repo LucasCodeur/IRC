@@ -1,5 +1,6 @@
 #include "Command.hpp"
 #include "UserCommand.hpp"
+#include "ReplyBuilder.hpp"
 #include "debug.hpp"
 #include "Exceptions.hpp"
 
@@ -33,11 +34,22 @@ void	UserCommand::execute() const
 	PRINT("RealName: ", RED, "");
 	PRINT(it->second->getRealname(), WHITE, "\n");
 
+	Director director;
 	std::string message = "User information complete successfully\n";
-	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-		throw sendFailed();
-	//	WARN: EXEMPLE
-	// std::string reply;
-	// reply = server.reply_builder(info);
-	// send(reply);
+	std::string client = it->second->getNickname();
+
+	try 
+	{
+		std::string reply = director.rplWelcome(client);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		reply = director.rplYourhost(reply);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+	}
+	catch (std::exception& e)
+	{
+            std::cout << "Caught: " << e.what() << std::endl;
+			return ;
+	}
 }

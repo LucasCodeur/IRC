@@ -47,8 +47,11 @@ SRC_SERVER =	Server.cpp	\
 				CheckServer.cpp \
 				ServerSideProcessing.cpp \
 
+SRC_REPLY_BUILDER = ReplyBuilder.cpp \
+
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
+	$(addprefix $(P_SRC), $(SRC_REPLY_BUILDER)) \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
 INCS = $(addprefix $(P_INC), $(INC)) \
