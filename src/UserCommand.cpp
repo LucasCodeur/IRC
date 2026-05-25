@@ -40,10 +40,11 @@ void	UserCommand::execute() const
 
 	try 
 	{
-		std::string reply = director.rplWelcome(client);
+		std::string reply = director.rplWelcome(*(it->second));
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
-		reply = director.rplYourhost(reply);
+
+		reply = director.rplYourhost(*(it->second));
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
 	}

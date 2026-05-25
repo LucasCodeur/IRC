@@ -1,16 +1,5 @@
 #include "ReplyBuilder.hpp"
 
-ReplyBuilder::ReplyBuilder()
-{
-	std::cout << "Default constructor Reply_builder called" << std::endl;
-}
-
-ReplyBuilder::ReplyBuilder(std::string params)
-{
-	std::cout << "Params constructor Reply_builder called" << std::endl;
-	this->addParams(params);
-}
-
 /**
  * @brief allows to setting the params.
  * @param string params to add inside the reply.
@@ -18,7 +7,7 @@ ReplyBuilder::ReplyBuilder(std::string params)
  */
 ReplyBuilder&	ReplyBuilder::addParams(std::string params)
 {	
-	_reply.params = params;
+	this->_reply.setParams(params);
 	return (*this);
 }
 
@@ -28,8 +17,10 @@ ReplyBuilder&	ReplyBuilder::addParams(std::string params)
  */
 ReplyBuilder&	ReplyBuilder::addPrefixe()
 {
-	_reply.prefixe = PREFIX_MARKER;
-	_reply.prefixe += SERVERNAME;
+	std::string prefixe = PREFIX_MARKER;
+	prefixe += SERVERNAME;
+	this->_reply.setPrefixe(prefixe);
+
 	return (*this);
 }
 
@@ -40,19 +31,23 @@ ReplyBuilder&	ReplyBuilder::addPrefixe()
  */
 ReplyBuilder&	ReplyBuilder::addNumeric(std::string numeric)
 {
-	_reply.numeric = numeric;
+	this->_reply.setNumeric(numeric);
 	return (*this);
 }
 
 /**
- * @brief allows to setting the message.
- * @param string message to add inside the reply.
+ * @brief allows to setting the trailing.
+ * @param string trailing to add inside the reply.
  * @return an object of the replyBuilder in order to do the chaining of differents adds.
  */
-ReplyBuilder&	ReplyBuilder::addMessage(std::string message)
+ReplyBuilder&	ReplyBuilder::addTrailing(std::string trailing)
 {
-	_reply.message = PREFIX_MARKER;
-	_reply.message += message;
+	std::string temp;
+
+	temp = PREFIX_MARKER;
+	temp += trailing;
+	this->_reply.setNumeric(temp);
+
 	return (*this);
 }
 
@@ -62,7 +57,22 @@ ReplyBuilder&	ReplyBuilder::addMessage(std::string message)
  */
 ReplyBuilder&	ReplyBuilder::addCrln()
 {
-	_reply.crln = "\r\n";
+	this->_reply.setCrln("\r\n");
+	return (*this);
+}
+
+/**
+ * @brief allows to reset all the information inside reply.
+ * @return an object of the replyBuilder in order to do the chaining of differents adds.
+ */
+ReplyBuilder&	ReplyBuilder::reset()
+{
+	this->_reply.setNumeric("");
+	this->_reply.setParams("");
+	this->_reply.setTrailing("");
+	this->_reply.setPrefixe("");
+	this->_reply.setCrln("");
+
 	return (*this);
 }
 
@@ -70,18 +80,18 @@ ReplyBuilder&	ReplyBuilder::addCrln()
  * @brief allows concatenating all the strings.
  * @return a string numeric reply to be sent.
  */
-std::string	ReplyBuilder::getReply()
+std::string	ReplyBuilder::buildReply()
 {
 	std::string reply;
 
-	reply += this->_reply.prefixe;
+	reply += this->_reply.getPrefixe();
 	reply += SPACE;
-	reply += this->_reply.numeric;
+	reply += this->_reply.getNumeric();
 	reply += SPACE;
-	reply += this->_reply.params;
+	reply += this->_reply.getParams();
 	reply += SPACE;
-	reply += this->_reply.message;
-	reply += this->_reply.crln;
+	reply += this->_reply.getTrailing();
+	reply += this->_reply.getCrln();
 
 	return (reply);
 }
@@ -101,47 +111,107 @@ void Director::setBuilderType(ReplyBuilder* builder)
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplWelcome(std::string client)
+std::string	Director::rplWelcome(Client client)
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
-						.addPrefixe()
-						.addNumeric("001")
-						.addParams(client)
-						.addMessage("Welcome to the IRC Network")
-						.addCrln()
-						.getReply();
+				.reset()
+				.addPrefixe()
+				.addNumeric("001")
+				.addParams(client.getNickname())
+				.addTrailing("Welcome to the IRC Network")
+				.addCrln()
+				.buildReply();
 	//WARN: Maybe change the content of the runtime or even the runtime
 	if (reply.size() > 512) 
         throw std::runtime_error("Reply longer than 512 characters");
 	return (reply);
 }
 
-
 /**
 * @brief creates the numeric reply to indicate the servername and the version, when a client successfully connects to a irc server.
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string		Director::rplYourhost(std::string client)
+std::string	Director::rplYourhost(Client client)
 {
 	ReplyBuilder	builder;
 
-	std::string message = "Your host is ";
-	message += SERVERNAME;
-	message += ", running version 1.0";
+	std::string trailing = "Your host is ";
+	trailing += SERVERNAME;
+	trailing += ", running version 1.0";
 
 	std::string reply = builder
-						.addPrefixe()
-						.addNumeric("002")
-						.addParams(client)
-						.addMessage(message)
-						.addCrln()
-						.getReply();
+				.reset()
+				.addPrefixe()
+				.addNumeric("002")
+				.addParams(client.getNickname())
+				.addTrailing(trailing)
+				.addCrln()
+				.buildReply();
 	if (reply.size() > 512) 
         throw std::runtime_error("Reply longer than 512 characters");
 
 	return (reply);
 }
 
+ReplyBuilder::ReplyBuilder()
+{
+	std::cout << "Default constructor Reply_builder called" << std::endl;
+}
+
+ReplyBuilder::ReplyBuilder(std::string params)
+{
+	std::cout << "Params constructor Reply_builder called" << std::endl;
+	this->addParams(params);
+}
+
+std::string reply::getPrefixe()
+{
+	return (this->_prefixe);
+}
+
+std::string reply::getNumeric()
+{
+	return (this->_numeric);
+}
+
+std::string reply::getParams()
+{
+	return (this->_params);
+}
+
+std::string reply::getTrailing()
+{
+	return (this->_trailing);
+}
+
+std::string reply::getCrln()
+{
+	return (this->_crln);
+}
+
+void reply::setPrefixe(std::string prefixe)
+{
+	this->_prefixe = prefixe;
+}
+
+void reply::setNumeric(std::string numeric)
+{
+	this->_numeric = numeric;
+}
+
+void reply::setParams(std::string params)
+{
+	this->_params = params;
+}
+
+void reply::setTrailing(std::string trailing)
+{
+	this->_trailing = trailing;
+}
+void reply::setCrln(std::string crln)
+{
+	this->_crln = crln;
+}
