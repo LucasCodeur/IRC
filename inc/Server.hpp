@@ -48,6 +48,7 @@ class Server
 	// METHODS
     std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
 	void					removeChannel(const std::string &name);
+    Channel *getChannelByName(std::string const &name) const;
 	void                    handleJoin(Command const &cmd);
 	void                    handleCommand(Command const &cmd);
     void                    sendData(int fd, std::string data);

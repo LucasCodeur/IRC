@@ -66,17 +66,22 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	mainContentContainer.push_back(mainContent);
 
 
-	std::stringstream ss(str.substr(0, colon_pos));
+	std::stringstream ss;
+	ss << (str.substr(0, colon_pos));
 
 	while(getline(ss, splitString, ' '))
 	{
 		size_t pos = splitString.find(" ");
 		if (pos != std::string::npos)
-			splitString.erase(pos, pos);
+			splitString.erase(pos, 1);
 		formattedCommand.push_back(splitString);
 	}
+
 	if (formattedCommand.size() <= 0)
+	{
+		std::cerr << "Formatted command size :" << formattedCommand.size() << std::endl << "first element : " << formattedCommand.front() << std::endl;
 		throw Command::EmptyCommandException();
+	}
 	std::vector<std::vector<std::string> > parameters;
 
 	for (std::vector<std::string>::iterator it = formattedCommand.begin() + 1; it != formattedCommand.end(); ++it)

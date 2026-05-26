@@ -11,17 +11,18 @@ Channel::Channel()
 	: _name(""),
 	  _topic(""),
 	  _password(""),
-	  _mode(0)
+	  _mode(0100)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
+	std::cout << " with mode " << _mode << std::endl;
 }
 
 Channel::Channel(std::string const &name)
 	: _name(name),
 	  _topic(""),
 	  _password(""),
-	  _mode(0)
+	  _mode(0100)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -85,8 +86,7 @@ std::ostream &operator<<(std::ostream &o, const Channel &obj)
 			  << " Password: '" << obj.getPassword() << "'"
 			  << ", Users: " << obj.getUsers().size()
 			  << ", Operators: " << obj.getOperators().size()
-			  << ", Invited: " << obj.getInvited().size()
-			  << ", Mode: " << obj.getMode() << ")");
+			  << ", Invited: " << obj.getInvited().size() << ")");
 }
 
 std::string const &Channel::getName() const
@@ -119,9 +119,36 @@ std::vector<int> const &Channel::getInvited() const
 	return (_invited);
 }
 
-int Channel::getMode() const
+int Channel::getMode(int i) const
 {
-	return (_mode);
+	return this->_mode[i];
+}
+
+int	Channel::isInviteOnly() const
+{
+	return (this->_mode[i]);
+}
+
+int Channel::hasPassword() const
+{
+	return (this->_mode[k]);
+}
+
+int Channel::isTopicRestricted() const
+{
+	return (this->_mode[t]);
+}
+
+int Channel::hasUserLimit() const
+{
+	return (this->_mode[l]);
+}
+
+int Channel::isChanOp(std::string userName) const
+{
+	//TODO: need chanops to be listed by name in Channel to do this
+	(void)userName;
+	return (0);
 }
 
 void Channel::setTopic(std::string const &topic)
@@ -144,6 +171,13 @@ void Channel::setMode(int mode)
  * @param clientFd the file descriptor of the user to add.
  * @return true if the user was successfully added, false if the user was already in the channel.
  */
+void Channel::setModeItem(unsigned int item, bool value)
+{
+	if (item < 0 || item >= _mode.size())
+		return; // Invalid item index, do nothing
+	this->_mode.set(item, value);
+}
+
 bool Channel::addUser(int clientFd)
 {
 	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())

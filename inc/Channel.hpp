@@ -4,6 +4,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <bitset>
 
 class Channel
 {
@@ -13,10 +14,11 @@ class Channel
 	std::string			_password;
 	std::vector<int>	_users;
 	std::vector<int>	_operators;
-	std::vector<int>	_invited;
-	int					_mode;
+	std::vector<int>	_invited; // FIXME: what happens if I want to invite someone not connected to the server yet?
+	std::bitset<4>		_mode; // itkl = 0100
 
 	public:
+	enum inviteMode {i = 0, t, k, l};
 	// CONSTRUCTOR
 	Channel();
 	Channel(std::string const &name, std::string const &password);
@@ -34,12 +36,18 @@ class Channel
 	std::vector<int> const &getUsers() const;
 	std::vector<int> const &getOperators() const;
 	std::vector<int> const &getInvited() const;
-	int getMode() const;
+	int						getMode(int i) const;
+	int						isInviteOnly() const;
+	int						hasPassword() const;
+	int						isTopicRestricted() const;
+	int						hasUserLimit() const;
+	int						isChanOp(std::string userName) const;
 
 	// SETTERS
 	void setTopic(std::string const &topic);
 	void setPassword(std::string const &password);
 	void setMode(int mode);
+	void setModeItem(unsigned int item, bool value);
 
 	// METHODS
 	bool addUser(int clientFd);

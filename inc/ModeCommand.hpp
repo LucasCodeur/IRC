@@ -13,11 +13,13 @@ public:
 	enum editedMode { INVITEONLY = 0, CHANOPRIVFORTOPIC, KEY, OP, USERLIMIT, UNKNOWNMODE};
 
 	void execute() const;
+	void replyChannelMode() const;
 
 private:
 	static const unsigned int	min_params = 1;
 	static const unsigned int	max_params = 2;
 	std::string					operationChar;
+	Channel *					_targetChannel;
 };
 
 #endif

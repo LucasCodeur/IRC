@@ -342,6 +342,13 @@ std::map<int, Client*> const &Server::getClientmap() const
         return (this->_clients);
 }
 
+Channel *Server::getChannelByName(std::string const &name) const
+{
+        std::map<std::string, Channel *>::const_iterator it = this->_channels.find(name);
+        if (it != this->_channels.end())
+                return (it->second);
+        return (NULL);
+}
 std::ostream &operator<<(std::ostream &o, const Server &obj)
 {
 	return (o << "Server name: " << obj.getServerName()
