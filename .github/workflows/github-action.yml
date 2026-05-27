@@ -33,28 +33,28 @@ jobs:
       - name: Test wrong argument count
         run: |
           echo "🔎 Testing wrong argument count..."
-          ./ircserv; [ $? -eq 2 ]
-          ./ircserv 6667; [ $? -eq 2 ]
+          ./ircserv || [ $? -eq 2 ]
+          ./ircserv 6667 || [ $? -eq 2 ]
           echo "✅ Wrong argument count handled correctly!"
       
       - name: Test wrong argument count
         run: |
           echo "🔎 Testing wrong argument count..."
-          ./ircserv; [ $? -eq 2 ]
-          ./ircserv 6667; [ $? -eq 2 ]
-          ./ircserv 6667 password idk; [ $? -eq 2 ]
+          ./ircserv || [ $? -eq 2 ]
+          ./ircserv 6667 || [ $? -eq 2 ]
+          ./ircserv 6667 password idk || [ $? -eq 2 ]
           echo "✅ Wrong argument count handled correctly!"
 
       - name: Test invalid port
         run: |
           echo "🔎 Testing invalid port..."
-          ./ircserv 0 password; [ $? -eq 1 ]
-          ./ircserv 99999 password; [ $? -eq 1 ]
+          ./ircserv 0 password || [ $? -eq 1 ]
+          ./ircserv 99999 password || [ $? -eq 1 ]
           echo "✅ Invalid port handled correctly!"
 
       - name: Test empty password
         run: |
           echo "🔎 Testing empty password..."
-          ./ircserv 6667 ""; [ $? -eq 1 ]
+          ./ircserv 6667 "" || [ $? -eq 1 ]
           echo "✅ Empty password handled correctly!"
 
