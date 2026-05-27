@@ -2,6 +2,7 @@
 #include "NumericReplies.h"
 #include "debug.hpp"
 
+#include <ctime>
 /**
  * @brief allows to setting the params.
  * @param string params to add inside the reply.
@@ -125,10 +126,10 @@ std::string	Director::rplWelcome(Client client)
 				.addTrailing("Welcome to the IRC Network")
 				.addCrln()
 				.buildReply();
+
 	//WARN: Maybe change the content of the runtime or even the runtime
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
-	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -143,7 +144,7 @@ std::string	Director::rplYourhost(Client client)
 
 	std::string trailing = "Your host is ";
 	trailing += SERVERNAME;
-	trailing += ", running version 1.0";
+	trailing += SERVER_VERSION;
 
 	std::string reply = builder
 				.reset()
@@ -153,19 +154,24 @@ std::string	Director::rplYourhost(Client client)
 				.addTrailing(trailing)
 				.addCrln()
 				.buildReply();
+
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
-	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
+/**
+* @brief creates the numeric reply to indicate when the server was created.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
 std::string	Director::rplCreated(Client client)
 {
 	ReplyBuilder	builder;
+	std::string		trailing = "This server was created ";
 
-	std::string trailing = "This";
-	
+	trailing += "01/01/2026";
 
 	std::string reply = builder
 				.reset()
@@ -175,10 +181,34 @@ std::string	Director::rplCreated(Client client)
 				.addTrailing(trailing)
 				.addCrln()
 				.buildReply();
+
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
-	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string	Director::rplMyInfo(Client client)
+{
+	ReplyBuilder	builder;
+	std::string		trailing = "This server was created ";
+	std::string		params = client.getNickname();;
+
+	params += SERVERNAME;
+	params += SERVER_VERSION;
+
+	std::string reply = builder
+				.reset()
+				.addPrefixe()
+				.addNumeric(RPL_MYINFO)
+				.addParams(params)
+				.addTrailing(trailing)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
 	return (reply);
 }
 
