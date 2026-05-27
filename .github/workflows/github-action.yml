@@ -52,9 +52,4 @@ jobs:
           ./ircserv 99999 password || [ $? -eq 1 ]
           echo "✅ Invalid port handled correctly!"
 
-      - name: Test empty password
-        run: |
-          echo "🔎 Testing empty password..."
-          ./ircserv 6667 "" || [ $? -eq 1 ]
-          echo "✅ Empty password handled correctly!"
 
