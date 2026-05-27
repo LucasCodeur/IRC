@@ -89,30 +89,24 @@ void JoinCommand::execute() const
 
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
-			if (DEBUG)
-				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
 			{
 				std::string reply = director.rplJoin(*(it->second), *chan_it);
-				distChan_it->second->sendMessageToAll(reply.c_str()); //TODO: change after the builder is done
+				distChan_it->second->sendMessageToAll(reply.c_str());
 			}
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
-			if (DEBUG)
-				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with correct pass '" << providedPassword << "'" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
 			{
 				std::stringstream joinMsg;
 				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
-				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+				distChan_it->second->sendMessageToAll(joinMsg.str());
 			}
 		}
 		else // if password incorrect
 		{
-			std::stringstream ss;
-			ss << this->_server->getClientNickname(this->getClientFd()) << " " << *chan_it;
-			this->returnErrorReply(ERR_BADCHANNELKEY, ss.str(), *this->_server);//TODO: change after the builder is done
+			std::string reply = director.rplError(ERR_BADCHANNELKEY, *(it->second), *chan_it);
 		}
 	}
 }

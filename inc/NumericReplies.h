@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NumericReplies.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 13:39:39 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/26 13:40:15 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/05/27 17:35:43 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define ERR_NOTONCHANNEL 442
 # define ERR_NEEDMOREPARAMS 461
 # define ERR_UNKNOWNMODE 472
-# define ERR_BADCHANNELKEY 475
+# define ERR_BADCHANNELKEY "475"
 # define ERR_CHANOPRIVSNEEDED 482
 # define ERR_ERRUNKNOWNMODE 472
 

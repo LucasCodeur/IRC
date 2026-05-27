@@ -126,8 +126,10 @@ std::string	Director::rplWelcome(Client client)
 				.addCrln()
 				.buildReply();
 	//WARN: Maybe change the content of the runtime or even the runtime
+	
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -154,6 +156,7 @@ std::string	Director::rplYourhost(Client client)
 				.addTrailing(trailing)
 				.addCrln()
 				.buildReply();
+
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
@@ -172,6 +175,30 @@ std::string Director::rplJoin(Client const &client, Channel const &channel)
 				.addParams(channel.getName())
 				.addCrln()
 				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string Director::rplError(std::string const &numeric, Client const &client, Channel const &channel)
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(numeric)
+				.addParams(client.getNickname())
+				.addParams(channel.getName())
+				.addTrailing("Incorrect password")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
 
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
@@ -220,8 +247,8 @@ void reply::setPrefix(std::string prefix)
 
 void reply::setNumeric(std::string numeric)
 {
-	PRINT("Set numeric: ", BLUE, "\n");
-	PRINT(numeric, WHITE, "\n");
+	// PRINT("Set numeric: ", BLUE, "\n");
+	// PRINT(numeric, WHITE, "\n");
 	this->_numeric = numeric;
 }
 

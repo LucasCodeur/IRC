@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/27 17:10:24 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/27 17:39:47 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ class Director
 		std::string		rplWelcome(Client client);
 		std::string		rplYourhost(Client client);
 		std::string		rplJoin(Client const &client, Channel const &channel);
+		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
 
 };
 

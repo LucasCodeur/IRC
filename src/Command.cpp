@@ -138,9 +138,6 @@ void	Command::returnErrorReply(int n, std::string param, Server &server) const
 		case ERR_UNKNOWNMODE:
 			reply << param << ": is unknown mode char to me" << "\r\n"; //TODO: this
 			break;
-		case ERR_BADCHANNELKEY:
-			reply << param << ": Cannot join channel (+k) - bad key" << "\r\n"; //TODO: this
-			break;
 		default:
 			reply << "Internal server error" << "\r\n";
 	}
