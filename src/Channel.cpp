@@ -173,7 +173,7 @@ void Channel::setMode(int mode)
  */
 void Channel::setModeItem(unsigned int item, bool value)
 {
-	if (item < 0 || item >= _mode.size())
+	if (item >= _mode.size())
 		return; // Invalid item index, do nothing
 	this->_mode.set(item, value);
 }

@@ -21,6 +21,8 @@ private:
 	static Command	*createUserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	static Command	*createPartCommand(Server *server,const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
 	static Command	*createPrivmsgCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	static Command	*createModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+
 };
 
 #endif

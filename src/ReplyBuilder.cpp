@@ -1,5 +1,6 @@
 #include "ReplyBuilder.hpp"
 #include "NumericReplies.h"
+#include "Channel.hpp"
 #include "debug.hpp"
 
 #include <ctime>
@@ -15,14 +16,12 @@ ReplyBuilder&	ReplyBuilder::addParams(std::string params)
 }
 
 /**
- * @brief allows to setting the prefixe.
+ * @brief allows to setting the prefix.
  * @return an object of the replyBuilder in order to do the chaining of differents adds.
  */
-ReplyBuilder&	ReplyBuilder::addPrefixe()
+ReplyBuilder&	ReplyBuilder::addPrefix(std::string const &prefix)
 {
-	std::string prefixe = PREFIX_MARKER;
-	prefixe += SERVERNAME;
-	this->_reply.setPrefixe(prefixe);
+	this->_reply.setPrefix(prefix);
 
 	return (*this);
 }
@@ -73,7 +72,7 @@ ReplyBuilder&	ReplyBuilder::reset()
 	this->_reply.setNumeric("");
 	this->_reply.setParams("");
 	this->_reply.setTrailing("");
-	this->_reply.setPrefixe("");
+	this->_reply.setPrefix(":");
 	this->_reply.setCrln("");
 
 	return (*this);
@@ -87,7 +86,7 @@ std::string	ReplyBuilder::buildReply()
 {
 	std::string reply;
 
-	reply += this->_reply.getPrefixe();
+	reply += this->_reply.getPrefix();
 	reply += SPACE;
 	reply += this->_reply.getNumeric();
 	reply += SPACE;
@@ -120,7 +119,7 @@ std::string	Director::rplWelcome(Client client)
 	
 	std::string reply = builder
 				.reset()
-				.addPrefixe()
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_WELCOME)
 				.addParams(client.getNickname())
 				.addTrailing("Welcome to the IRC Network")
@@ -148,7 +147,7 @@ std::string	Director::rplYourhost(Client client)
 
 	std::string reply = builder
 				.reset()
-				.addPrefixe()
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_YOURHOST)
 				.addParams(client.getNickname())
 				.addTrailing(trailing)
@@ -175,7 +174,7 @@ std::string	Director::rplCreated(Client client)
 
 	std::string reply = builder
 				.reset()
-				.addPrefixe()
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_CREATED)
 				.addParams(client.getNickname())
 				.addTrailing(trailing)
@@ -199,7 +198,7 @@ std::string	Director::rplMyInfo(Client client)
 
 	std::string reply = builder
 				.reset()
-				.addPrefixe()
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_MYINFO)
 				.addParams(params)
 				.addTrailing(trailing)
@@ -209,6 +208,22 @@ std::string	Director::rplMyInfo(Client client)
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
+	return (reply);
+}
+
+std::string Director::rplJoin(Client const &client, Channel const &channel)
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("JOIN")
+				.addParams(channel.getName())
+				.addCrln()
+				.buildReply();
+
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -223,9 +238,9 @@ ReplyBuilder::ReplyBuilder(std::string params)
 	this->addParams(params);
 }
 
-std::string reply::getPrefixe()
+std::string reply::getPrefix()
 {
-	return (this->_prefixe);
+	return (this->_prefix);
 }
 
 std::string reply::getNumeric()
@@ -248,9 +263,9 @@ std::string reply::getCrln()
 	return (this->_crln);
 }
 
-void reply::setPrefixe(std::string prefixe)
+void reply::setPrefix(std::string prefix)
 {
-	this->_prefixe = prefixe;
+	this->_prefix += prefix;
 }
 
 void reply::setNumeric(std::string numeric)
@@ -260,13 +275,16 @@ void reply::setNumeric(std::string numeric)
 
 void reply::setParams(std::string params)
 {
-	this->_params = params;
+	if (!this->_params.empty())
+		this->_params += ' ';
+	this->_params += params;
 }
 
 void reply::setTrailing(std::string trailing)
 {
 	this->_trailing = trailing;
 }
+
 void reply::setCrln(std::string crln)
 {
 	this->_crln = crln;

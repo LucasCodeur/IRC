@@ -1,20 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ReplyBuilder.hpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/27 10:02:35 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef REPLY_BUILDER_HPP
 # define REPLY_BUILDER_HPP
 
-#include <iostream>
 #include "Client.hpp"
+#include "Channel.hpp"
 
 # define SERVERNAME "irc_server"
 # define SERVER_VERSION ", running version 1.0"
@@ -24,19 +12,19 @@
 class reply 
 {
 	public:
-		std::string getPrefixe();
+		std::string getPrefix();
 		std::string getNumeric();
 		std::string getParams();
 		std::string getTrailing();
 		std::string getCrln();
 
-		void setPrefixe(std::string prefixe);
+		void setPrefix(std::string prefix);
 		void setNumeric(std::string numeric);
 		void setParams(std::string params);
 		void setTrailing(std::string trailing);
 		void setCrln(std::string crln);
 	private:
-		std::string _prefixe;
+		std::string _prefix;
 		std::string _numeric;
 		std::string _params;
 		std::string _trailing;
@@ -47,7 +35,7 @@ class IReplyBuilder
 {
 	public: 
 		virtual	IReplyBuilder&	reset() = 0;
-		virtual IReplyBuilder&	addPrefixe() = 0;
+		virtual IReplyBuilder&	addPrefix(std::string const &prefix) = 0;
 		virtual IReplyBuilder&	addNumeric(std::string numeric) = 0;
 		virtual IReplyBuilder&	addTrailing(std::string trailing) = 0;
 		virtual IReplyBuilder&	addParams(std::string params) = 0;
@@ -61,7 +49,7 @@ class ReplyBuilder : IReplyBuilder
 		ReplyBuilder();
 		ReplyBuilder(std::string params);
 		ReplyBuilder&	reset();
-		ReplyBuilder&	addPrefixe();
+		ReplyBuilder&	addPrefix(std::string const &string);
 		ReplyBuilder&	addNumeric(std::string numeric);
 		ReplyBuilder&	addTrailing(std::string trailing);
 		ReplyBuilder&	addParams(std::string params);
@@ -80,6 +68,7 @@ class Director
 		std::string		rplYourhost(Client client);
 		std::string		rplCreated(Client client);
 		std::string		rplMyInfo(Client client);
+		std::string		rplJoin(Client const &client, Channel const &channel);
 };
 
 #endif
