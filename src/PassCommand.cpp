@@ -31,8 +31,8 @@ void	PassCommand::execute() const
 		throw passwordNotCorrect();
 	}
 
-	std::string message = "Password is correct\n";
+	// std::string message = "Password is correct\n";
 	// std::cout << "before to send" << std::endl;
-	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-		throw sendFailed();
+	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
+	// 	throw sendFailed();
 }

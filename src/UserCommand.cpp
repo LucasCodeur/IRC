@@ -27,15 +27,15 @@ void	UserCommand::execute() const
 	// PRINT(this->_params[1][0], GREEN, "\n");
 	// PRINT("this->params[2][0]: ", GREEN, "");
 	// PRINT(this->_params[2][0], GREEN, "\n");
-	PRINT("this->params[3][0]: ", RED, "");
-	PRINT(this->_params[3][0], WHITE, "\n");
+	// PRINT("this->params[3][0]: ", RED, "");
+	// PRINT(this->_params[3][0], WHITE, "\n");
 	// PRINT("this->params[4][0]: ", GREEN, "");
 	// PRINT(this->_params[4][0], GREEN, "\n");
-	PRINT("RealName: ", RED, "");
-	PRINT(it->second->getRealname(), WHITE, "\n");
+	// PRINT("RealName: ", RED, "");
+	// PRINT(it->second->getRealname(), WHITE, "\n");
 
 	Director director;
-	std::string message = "User information complete successfully\n";
+	// std::string message = "User information complete successfully\n";
 	std::string client = it->second->getNickname();
 
 	try 
@@ -46,6 +46,15 @@ void	UserCommand::execute() const
 			throw sendFailed();
 
 		reply = director.rplYourhost(*(it->second));
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+
+
+		reply = director.rplCreated(*(it->second));
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+
+		reply = director.rplMyInfo(*(it->second));
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
 	}

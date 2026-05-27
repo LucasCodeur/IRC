@@ -5,7 +5,8 @@
 #include "Channel.hpp"
 
 # define SERVERNAME "irc_server"
-# define SERVER_VERSION ", running version 1.0"
+# define SERVER_VERSION "running version 1.0"
+# define CHANNEL_MODES  "+i, +t, +k, +o, +l"
 # define PREFIX_MARKER ":"
 # define SPACE " "
 

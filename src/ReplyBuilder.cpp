@@ -143,6 +143,7 @@ std::string	Director::rplYourhost(Client client)
 
 	std::string trailing = "Your host is ";
 	trailing += SERVERNAME;
+	trailing += ", ";
 	trailing += SERVER_VERSION;
 
 	std::string reply = builder
@@ -190,18 +191,22 @@ std::string	Director::rplCreated(Client client)
 std::string	Director::rplMyInfo(Client client)
 {
 	ReplyBuilder	builder;
-	std::string		trailing = "This server was created ";
-	std::string		params = client.getNickname();;
+	std::string		params = client.getNickname();
 
+	params += " ";
 	params += SERVERNAME;
+	params += " ";
 	params += SERVER_VERSION;
+	params += " ";
+	params += "none user modes";
+	params += " ";
+	params += CHANNEL_MODES;
 
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_MYINFO)
 				.addParams(params)
-				.addTrailing(trailing)
 				.addCrln()
 				.buildReply();
 

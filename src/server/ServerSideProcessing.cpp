@@ -46,9 +46,9 @@ void    Server::receiveData(int clientFd)
         Command* command;
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
-        PRINT("received: ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
-        PRINT(buffer, GREEN, "\n");
+        // PRINT("received: ", GREEN, "");
+        // PRINT(clientFd, GREEN, "\n");
+        // PRINT(buffer, GREEN, "\n");
         try
         {
             stringBuf += buffer;
@@ -77,8 +77,8 @@ void    Server::receiveData(int clientFd)
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
             }
         }
-        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        print_info_client(*(it->second));
+        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        // print_info_client(*(it->second));
     }
 }
 

@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# define PORT 8080
 # define MAX_EVENTS 30
 # define MAX_WAITING_LIST 3
 # define TIMEOUT -1 
@@ -46,7 +45,7 @@ class Server
 	
 	// METHODS
     	std::pair<std::map<std::string, Channel *>::iterator, bool> addChannel(std::string s, std::string password);
-		void					removeChannel(const std::string &name);
+		void					        removeChannel(const std::string &name);
     	Channel 				*getChannelByName(std::string const &name) const;
 		void                    handleJoin(Command const &cmd);
 		void                    handleCommand(Command const &cmd);

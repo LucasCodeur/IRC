@@ -21,7 +21,7 @@ void	NickCommand::execute() const
 	std::string nickname = this->_params[0][0];
 	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
 	it->second->setNickname(nickname);
-	std::string message = "Nick information complete successfully\n";
-	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-		throw sendFailed();
+	// std::string message = "Nick information complete successfully\n";
+	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
+	// 	throw sendFailed();
 }
