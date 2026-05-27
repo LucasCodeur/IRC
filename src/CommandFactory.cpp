@@ -5,6 +5,7 @@
 #include "NickCommand.hpp"
 #include "UserCommand.hpp"
 #include "PartCommand.hpp"
+#include "ModeCommand.hpp"
 #include "PrivmsgCommand.hpp"
 #include "Command.hpp"
 #include <sstream>
@@ -47,6 +48,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
+	// creators[6] = &CommandFactory::createModeCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
@@ -132,10 +134,10 @@ Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, 
 // 	return (new KickCommand(clientFd, type, params));
 // }
 
-// Command *createModeCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
-// {
-// 	return (new ModeCommand(clientFd, type, params));
-// }
+Command *CommandFactory::createModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+{
+	return (new ModeCommand(server, clientFd, type, params));
+}
 
 // Command *createWhoCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
 // {

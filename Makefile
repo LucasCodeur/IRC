@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/27 10:39:55 by lud-adam         ###   ########.fr        #
+#    Updated: 2026/05/27 17:16:49 by enchevri         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,7 @@ SRC =			main.cpp	\
 				PartCommand.cpp \
 				TopicCommand.cpp \
 				PrivmsgCommand.cpp \
+				ModeCommand.cpp \
 				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\

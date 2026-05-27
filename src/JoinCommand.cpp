@@ -1,6 +1,8 @@
 #include <utility>
 #include <iostream>
 #include <sstream>
+#include "Client.hpp"
+#include "ReplyBuilder.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
 #include "JoinCommand.hpp"
@@ -42,6 +44,7 @@ JoinCommand::~JoinCommand() {}
 // TODO: replace raw channel.addUser with dedicated USER command (could check if user is already in there etc.)
 void JoinCommand::execute() const
 {
+	Director director;
 	std::vector<std::string> keys = this->_params.back();
 	std::vector<std::string> channels = this->_params.front();
 
@@ -49,6 +52,8 @@ void JoinCommand::execute() const
 
 	std::vector<std::string>::const_iterator key_it = keys.begin();
 	std::vector<std::string>::iterator chan_it;
+
+	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(this->getClientFd());
 
 	std::string providedPassword = "";
 
@@ -71,11 +76,8 @@ void JoinCommand::execute() const
 			}
 			distChan_it->second->addUser(this->getClientFd());
 			distChan_it->second->setOperator(this->getClientFd());
-			{
-				std::stringstream joinMsg;
-				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
-				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
-			}
+			std::string reply = director.rplJoin(*(it->second), *chan_it);
+			distChan_it->second->sendMessageToAll(reply.c_str());
 			if (key_it != keys.end())
 				key_it++;
 			continue ;
@@ -91,9 +93,8 @@ void JoinCommand::execute() const
 				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
 			distChan_it->second->addUser(this->getClientFd());
 			{
-				std::stringstream joinMsg;
-				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
-				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+				std::string reply = director.rplJoin(*(it->second), *chan_it);
+				distChan_it->second->sendMessageToAll(reply.c_str()); //TODO: change after the builder is done
 			}
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
