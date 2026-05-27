@@ -1,6 +1,7 @@
 #include <utility>
 #include <iostream>
 #include <sstream>
+#include "Channel.hpp"
 #include "Client.hpp"
 #include "ReplyBuilder.hpp"
 #include "Command.hpp"
@@ -29,6 +30,39 @@ JoinCommand::JoinCommand(Server *server, const int clientFd, const enum Command:
 
 JoinCommand::~JoinCommand() {}
 
+void JoinCommand::sendReply(Client const &client, Channel const &channel) const
+{
+	Director director;
+
+	channel.sendMessageToAll(director.rplJoin(client, channel).c_str());
+
+	if (channel.getTopic().empty()) //send topic or no topic reply
+		this->_server->sendData(client.getFd(), director.rplNoTopic(client, channel));
+	else
+		this->_server->sendData(client.getFd(), director.rplTopic(client, channel));
+
+	std::string namesList;
+	std::vector<int> const &users = channel.getUsers();
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (i > 0) namesList += " ";
+		if (channel.isOp(users[i]))
+			namesList += "@";
+		namesList += this->_server->getClientNickname(users[i]); 
+	}
+
+	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, namesList)); //send names list
+	this->_server->sendData(client.getFd(), director.rplEndOfNames(client, channel));//send end of names list
+}
+
+void JoinCommand::sendErrorReply(Client const &client, Channel const &channel, std::string const &numeric) const
+{
+	Director director;
+
+	std::string reply = director.rplError(numeric, client, channel);
+	this->_server->sendData(client.getFd(), reply);
+}
+
 /**
 * @brief executes itself.
 * @param server the server in which the JoinCommand should be executed.
@@ -44,7 +78,6 @@ JoinCommand::~JoinCommand() {}
 // TODO: replace raw channel.addUser with dedicated USER command (could check if user is already in there etc.)
 void JoinCommand::execute() const
 {
-	Director director;
 	std::vector<std::string> keys = this->_params.back();
 	std::vector<std::string> channels = this->_params.front();
 
@@ -76,8 +109,9 @@ void JoinCommand::execute() const
 			}
 			distChan_it->second->addUser(this->getClientFd());
 			distChan_it->second->setOperator(this->getClientFd());
-			std::string reply = director.rplJoin(*(it->second), *chan_it);
-			distChan_it->second->sendMessageToAll(reply.c_str());
+
+			this->sendReply(*(it->second), *(distChan_it->second));
+			
 			if (key_it != keys.end())
 				key_it++;
 			continue ;
@@ -91,23 +125,20 @@ void JoinCommand::execute() const
 		{
 			distChan_it->second->addUser(this->getClientFd());
 			{
-				std::string reply = director.rplJoin(*(it->second), *chan_it);
-				distChan_it->second->sendMessageToAll(reply.c_str());
+				this->sendReply(*(it->second), *(distChan_it->second));
 			}
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
 			distChan_it->second->addUser(this->getClientFd());
 			{
-				std::stringstream joinMsg;
-				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
-				distChan_it->second->sendMessageToAll(joinMsg.str());
+				this->sendReply(*(it->second), *(distChan_it->second));
 			}
 		}
 		else // if password incorrect
 		{
-			std::string reply = director.rplError(ERR_BADCHANNELKEY, *(it->second), *chan_it);
-			this->_server->sendData(this->getClientFd(), reply);
+			this->sendErrorReply(*(it->second), *(distChan_it->second), ERR_BADCHANNELKEY);
+			continue ;
 		}
 	}
 }

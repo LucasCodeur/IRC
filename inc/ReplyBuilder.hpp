@@ -78,6 +78,10 @@ class Director
 		std::string		rplWelcome(Client client);
 		std::string		rplYourhost(Client client);
 		std::string		rplJoin(Client const &client, Channel const &channel);
+		std::string		rplTopic(Client const &client, Channel const &channel);
+		std::string		rplNoTopic(Client const &client, Channel const &channel);
+		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList);
+		std::string		rplEndOfNames(Client const &client, Channel const &channel);
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
 
 };

@@ -219,7 +219,7 @@ bool Channel::removeOperator(int clientFd)
 	return (false);
 }
 
-bool Channel::isOp(int clientFd)
+bool Channel::isOp(int clientFd) const
 {
 	return (std::find(this->_operators.begin(), this->_operators.end(), clientFd) != this->_operators.end());
 }

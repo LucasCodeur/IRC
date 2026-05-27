@@ -54,7 +54,7 @@ class Channel
 	bool removeUser(int clientFd);
 	bool setOperator(int clientFd);
 	bool removeOperator(int clientFd);
-	bool isOp(int clientFd);
+	bool isOp(int clientFd) const;
 	bool isOnChan(int clientFd);
 	void sendMessageToAll(const std::string &message) const;
 	void sendMessageToAllOther(const std::string &message, int senderFd) const;

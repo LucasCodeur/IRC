@@ -11,7 +11,8 @@ public:
 	~JoinCommand();
 
 	void	execute() const;
-
+	void	sendReply(Client const &client, Channel const &channel)const;
+	void	sendErrorReply(Client const &client, Channel const &channel, std::string const &numeric) const;
 private:
 	static const unsigned int min_params = 1;
 	static const unsigned int max_params = 2;
