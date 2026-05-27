@@ -1,8 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerSideProcessing.cpp                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/27 10:44:22 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
 #include "CommandFactory.hpp"
 
+#include <stdexcept>
 #include <stdio.h>
 #include <errno.h>
 #include <bits/stdc++.h>
@@ -16,10 +29,13 @@ static std::string    extractCommand(std::string& buffer);
  */
 void    Server::receiveData(int clientFd)
 {
-    Client* temp = new Client; 
-
-    temp->setFd(clientFd);
-    this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
+    std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+    if (it == this->_clients.end())
+    {
+        Client* temp = new Client; 
+        temp->setFd(clientFd);
+        this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
+    }
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
     std::string stringBuf;
@@ -33,11 +49,11 @@ void    Server::receiveData(int clientFd)
         PRINT("received: ", GREEN, "");
         PRINT(clientFd, GREEN, "\n");
         PRINT(buffer, GREEN, "\n");
-        stringBuf += buffer;
-        strCommand = extractCommand(stringBuf);
-        memset(buffer, 0, BUFFER_SIZE);
         try
         {
+            stringBuf += buffer;
+            strCommand = extractCommand(stringBuf);
+            memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
         }
@@ -45,11 +61,6 @@ void    Server::receiveData(int clientFd)
         {
             std::cout << "Caught: " << e.what() << std::endl;
             continue ;
-        }
-        catch(Command::EmptyCommandException& e)
-        {
-            std::cout << "Caught: " << e.what() << std::endl;
-            return ;
         }
         catch(std::exception& e)
         {
@@ -66,9 +77,36 @@ void    Server::receiveData(int clientFd)
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
             }
         }
+        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        print_info_client(*(it->second));
     }
 }
 
+// /**
+//  * @brief function to extract a valid command from the buffer.
+//  * @param buffer, string to extract the command.
+//  * @return a valid command.
+//  */
+// static std::string    extractCommand(std::string& buffer)
+// {
+//     std::string     res;
+//     size_t          pos = buffer.find("\n");
+//
+//     // PRINT("STR BUFFER: ", YELLOW, "");
+//     // PRINT(buffer, WHITE, "\n");
+//     // PRINT("Pos: ", BLUE, "\n");
+//     // PRINT(pos, RED, "\n");
+//     if (pos != 0)
+//     {
+//         res = buffer.substr(0, pos - 1);
+//         buffer.erase(0, pos + 1);
+//     }
+//     // PRINT("STR COMMAND: ", YELLOW, "");
+//     // PRINT(res, RED, "\n");
+//     return (res);
+// }
+
+#include <stdlib.h>  // <cstdlib> en C++
 /**
  * @brief function to extract a valid command from the buffer.
  * @param buffer, string to extract the command.
@@ -85,9 +123,23 @@ static std::string    extractCommand(std::string& buffer)
     // PRINT(pos, RED, "\n");
     if (pos != 0)
     {
-        res = buffer.substr(0, pos);
+        // PRINT("inside if pos", RED, "\n");
+        res = buffer.substr(0, pos + 1);
         buffer.erase(0, pos + 1);
     }
+    int size = res.size();
+    // std::cout << "res: "  << res << "size: " << size << std::endl;
+    // if (res[size - 1] == '\n')
+    // {
+    //     std::cout << "new_line present" << std::endl;
+    // }
+    // if (res[size - 2] == '\r')
+    // {
+    //     std::cout << "carriage present" << std::endl;
+    // }
+    if (size <= 2 && res[size - 1] != '\n' && res[size - 2] != '\r')
+        throw std::runtime_error("Not carriage or newline at the end of the command");
+    res = res.substr(0, size - 2);
     // PRINT("STR COMMAND: ", YELLOW, "");
     // PRINT(res, RED, "\n");
     return (res);

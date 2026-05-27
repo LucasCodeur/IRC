@@ -37,8 +37,11 @@ class Client
 
 	// GETTERS
 	std::string const &getUsername() const;
+	std::string const &getHostname() const;
 	std::string const &getNickname() const;
 	std::string const &getPassword() const;
+	std::string const &getRealname() const;
+	std::string const &getServername() const;
 	std::string const &getBuf() const;
 	int getFd() const;
 	authState getAuthState() const;

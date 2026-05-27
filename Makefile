@@ -6,7 +6,7 @@
 #    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/20 16:34:08 by enchevri         ###   ########lyon.fr    #
+#    Updated: 2026/05/27 10:39:55 by lud-adam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,15 +42,18 @@ SRC =			main.cpp	\
 				UserCommand.cpp \
 				PartCommand.cpp \
 				TopicCommand.cpp \
-				PrivmsgCommand.cpp
-
+				PrivmsgCommand.cpp \
+				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\
 				CheckServer.cpp \
 				ServerSideProcessing.cpp \
 
+SRC_REPLY_BUILDER = ReplyBuilder.cpp \
+
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
+	$(addprefix $(P_SRC), $(SRC_REPLY_BUILDER)) \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
 INCS = $(addprefix $(P_INC), $(INC)) \

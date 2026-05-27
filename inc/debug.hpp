@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Client.hpp"
+
 #ifndef DEBUG
 #define DEBUG 0
 #endif
@@ -19,7 +21,8 @@
 #define DBUG		YELLOW "DEBUG " RESET
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x << newline << RESET;
+    std::cout << color << x << RESET << newline;
 
 void print_vec(const std::vector<std::vector<std::string> > params);
+void print_info_client(const Client& toPrint);
 #endif
