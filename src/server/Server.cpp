@@ -239,16 +239,6 @@ Server::Server()
 		std::cout << DBUG GREEN "Server created: " RESET << *this << std::endl;
 }
 
-Server::Server(int port, const std::string &password)
-	: _port(port),
-	  _fd(-1),
-	  _serverName("ircserv"),
-	  _password(password),
-          _opt(1)
-{
-	if (DEBUG == 1)
-		std::cout << DBUG GREEN "Server created: " RESET << *this << std::endl;
-} 
 
 Server::~Server()
 {
@@ -258,33 +248,6 @@ Server::~Server()
 		std::cout << DBUG RED "Server destroyed: " RESET << *this << std::endl;
 }
 
-Server::Server(Server const &original)
-	: _port(original._port),
-	  _fd(original._fd),
-	  _serverName(original._serverName),
-	  _password(original._password),
-	  _clients(original._clients),
-          _opt(original._opt)
-{
-	if (DEBUG == 1)
-		std::cout << DBUG BLUE "Server copied: " RESET << *this << std::endl;
-}
-
-Server &Server::operator=(Server const &other)
-{
-	if (this != &other)
-	{
-		this->_opt = other._opt;
-		this->_port = other._port;
-		this->_fd = other._fd;
-		this->_serverName = other._serverName;
-		this->_password = other._password;
-		this->_clients = other._clients;
-		if (DEBUG == 1)
-			std::cout << DBUG BLUE "Server assigned: " RESET << *this << std::endl;
-	}
-	return (*this);
-}
 
 int Server::getPort() const
 {
