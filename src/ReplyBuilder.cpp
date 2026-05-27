@@ -1,4 +1,5 @@
 #include "ReplyBuilder.hpp"
+#include "debug.hpp"
 
 /**
  * @brief allows to setting the params.
@@ -46,7 +47,7 @@ ReplyBuilder&	ReplyBuilder::addTrailing(std::string trailing)
 
 	temp = PREFIX_MARKER;
 	temp += trailing;
-	this->_reply.setNumeric(temp);
+	this->_reply.setTrailing(temp);
 
 	return (*this);
 }
@@ -86,6 +87,8 @@ std::string	ReplyBuilder::buildReply()
 
 	reply += this->_reply.getPrefixe();
 	reply += SPACE;
+	PRINT("Build reply", RED, "\n");
+	PRINT(this->_reply.getNumeric(), BLUE, "\n");
 	reply += this->_reply.getNumeric();
 	reply += SPACE;
 	reply += this->_reply.getParams();
@@ -125,10 +128,12 @@ std::string	Director::rplWelcome(Client client)
 				.buildReply();
 	//WARN: Maybe change the content of the runtime or even the runtime
 	if (reply.size() > 512) 
-        throw std::runtime_error("Reply longer than 512 characters");
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
+// :serverName 584 #channel : incorrect password 'password'
 /**
 * @brief creates the numeric reply to indicate the servername and the version, when a client successfully connects to a irc server.
 * @param client, the name of the person successfully connect.
@@ -151,8 +156,9 @@ std::string	Director::rplYourhost(Client client)
 				.addCrln()
 				.buildReply();
 	if (reply.size() > 512) 
-        throw std::runtime_error("Reply longer than 512 characters");
+		throw std::runtime_error("Reply longer than 512 characters");
 
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -199,6 +205,8 @@ void reply::setPrefixe(std::string prefixe)
 
 void reply::setNumeric(std::string numeric)
 {
+	PRINT("Set numeric: ", BLUE, "\n");
+	PRINT(numeric, WHITE, "\n");
 	this->_numeric = numeric;
 }
 

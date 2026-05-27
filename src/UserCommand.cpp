@@ -40,6 +40,7 @@ void	UserCommand::execute() const
 
 	try 
 	{
+		PRINT("Inside try to reply in USER", BLUE, "\n");
 		std::string reply = director.rplWelcome(*(it->second));
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
