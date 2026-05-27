@@ -17,6 +17,7 @@
 #include "Client.hpp"
 
 # define SERVERNAME "irc_server"
+# define SERVER_VERSION ", running version 1.0"
 # define PREFIX_MARKER ":"
 # define SPACE " "
 
@@ -78,6 +79,7 @@ class Director
 		std::string		rplWelcome(Client client);
 		std::string		rplYourhost(Client client);
 		std::string		rplCreated(Client client);
+		std::string		rplMyInfo(Client client);
 };
 
 #endif
