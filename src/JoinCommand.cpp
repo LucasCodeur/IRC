@@ -107,6 +107,7 @@ void JoinCommand::execute() const
 		else // if password incorrect
 		{
 			std::string reply = director.rplError(ERR_BADCHANNELKEY, *(it->second), *chan_it);
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
 }

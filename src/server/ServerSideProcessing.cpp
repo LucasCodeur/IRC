@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ServerSideProcessing.cpp                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/27 10:44:22 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
@@ -46,9 +34,9 @@ void    Server::receiveData(int clientFd)
         Command* command;
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
-        PRINT("received: ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
-        PRINT(buffer, GREEN, "\n");
+        // PRINT("received: ", GREEN, "");
+        // PRINT(clientFd, GREEN, "\n");
+        // PRINT(buffer, GREEN, "\n");
         try
         {
             stringBuf += buffer;
@@ -77,8 +65,8 @@ void    Server::receiveData(int clientFd)
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
             }
         }
-        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        print_info_client(*(it->second));
+        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        // print_info_client(*(it->second));
     }
 }
 

@@ -126,7 +126,7 @@ std::string	Director::rplWelcome(Client client)
 				.addCrln()
 				.buildReply();
 	//WARN: Maybe change the content of the runtime or even the runtime
-	
+
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
@@ -206,12 +206,10 @@ std::string Director::rplError(std::string const &numeric, Client const &client,
 
 ReplyBuilder::ReplyBuilder()
 {
-	std::cout << "Default constructor Reply_builder called" << std::endl;
 }
 
 ReplyBuilder::ReplyBuilder(std::string params)
 {
-	std::cout << "Params constructor Reply_builder called" << std::endl;
 	this->addParams(params);
 }
 
