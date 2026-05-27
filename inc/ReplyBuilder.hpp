@@ -77,6 +77,7 @@ class Director
 		void			setBuilderType(ReplyBuilder* builder);
 		std::string		rplWelcome(Client client);
 		std::string		rplYourhost(Client client);
+		std::string		rplCreated(Client client);
 };
 
 #endif
