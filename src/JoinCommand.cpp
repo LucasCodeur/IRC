@@ -56,6 +56,7 @@ void JoinCommand::execute() const
 	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(this->getClientFd());
 
 	std::string providedPassword = "";
+	std::string reply;
 
 	for (chan_it = channels.begin(); chan_it != channels.end(); ++chan_it)
 	{
@@ -110,9 +111,8 @@ void JoinCommand::execute() const
 		}
 		else // if password incorrect
 		{
-			std::stringstream ss;
-			ss << this->_server->getClientNickname(this->getClientFd()) << " " << *chan_it;
-			this->returnErrorReply(ERR_BADCHANNELKEY, ss.str(), *this->_server);//TODO: change after the builder is done
+			reply = this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
 }

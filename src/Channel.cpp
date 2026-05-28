@@ -126,6 +126,7 @@ int Channel::getMode(int i) const
 
 int	Channel::isInviteOnly() const
 {
+	std::cout << "Invite only mode: " << this->_mode[i] << std::endl;
 	return (this->_mode[i]);
 }
 

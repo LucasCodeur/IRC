@@ -1,5 +1,6 @@
 #include "ReplyBuilder.hpp"
 #include "Channel.hpp"
+#include "NumericReplies.h"
 #include "debug.hpp"
 
 /**
@@ -113,7 +114,7 @@ void Director::setBuilderType(ReplyBuilder* builder)
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplWelcome(Client client)
+std::string	Director::rplWelcome(Client client) const
 {
 	ReplyBuilder	builder;
 	
@@ -132,13 +133,211 @@ std::string	Director::rplWelcome(Client client)
 	return (reply);
 }
 
-// :serverName 584 #channel : incorrect password 'password'
+/**
+* @brief creates the numeric reply of welcome when a client successfully connects to a irc server.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
+std::string	Director::rplChannelModeIs(Client client, std::string channelName, std::string modes) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(RPL_CHANNELMODEIS)
+				.addParams(channelName)
+				.addParams(modes)
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string Director::errNeedMoreParams(Client client, std::string command) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_NEEDMOREPARAMS)
+				.addParams(command)
+				.addTrailing("Not enough parameters")
+				.addCrln()
+				.buildReply();
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+/**
+* @brief creates the numeric reply of welcome when a client successfully connects to a irc server.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
+std::string	Director::errNoSuchChannel(Client client, std::string channelName) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_NOSUCHCHANNEL)
+				.addParams(channelName)
+				.addTrailing("No such channel")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::errUnknownMode(Client client, std::string modeChar) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_UNKNOWNMODE)
+				.addParams(modeChar)
+				.addTrailing(": is unknown mode char to me")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::rplTopic(Client client, std::string channelName, std::string topic) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(RPL_NOTOPIC)
+				.addParams(channelName)
+				.addTrailing(":")
+				.addParams(topic)
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::rplNoTopic(Client client, std::string channelName) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(RPL_NOTOPIC)
+				.addParams(channelName)
+				.addTrailing(": No topic is set")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::errNotOnChannel(Client client, std::string channelName) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_NOTONCHANNEL)
+				.addParams(channelName)
+				.addTrailing(": You're not on that channel")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::errChanOPrivsNeeded(Client client, std::string channelName) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_NOTONCHANNEL)
+				.addParams(channelName)
+				.addTrailing(": You're not channel operator")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+
+std::string		Director::errBadChannelKey(Client client, std::string channelName) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_BADCHANNELKEY)
+				.addParams(channelName)
+				.addTrailing(": Cannot join channel (+k)")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::errUnknownCommand(Client client, std::string cmdKeyword) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addNumeric(ERR_UNKNOWNCOMMAND)
+				.addParams(cmdKeyword)
+				.addTrailing(": Unknown command")
+				.addCrln()
+				.buildReply();
+	//WARN: Maybe change the content of the runtime or even the runtime
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
 /**
 * @brief creates the numeric reply to indicate the servername and the version, when a client successfully connects to a irc server.
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplYourhost(Client client)
+std::string	Director::rplYourhost(Client client) const
 {
 	ReplyBuilder	builder;
 
@@ -149,7 +348,7 @@ std::string	Director::rplYourhost(Client client)
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
-				.addNumeric("002")
+				.addNumeric(RPL_YOURHOST)
 				.addParams(client.getNickname())
 				.addTrailing(trailing)
 				.addCrln()
