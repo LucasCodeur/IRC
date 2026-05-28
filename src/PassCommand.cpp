@@ -33,6 +33,8 @@ void	PassCommand::execute() const
 		if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
 			throw sendFailed();
 	}
-	// else
-	// 	throw std::runtime_error("The Client still has a password registered.\n");
+	else
+	{
+		throw std::runtime_error("The Client still has a password registered.\n");
+	}
 }
