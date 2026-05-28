@@ -462,27 +462,6 @@ std::string Director::rplEndOfNames(Client const &client, Channel const &channel
 	return (reply);
 }
 
-std::string Director::rplError(std::string const &numeric, Client const &client, Channel const &channel)
-{
-	ReplyBuilder builder;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(numeric)
-				.addParams(client.getNickname())
-				.addParams(channel.getName())
-				.addTrailing("Incorrect password")
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512) 
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
-
 ReplyBuilder::ReplyBuilder()
 {
 }

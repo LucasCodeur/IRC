@@ -318,14 +318,6 @@ std::ostream &operator<<(std::ostream &o, const Server &obj)
 			  << " port: " << obj.getPort());
 }
 
-std::string const Server::getClientNickname(int clientFd) const
-{
-	std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-	if (it != this->_clients.end())
-		return (it->second->getNickname());
-	return ("");
-}
-
 Client *Server::getClientByFd(const int fd) const
 {
         std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
