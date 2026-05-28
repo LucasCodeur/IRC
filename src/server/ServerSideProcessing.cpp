@@ -49,36 +49,40 @@ void    Server::receiveData(int clientFd)
         // PRINT("received: ", GREEN, "");
         // PRINT(clientFd, GREEN, "\n");
         // PRINT(buffer, GREEN, "\n");
-        try
+        if (bytes_read != 0)
         {
-            stringBuf += buffer;
-            strCommand = extractCommand(stringBuf);
-            memset(buffer, 0, BUFFER_SIZE);
-            command = CommandFactory::createCommand(this, clientFd, strCommand);
-            command->execute();
-        }
-        catch(Command::UnknownCommandException& e)
-        {
-            std::cout << "Caught: " << e.what() << std::endl;
-            continue ;
-        }
-        catch(std::exception& e)
-        {
-            std::cout << "Caught: " << e.what() << std::endl;
-            return ; //FIXME: Maybe take off the client instead.
-        }
-        if (bytes_read <= 0)
-        {
-            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+            try
             {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
-                close(clientFd);
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+                stringBuf += buffer;
+                strCommand = extractCommand(stringBuf);
+                memset(buffer, 0, BUFFER_SIZE);
+                command = CommandFactory::createCommand(this, clientFd, strCommand);
+                command->execute();
             }
+            catch(Command::UnknownCommandException& e)
+            {
+                std::cout << "Caught: " << e.what() << std::endl;
+                continue ;
+            }
+            catch(std::exception& e)
+            {
+                std::cout << "Caught: " << e.what() << std::endl;
+                return ; //FIXME: Maybe take off the client instead.
+            }
+            if (bytes_read <= 0)
+            {
+                if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+                {
+                    PRINT("client disconnected: ", RED, "");
+                    PRINT(clientFd, RED, "\n");
+                    close(clientFd);
+                    this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+                }
+            }
+            // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+            // print_info_client(*(it->second));
+
         }
-        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        // print_info_client(*(it->second));
     }
 }
 
@@ -114,6 +118,8 @@ void    Server::receiveData(int clientFd)
  */
 static std::string    extractCommand(std::string& buffer)
 {
+    // PRINT("EXTRACT COMMAND:", RED, "\n");
+    // PRINT(buffer, WHITE, "\n");
     std::string     res;
     size_t          pos = buffer.find("\n");
 

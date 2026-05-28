@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "PassCommand.hpp"
+#include "Client.hpp"
 #include "Exceptions.hpp"
 
 PassCommand::PassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
@@ -18,21 +19,20 @@ PassCommand::~PassCommand() {};
 
 void	PassCommand::execute() const
 {
-	// std::cout << "Inside execute pass command\n" << std::endl;
-	std::string password = this->_params[0][0];
-	// std::cout << "Password: " << password << std::endl;
-	// std::cout << "size: " << password.size() << std::endl; 
-	// std::cout << "server pass_word: " << server.getPassword() << std::endl;
-	// std::cout << "size: " << server.getPassword().size() << std::endl;
+	std::map<int, Client*>::const_iterator	it = _server->getClientmap().find(this->getClientFd());
+	std::string								message = "Password correct\n";
+	std::string								password = this->_params[0][0];
 
-	if (password != _server->getPassword())
+	if (it->second->authState.getFullyRegistered() == false)
 	{
-		// std::cout << "problem password not correct" << std::endl;
-		throw passwordNotCorrect();
-	}
+		it->second->authState.setPasswordReceived(true);
 
-	// std::string message = "Password is correct\n";
-	// std::cout << "before to send" << std::endl;
-	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-	// 	throw sendFailed();
+		if (password != _server->getPassword())
+			throw passwordNotCorrect();
+
+		if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
+			throw sendFailed();
+	}
+	// else
+	// 	throw std::runtime_error("The Client still has a password registered.\n");
 }
