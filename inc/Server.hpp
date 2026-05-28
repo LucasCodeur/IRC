@@ -35,11 +35,11 @@ class Server
 		int																getPort() const;
 		int																getFd() const;
 		int																getOpt() const;
-		std::string const												&getServerName() const;
-		std::string const												&getPassword() const;
-		std::map<int, Client* > const									&getClientmap() const;
-		std::map<std::string, Channel*> const							&getChannelMap() const;
-		std::string const												getClientNickname(int clientFd) const;
+        std::string const												&getServerName() const;
+        std::string const												&getPassword() const;
+        std::map<int, Client* > const									&getClientmap() const;
+        std::map<std::string, Channel*> const							&getChannelMap() const;
+        Client															*getClientByFd(const int fd) const;
 	
 	// METHODS
 		std::pair<std::map<std::string, Channel *>::iterator, bool>		addChannel(std::string s, std::string password);

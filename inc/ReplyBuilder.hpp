@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/27 17:39:47 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/28 17:35:37 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,15 +75,24 @@ class Director
 	public:
 		ReplyBuilder*	builder;
 		void			setBuilderType(ReplyBuilder* builder);
-		std::string		rplWelcome(Client client);
-		std::string		rplYourhost(Client client);
+
 		std::string		rplJoin(Client const &client, Channel const &channel);
 		std::string		rplTopic(Client const &client, Channel const &channel);
 		std::string		rplNoTopic(Client const &client, Channel const &channel);
 		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList);
 		std::string		rplEndOfNames(Client const &client, Channel const &channel);
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
-
+		std::string		rplWelcome(Client client) const;
+		std::string		rplChannelModeIs(Client client, std::string channelName, std::string modes) const;
+		std::string		rplYourhost(Client client) const;
+		std::string		errNeedMoreParams(Client client, std::string command) const;
+		std::string		errNoSuchChannel(Client client, std::string channelName) const;
+		std::string		errUnknownMode(Client client, std::string modeChar) const;
+		std::string		rplTopic(Client client, std::string channelName, std::string topic) const;
+		std::string		rplNoTopic(Client client, std::string channelName) const;
+		std::string		errNotOnChannel(Client client, std::string channelName) const;
+		std::string		errChanOPrivsNeeded(Client client, std::string channelName) const;
+		std::string		errBadChannelKey(Client client, std::string channelName) const;
+		std::string		errUnknownCommand(Client client, std::string cmdKeyword) const;
 };
-
 #endif

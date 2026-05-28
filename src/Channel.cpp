@@ -126,6 +126,7 @@ int Channel::getMode(int i) const
 
 int	Channel::isInviteOnly() const
 {
+	std::cout << "Invite only mode: " << this->_mode[i] << std::endl;
 	return (this->_mode[i]);
 }
 
@@ -166,11 +167,6 @@ void Channel::setMode(int mode)
 	this->_mode = mode;
 }
 
-/**
- * @brief Adds a user to the channel if they are not already present. Sends a JOIN message to all other users in the channel.
- * @param clientFd the file descriptor of the user to add.
- * @return true if the user was successfully added, false if the user was already in the channel.
- */
 void Channel::setModeItem(unsigned int item, bool value)
 {
 	if (item >= _mode.size())
@@ -178,6 +174,11 @@ void Channel::setModeItem(unsigned int item, bool value)
 	this->_mode.set(item, value);
 }
 
+/**
+ * @brief Adds a user to the channel if they are not already present. Sends a JOIN message to all other users in the channel.
+ * @param clientFd the file descriptor of the user to add.
+ * @return true if the user was successfully added, false if the user was already in the channel.
+ */
 bool Channel::addUser(int clientFd)
 {
 	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())

@@ -11,7 +11,14 @@
 PartCommand::PartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
 {
 	if (params.size() < PartCommand::min_params)
-		server->sendData(ERR_NEEDMOREPARAMS, ""); //FIXME: send 461 ERR_NEEDMOREPARAMS to client
+	{
+		std::string reply = this->_director.errNeedMoreParams(*_server->getClientByFd(this->getClientFd()), "PART");
+		this->_server->sendData(this->getClientFd(), reply);
+	}
+	else if (params.size() > PartCommand::max_params)
+	{
+		throw IncorrectParametersException("Too much parameters in PART"); // TODO: maybe just ignore extra parameters instead of throwing error
+	}
 	if (type != PART)
 		throw UnknownCommandException();
 }
@@ -46,12 +53,14 @@ void PartCommand::execute() const
 			}
 			else // if user was not on channel
 			{
-				this->returnErrorReply(ERR_NOTONCHANNEL, it->second->getName(), *this->_server); //TODO: change after the builder is done
+				std::string reply = this->_director.errNotOnChannel(*_server->getClientByFd(fd), it->second->getName());
+				this->_server->sendData(this->getClientFd(), reply);
 			}
 		}
 		else // if channel does not exist
 		{
-			this->returnErrorReply(ERR_NOSUCHCHANNEL, params[i], *this->_server); //TODO: change after the builder is done
+			std::string reply = this->_director.errNoSuchChannel(*_server->getClientByFd(fd), it->second->getName());
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
 }

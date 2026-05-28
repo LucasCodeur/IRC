@@ -6,6 +6,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include "ReplyBuilder.hpp"
 
 class Server;
 
@@ -64,7 +65,9 @@ class Command
 
 	// GETTERS
 	int getClientFd() const;
+	Server *getServer() const;
 	commandType getCommandType() const;
+	Director	*getDirector() ;
 	std::vector<std::vector<std::string> > const &getParams() const;
 
 	// SETTERS
@@ -77,15 +80,15 @@ class Command
 
 	// METHODS
 	virtual void	execute() const = 0;
-	void			returnErrorReply(int errNum, std::string param, Server &server) const;
-	
 
 private:
 	Command();
 	int							_clientFd;
 	commandType					_commandType;
+	std::string					_commandKeyword;
 
 protected:
+	Director								_director;
 	std::vector<std::vector<std::string> >	_params;
 	Server									*_server;
 

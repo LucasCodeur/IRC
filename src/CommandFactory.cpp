@@ -1,5 +1,6 @@
 #include "CommandFactory.hpp"
 #include "JoinCommand.hpp"
+#include "ModeCommand.hpp"
 #include "TopicCommand.hpp"
 #include "PassCommand.hpp"
 #include "NickCommand.hpp"
@@ -13,6 +14,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 CommandFactory::CommandFactory() {}
 
@@ -47,8 +49,11 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
+	// creators[3] = &CommandFactory::createKickCommand;
+	// creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
-	// creators[6] = &CommandFactory::createModeCommand;
+	creators[6] = &CommandFactory::createModeCommand;
+	// creators[7] = &CommandFactory::createWhoCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
@@ -64,6 +69,8 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	if (colon_pos != str.npos)
 		mainContent = str.substr(colon_pos + 1);
 	
+	std::cout << "whole command : " << str << std::endl;
+	std::cout << "main content : " << mainContent << std::endl;	
 	std::vector<std::string> mainContentContainer;
 	mainContentContainer.push_back(mainContent);
 
@@ -94,18 +101,17 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	if (!mainContent.empty())
 		parameters.push_back(mainContentContainer);
 
-	for (type = 0; type < commandTypes.size(); ++type)
+	for (type = 0; type < commandTypes.size() - 1; ++type)
 	{
+
 		if (formattedCommand[0] == commandTypes[type])
 		{
 			if (creators[type] == NULL)
-				throw Command::UnknownCommandException();
+				throw Command::UnknownCommandException(std::string(formattedCommand[0]));
 			return (*creators[type])(server, clientFd, (enum Command::commandType)type, parameters);
 		}
-		if (type == commandTypes.size() - 1)
-			throw Command::UnknownCommandException();
 	}
-	throw Command::UnknownCommandException();
+	throw Command::UnknownCommandException(std::string(formattedCommand[0]));
 }
 
 
@@ -119,10 +125,16 @@ Command *CommandFactory::createPrivmsgCommand(Server *server, const int clientFd
 	return (new PrivmsgCommand(server, clientFd, type, params));
 }
 
-// Command *createInviteCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
+// Command *CommandFactory::createInviteCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
 // {
-// 	return (new InviteCommand(clientFd, type, params));
+// 	return (new InviteCommand(server, clientFd, type, params));
 // }
+
+// Command *CommandFactory::createKickCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+// {
+// 	return (new KickCommand(server, clientFd, type, params));
+// }
+//
 
 Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
 {
@@ -139,9 +151,9 @@ Command *CommandFactory::createModeCommand(Server *server, const int clientFd, c
 	return (new ModeCommand(server, clientFd, type, params));
 }
 
-// Command *createWhoCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
+// Command *createWhoCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
 // {
-// 	return (new WhoCommand(clientFd, type, params));
+// 	return (new WhoCommand(server, clientFd, type, params));
 // }
 
 Command *CommandFactory::createPassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)

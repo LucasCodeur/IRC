@@ -1,8 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerSideProcessing.cpp                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/28 17:37:30 by enchevri         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Exceptions.hpp"
 #include "Server.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
 #include "CommandFactory.hpp"
 
+#include <exception>
 #include <stdexcept>
 #include <stdio.h>
 #include <errno.h>
@@ -40,6 +54,7 @@ void    Server::receiveData(int clientFd)
         try
         {
             stringBuf += buffer;
+            std::cout << "stringBuf: " << stringBuf << std::endl;
             strCommand = extractCommand(stringBuf);
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
@@ -47,7 +62,11 @@ void    Server::receiveData(int clientFd)
         }
         catch(Command::UnknownCommandException& e)
         {
+            Client *originClient = this->getClientByFd(clientFd);
             std::cout << "Caught: " << e.what() << std::endl;
+            std::string cmdKeyword = e.what();
+            std::string reply = command->getDirector()->errUnknownCommand(*originClient, cmdKeyword);
+            this->sendData(clientFd, reply);
             continue ;
         }
         catch(std::exception& e)
@@ -69,30 +88,6 @@ void    Server::receiveData(int clientFd)
         // print_info_client(*(it->second));
     }
 }
-
-// /**
-//  * @brief function to extract a valid command from the buffer.
-//  * @param buffer, string to extract the command.
-//  * @return a valid command.
-//  */
-// static std::string    extractCommand(std::string& buffer)
-// {
-//     std::string     res;
-//     size_t          pos = buffer.find("\n");
-//
-//     // PRINT("STR BUFFER: ", YELLOW, "");
-//     // PRINT(buffer, WHITE, "\n");
-//     // PRINT("Pos: ", BLUE, "\n");
-//     // PRINT(pos, RED, "\n");
-//     if (pos != 0)
-//     {
-//         res = buffer.substr(0, pos - 1);
-//         buffer.erase(0, pos + 1);
-//     }
-//     // PRINT("STR COMMAND: ", YELLOW, "");
-//     // PRINT(res, RED, "\n");
-//     return (res);
-// }
 
 #include <stdlib.h>  // <cstdlib> en C++
 /**

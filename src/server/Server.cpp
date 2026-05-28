@@ -325,3 +325,11 @@ std::string const Server::getClientNickname(int clientFd) const
 		return (it->second->getNickname());
 	return ("");
 }
+
+Client *Server::getClientByFd(const int fd) const
+{
+        std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
+        if (it != this->_clients.end())
+                return (it->second);
+        return (NULL);
+}
