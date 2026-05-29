@@ -28,7 +28,7 @@ JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 
 JoinCommand::~JoinCommand() {}
 
-void JoinCommand::sendReply(Client const &client, Channel const &channel) const
+void JoinCommand::confirmJoin(Client const &client, Channel const &channel) const
 {
 	Director director;
 
@@ -101,7 +101,7 @@ void JoinCommand::execute() const
 			distChan_it->second->addUser(this->getClientFd());
 			distChan_it->second->setOperator(this->getClientFd());
 
-			this->sendReply(*(it->second), *(distChan_it->second));
+			this->confirmJoin(*(it->second), *(distChan_it->second));
 			
 			if (key_it != keys.end())
 				key_it++;
@@ -116,14 +116,14 @@ void JoinCommand::execute() const
 		{
 			distChan_it->second->addUser(this->getClientFd());
 			{
-				this->sendReply(*(it->second), *(distChan_it->second));
+				this->confirmJoin(*(it->second), *(distChan_it->second));
 			}
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
 			distChan_it->second->addUser(this->getClientFd());
 			{
-				this->sendReply(*(it->second), *(distChan_it->second));
+				this->confirmJoin(*(it->second), *(distChan_it->second));
 			}
 		}
 		else // if password incorrect
