@@ -19,14 +19,14 @@
 class UserCommand : public Command
 {
 	public:
-		UserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+		UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 		~UserCommand();
 
 		void	execute() const;
 
 	private:
-		static const unsigned int min_params = 4;
-		static const unsigned int max_params = 4;
+		static const unsigned int min_params = 3;
+		static const unsigned int max_params = 3;
 };
 
 #endif

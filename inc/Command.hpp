@@ -15,6 +15,14 @@ class Command
 
 
 	public:
+
+	typedef struct s_mgsSpecs
+	{
+		std::string prefix;
+		std::string command;
+		std::string trailer;
+	}				t_msgSpecs;
+
 	enum commandType
 	{
 		EMPTY = 0,
@@ -64,7 +72,7 @@ class Command
 	};
 
 	// CONSTRUCTOR
-	Command(Server *server, int clientFd, commandType type, std::vector<std::vector<std::string> > const &params);
+	Command(Server *server, int clientFd, t_msgSpecs specs, std::vector<std::vector<std::string> > const &params);
 	virtual ~Command();
 	Command(Command const &original);
 
@@ -93,12 +101,14 @@ private:
 	Command();
 	int							_clientFd;
 	commandType					_commandType;
-	std::string					_commandKeyword;
 
 protected:
 	Director								_director;
 	std::vector<std::vector<std::string> >	_params;
 	Server									*_server;
+	std::string								_prefix;
+	std::string								_command;
+	std::string								_trailer;
 
 };
 std::ostream &operator<<(std::ostream &o, const Command &obj);

@@ -1,19 +1,19 @@
 #include "Command.hpp"
 #include "debug.hpp"
 #include "Server.hpp"
-#include "NumericReplies.h"
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
 
 /* === CONSTRUCTOR === */
 
-Command::Command(Server *server, int clientFd, Command::commandType type, std::vector<std::vector<std::string> > const &params)
+Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::vector<std::vector<std::string> > const &params)
 	:
 	  _clientFd(clientFd),
-	  _commandType(type),
 	  _params(params),
-	  _server(server)
+	  _server(server),
+	  _prefix(specs.prefix),
+	  _command(specs.command),
+	  _trailer(specs.trailer)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;

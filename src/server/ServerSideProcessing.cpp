@@ -49,12 +49,13 @@ void    Server::receiveData(int clientFd)
         Client *originClient = this->getClient(clientFd);
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
-        PRINT("received: ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
+        PRINT("command received from client ", GREEN, "");
+        PRINT(clientFd, GREEN, "");
+        PRINT("\n", GREEN, "");
         try
         {
             stringBuf += buffer;
-            std::cout << "stringBuf: " << stringBuf << std::endl;
+            // std::cout << "stringBuf: " << stringBuf << std::endl;
             strCommand = extractCommand(stringBuf);
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
@@ -90,8 +91,8 @@ void    Server::receiveData(int clientFd)
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
             }
         }
-        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        print_info_client(*(it->second));
+        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        // print_info_client(*(it->second));
     }
 }
 
