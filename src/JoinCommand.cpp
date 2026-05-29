@@ -9,14 +9,12 @@
 #include "JoinCommand.hpp"
 #include "NumericReplies.h"
 
-JoinCommand::JoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < JoinCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > JoinCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != JOIN)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 	
 	std::vector<std::string> channels = params.front();
 	std::vector<std::string> keys;

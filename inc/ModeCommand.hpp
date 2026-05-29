@@ -7,7 +7,7 @@
 class ModeCommand : public Command
 {
 public:
-	ModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+	ModeCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 	~ModeCommand();
 	enum editionType { ADD = 0, REMOVE, UNKNOWNOPERATION};
 	enum editedMode { INVITEONLY = 0, CHANOPRIVFORTOPIC, KEY, OP, USERLIMIT, UNKNOWNMODE};

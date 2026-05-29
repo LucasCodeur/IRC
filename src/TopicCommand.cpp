@@ -14,14 +14,12 @@
 #include "NumericReplies.h"
 #include <sstream>
 
-TopicCommand::TopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, type, params)
+TopicCommand::TopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < min_params)
 		throw IncorrectParametersException("Not enough parameters");
 	if (params.size() > max_params)
 		throw IncorrectParametersException("Too much parameters in TOPIC");
-	if (type != TOPIC)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 	if (params.front().size() > 1)
 		throw IncorrectParametersException("Only 1 channel is supported in TOPIC command");
 	if (params.size() == 2 && params.back().size() > 1)

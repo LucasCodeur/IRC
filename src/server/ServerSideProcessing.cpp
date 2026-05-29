@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/28 17:37:30 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/29 14:08:01 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void    Server::receiveData(int clientFd)
         try
         {
             stringBuf += buffer;
-            std::cout << "stringBuf: " << stringBuf << std::endl;
+            // std::cout << "stringBuf: " << stringBuf << std::endl;
             strCommand = extractCommand(stringBuf);
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
