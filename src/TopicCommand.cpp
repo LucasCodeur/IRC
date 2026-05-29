@@ -44,7 +44,7 @@ void TopicCommand::execute() const
 
 	std::map<std::string, Channel*>::iterator distChanIt = channels.find(this->_targetChannel);
 	if (!distTargetChannel->isOnChan(this->getClientFd()))
-		responseStream << ERR_NOTONCHANNEL << this->_targetChannel << ":You're not on that channel" << LF << CR;
+		responseStream << ERR_NOTONCHANNEL << this->_targetChannel << ":You're not on that channel" << LF << CR; //TODO: 
 	else if (distChanIt == channels.end())
 	{
 		throw IncorrectParametersException("Specified channel does not exist"); // FIXME: should probably just answer error to client instead of throwing

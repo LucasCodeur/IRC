@@ -42,7 +42,7 @@ void PartCommand::execute() const
 			{
 				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
 				std::stringstream ss;
-				ss << ":" << this->_server->getClientNickname(fd) << " PART " << it->first << "\r\n";
+				ss << ":" << this->_server->getClientByFd(fd)->getNickname() << " PART " << it->first << "\r\n";
 				send(fd, ss.str().c_str(), ss.str().size(), 0); //TODO: change after the builder is done
 				it->second->sendMessageToAll(ss.str()); //TODO: change after the builder is done
 				if (it->second->getUsers().empty())

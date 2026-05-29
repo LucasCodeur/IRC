@@ -48,19 +48,11 @@ void JoinCommand::sendReply(Client const &client, Channel const &channel) const
 		if (i > 0) namesList += " ";
 		if (channel.isOp(users[i]))
 			namesList += "@";
-		namesList += this->_server->getClientNickname(users[i]); 
+		namesList += client.getNickname(); 
 	}
 
 	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, namesList)); //send names list
 	this->_server->sendData(client.getFd(), director.rplEndOfNames(client, channel));//send end of names list
-}
-
-void JoinCommand::sendErrorReply(Client const &client, Channel const &channel, std::string const &numeric) const
-{
-	Director director;
-
-	std::string reply = director.rplError(numeric, client, channel);
-	this->_server->sendData(client.getFd(), reply);
 }
 
 /**
