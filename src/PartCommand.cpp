@@ -6,9 +6,8 @@
 #include "Command.hpp"
 #include "debug.hpp"
 #include "PartCommand.hpp"
-#include "NumericReplies.h"
 
-PartCommand::PartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+PartCommand::PartCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < PartCommand::min_params)
 	{
@@ -19,8 +18,6 @@ PartCommand::PartCommand(Server *server, const int clientFd, const enum Command:
 	{
 		throw IncorrectParametersException("Too much parameters in PART"); // TODO: maybe just ignore extra parameters instead of throwing error
 	}
-	if (type != PART)
-		throw UnknownCommandException();
 }
 
 PartCommand::~PartCommand() {}

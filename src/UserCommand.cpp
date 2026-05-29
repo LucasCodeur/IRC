@@ -5,14 +5,12 @@
 #include "Exceptions.hpp"
 
 
-UserCommand::UserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
-	if (params.size() < UserCommand::min_params)
+	if (params.size() < UserCommand::min_params || this->_trailer.empty())
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > UserCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != USER)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 }
 
 UserCommand::~UserCommand() {};
@@ -21,14 +19,12 @@ void	UserCommand::execute() const
 {
 	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
 	
-	it->second->setUsername(this->_params[0][0]);
-	it->second->setRealname(this->_params[3][0]);
+	it->second->setUsername(this->_trailer);
+	it->second->setRealname(this->_trailer);
 	// PRINT("this->params[1][0]: ", GREEN, "");
 	// PRINT(this->_params[1][0], GREEN, "\n");
 	// PRINT("this->params[2][0]: ", GREEN, "");
 	// PRINT(this->_params[2][0], GREEN, "\n");
-	PRINT("this->params[3][0]: ", RED, "");
-	PRINT(this->_params[3][0], WHITE, "\n");
 	// PRINT("this->params[4][0]: ", GREEN, "");
 	// PRINT(this->_params[4][0], GREEN, "\n");
 	PRINT("RealName: ", RED, "");

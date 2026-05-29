@@ -3,12 +3,10 @@
 #include "Command.hpp"
 #include "PrivmsgCommand.hpp"
 
-PrivmsgCommand::PrivmsgCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+PrivmsgCommand::PrivmsgCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
-	if (params.size() < PrivmsgCommand::min_params)
+	if (params.size() < PrivmsgCommand::min_params || this->_trailer.empty())
 		throw Command::IncorrectParametersException("Not enough parameters");
-	if (type != PRIVMSG)
-		throw UnknownCommandException();
 }
 
 PrivmsgCommand::~PrivmsgCommand() {}

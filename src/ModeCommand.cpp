@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-ModeCommand::ModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	std::string	targetChannel = params.front().front();
 	std::string	modeEdition = "";

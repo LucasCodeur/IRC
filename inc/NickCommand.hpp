@@ -3,12 +3,11 @@
 
 #include "Command.hpp"
 #include "Server.hpp"
-#include "Client.hpp"
 
 class NickCommand : public Command
 {
 	public:
-		NickCommand(Server *server, const int ClientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+		NickCommand(Server *server, const int ClientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 		~NickCommand();
 
 		void	execute() const;

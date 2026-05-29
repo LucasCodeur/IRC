@@ -20,7 +20,7 @@ class TopicCommand : public Command
 {
 
 public:
-	TopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params);
+	TopicCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector <std::vector<std::string> > params);
 	~TopicCommand();
 
 	void	execute() const;

@@ -1,17 +1,14 @@
 #include <sys/socket.h>
-#include <iostream>
 
 #include "PassCommand.hpp"
 #include "Exceptions.hpp"
 
-PassCommand::PassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+PassCommand::PassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < PassCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > PassCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != PASS)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 }
 
 PassCommand::~PassCommand() {};
