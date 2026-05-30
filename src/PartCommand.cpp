@@ -12,7 +12,7 @@ PartCommand::PartCommand(Server *server, const int clientFd, const enum Command:
 {
 	if (params.size() < PartCommand::min_params)
 	{
-		std::string reply = this->_director.errNeedMoreParams(*_server->getClientByFd(this->getClientFd()), "PART");
+		std::string reply = this->_director.errNeedMoreParams(*_server->getClient(this->getClientFd()), "PART");
 		this->_server->sendData(this->getClientFd(), reply);
 	}
 	else if (params.size() > PartCommand::max_params)
@@ -53,13 +53,13 @@ void PartCommand::execute() const
 			}
 			else // if user was not on channel
 			{
-				std::string reply = this->_director.errNotOnChannel(*_server->getClientByFd(fd), it->second->getName());
+				std::string reply = this->_director.errNotOnChannel(*_server->getClient(fd), it->second->getName());
 				this->_server->sendData(this->getClientFd(), reply);
 			}
 		}
 		else // if channel does not exist
 		{
-			std::string reply = this->_director.errNoSuchChannel(*_server->getClientByFd(fd), it->second->getName());
+			std::string reply = this->_director.errNoSuchChannel(*_server->getClient(fd), it->second->getName());
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
