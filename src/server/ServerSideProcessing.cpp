@@ -6,11 +6,10 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/31 16:38:59 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/31 17:18:10 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Exceptions.hpp"
 #include "Server.hpp"
 #include "Command.hpp"
 #include "debug.hpp"

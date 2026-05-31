@@ -1,7 +1,6 @@
 #include "Command.hpp"
 #include "UserCommand.hpp"
 #include "ReplyBuilder.hpp"
-#include "debug.hpp"
 #include "Exceptions.hpp"
 
 

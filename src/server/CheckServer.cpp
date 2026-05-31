@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checkServer.cpp                                    :+:      :+:    :+:   */
+/*   CheckServer.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 09:58:12 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/13 10:41:52 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/31 17:17:30 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Exceptions.hpp"
-#include "debug.hpp"
 #include <cctype>
 #include <sstream>
 

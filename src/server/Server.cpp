@@ -111,7 +111,7 @@ void	 Server::setSocketOption(int socket_fd, int level, int option_name)
  */
 void	Server::bindSocket(void)
 {
-		if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
+	if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
 		throw bindFailed();
 }
 
@@ -135,11 +135,11 @@ void	Server::listenSocket(int sizeWaitingList)
  */
 void	Server::setEpoll(int option)
 {
-		this->_epollfd = epoll_create1(option);
-		if (this->_epollfd == -1)
+	this->_epollfd = epoll_create1(option);
+	if (this->_epollfd == -1)
 		throw epollCreateFailed();
-		this->_ev[0].events = EPOLLIN;
-		this->_ev[0].data.fd = this->_server_sock;
+	this->_ev[0].events = EPOLLIN;
+	this->_ev[0].data.fd = this->_server_sock;
 }
 
 /**
@@ -152,7 +152,7 @@ void	Server::setEpoll(int option)
  */
 void	Server::controlEpoll(int op, int fd, struct epoll_event* event)
 {
-		if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
+	if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
 		throw controlEpollFailed();
 }
 

@@ -1,7 +1,5 @@
 #include "Command.hpp"
-#include "debug.hpp"
 #include "Server.hpp"
-#include <iostream>
 #include <stdexcept>
 
 /* === CONSTRUCTOR === */
