@@ -97,7 +97,7 @@ void JoinCommand::execute() const
 		}
 
 		providedPassword = "";
-		if (!distChan_it->second->isUserInChannel(this->getClientFd())) // if already in channel, ignore
+		if (distChan_it->second->isUserInChannel(this->getClientFd())) // if already in channel, ignore
 			continue;
 		if (key_it != keys.end())
 			providedPassword = *key_it++;

@@ -2,6 +2,7 @@
 #include "UserCommand.hpp"
 #include "ReplyBuilder.hpp"
 #include "Exceptions.hpp"
+#include <iostream>
 
 
 UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
@@ -46,7 +47,7 @@ void	UserCommand::execute() const
 	}
 	catch (std::exception& e)
 	{
-        // std::cout << "Caught: " << e.what() << std::endl;
+        std::cout << "Caught: " << e.what() << std::endl;
 		return ;
 	}
 }
