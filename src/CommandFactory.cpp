@@ -129,7 +129,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		arguments.push_back(split(*it, ','));
 	}
 
-	for (type = 0; type < commandTypes.size() - 1; ++type)
+	for (type = 0; type < commandTypes.size(); ++type)
 	{
 		if (formattedMessage[0] == commandTypes[type])
 		{

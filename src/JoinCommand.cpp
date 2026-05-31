@@ -1,3 +1,4 @@
+#include <ostream>
 #include <utility>
 #include <iostream>
 #include <sstream>
@@ -43,10 +44,12 @@ void JoinCommand::confirmJoin(Client const &client, Channel const &channel) cons
 	std::vector<int> const &users = channel.getUsers();
 	for (size_t i = 0; i < users.size(); i++)
 	{
+		Client *member = this->_server->getClientByFd(users[i]);
+		if (!member) continue;
 		if (i > 0) namesList += " ";
 		if (channel.isOp(users[i]))
 			namesList += "@";
-		namesList += client.getNickname(); 
+		namesList += member->getNickname();
 	}
 
 	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, namesList)); //send names list
@@ -79,8 +82,6 @@ void JoinCommand::execute() const
 	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(this->getClientFd());
 
 	std::string providedPassword = "";
-	std::string reply;
-
 	for (chan_it = channels.begin(); chan_it != channels.end(); ++chan_it)
 	{
 		std::map<std::string, Channel *>::const_iterator distChan_it = channelMap.find(*chan_it);
@@ -92,20 +93,22 @@ void JoinCommand::execute() const
 				pair = this->_server->addChannel(*chan_it, *key_it);
 			else
 				pair = this->_server->addChannel(*chan_it, "");
+
 			distChan_it = channelMap.find(*chan_it);
 			if (distChan_it == channelMap.end()) // FIXME: should probably throw there
 			{
 				std::cerr << "Error : channel could not be created" << std::endl;
 				return ;
 			}
+
 			distChan_it->second->addUser(this->getClientFd());
 			distChan_it->second->setOperator(this->getClientFd());
 
 			this->confirmJoin(*(it->second), *(distChan_it->second));
-			
+
 			if (key_it != keys.end())
 				key_it++;
-			continue ;
+			continue;
 		}
 
 		providedPassword = "";
@@ -115,20 +118,19 @@ void JoinCommand::execute() const
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
 			distChan_it->second->addUser(this->getClientFd());
-			{
-				this->confirmJoin(*(it->second), *(distChan_it->second));
-			}
+
+			this->confirmJoin(*(it->second), *(distChan_it->second));
+
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
 			distChan_it->second->addUser(this->getClientFd());
-			{
-				this->confirmJoin(*(it->second), *(distChan_it->second));
-			}
+
+			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else // if password incorrect
 		{
-			reply = this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
+			std::string reply =	this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}

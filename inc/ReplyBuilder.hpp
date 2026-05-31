@@ -77,6 +77,7 @@ class Director
 		void			setBuilderType(ReplyBuilder* builder);
 
 		std::string		rplJoin(Client const &client, Channel const &channel);
+		std::string		rplPart(Client const &client, Channel const &channel, std::string const &reason) const;
 		std::string		rplTopic(Client const &client, Channel const &channel);
 		std::string		rplNoTopic(Client const &client, Channel const &channel);
 		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList);

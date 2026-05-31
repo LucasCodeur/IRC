@@ -20,61 +20,61 @@
  * @brief set up the server and launch it.
  * @return true if no errors occur.
  */
-bool    Server::launcherServer(std::string port, std::string password)
+bool	Server::launcherServer(std::string port, std::string password)
 {
-    try 
-    {
-        this->convertPort(port);
-        this->check_password(password);
-        this->_password = password;
-    }
-    catch (std::exception &e)
-    {
-        PRINT(e.what(), RED, "\n");
-        return (false);
-    }
-    this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
-    this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
-    this->setAddr();
-    this->bindSocket();
-    this->listenSocket(MAX_WAITING_LIST);
-    this->setEpoll(DEFAULT);
-    this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
-    this->listenConnexionsEpoll();
+	try 
+	{
+		this->convertPort(port);
+		this->check_password(password);
+		this->_password = password;
+	}
+	catch (std::exception &e)
+	{
+		PRINT(e.what(), RED, "\n");
+		return (false);
+	}
+	this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
+	this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
+	this->setAddr();
+	this->bindSocket();
+	this->listenSocket(MAX_WAITING_LIST);
+	this->setEpoll(DEFAULT);
+	this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
+	this->listenConnexionsEpoll();
 
-    return (true);
+	return (true);
 }
 
 /**
  * @brief infinite loop that allows receiving and sending data between the different sockets contains in the ready list of epoll.
  * @return
  */
-void    Server::listenConnexionsEpoll(void)
+void	Server::listenConnexionsEpoll(void)
 {
-    socklen_t addrlen = sizeof(this->_addr);
-    int nfds = 1;
+	socklen_t addrlen = sizeof(this->_addr);
+	int nfds = 1;
 
-    while (true) 
-    {
-        nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
-        for (int n = 0; n < nfds; n++)
-        {
-            int fd;
-            if (this->_ev[n].data.fd == this->_server_sock)
-            {
-                fd = this->acceptConnexion(&addrlen);
-                this->setNonBlocking(fd);
-                this->_ev[n + 1].events = EPOLLIN | EPOLLET;
-                this->_ev[n + 1].data.fd = fd;
-                this->sendData(fd, "Welcome to the IRC SERVER\n");
-                this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
-                PRINT("Client connected: ", GREEN, "");
-                PRINT(fd, WHITE, "\n");
-            } 
-            else if (this->_ev[n].events & EPOLLIN)
-                this->receiveData(this->_ev[n].data.fd);
-       }
-    }
+	while (true) 
+	{
+		nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
+		for (int n = 0; n < nfds; n++)
+		{
+		int fd;
+		if (this->_ev[n].data.fd == this->_server_sock)
+		{
+			fd = this->acceptConnexion(&addrlen);
+			this->setNonBlocking(fd);
+			this->_ev[n + 1].events = EPOLLIN | EPOLLET;
+			this->_ev[n + 1].data.fd = fd;
+			this->sendData(fd, "Welcome to the IRC SERVER\n");
+			this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
+			PRINT("Client connected: ", GREEN, "");
+			PRINT(fd, WHITE, "\n");
+		} 
+		else if (this->_ev[n].events & EPOLLIN)
+			this->receiveData(this->_ev[n].data.fd);
+	   }
+	}
 }
 
 /**
@@ -84,12 +84,12 @@ void    Server::listenConnexionsEpoll(void)
  * @param protocol value to choose the protocol (IP).
  * @return socket descriptor.
  */
-int    Server::createSocket(int domain, int type_communication, int protocol)
+int	Server::createSocket(int domain, int type_communication, int protocol)
 {
-    int sockfd = socket(domain, type_communication, protocol);
-    if (sockfd < 0)
-        throw socketFailed();
-    return (sockfd);
+	int sockfd = socket(domain, type_communication, protocol);
+	if (sockfd < 0)
+		throw socketFailed();
+	return (sockfd);
 }
 
 /**
@@ -99,20 +99,20 @@ int    Server::createSocket(int domain, int type_communication, int protocol)
  * @param option_name, name of the option have to be set.
  * @return
  */
-void     Server::setSocketOption(int socket_fd, int level, int option_name)
+void	 Server::setSocketOption(int socket_fd, int level, int option_name)
 {
-    if (setsockopt(socket_fd, level, option_name, &this->_opt, sizeof(this->_opt)) < 0)
-        throw setSocketOptionFailed();
+	if (setsockopt(socket_fd, level, option_name, &this->_opt, sizeof(this->_opt)) < 0)
+		throw setSocketOptionFailed();
 }
 
 /**
  * @brief wrapper function of bind(), allows binding the socket to the adress and port number specified in addr.
  * @return
  */
-void    Server::bindSocket(void)
+void	Server::bindSocket(void)
 {
-        if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
-            throw bindFailed();
+		if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
+		throw bindFailed();
 }
 
 /**
@@ -122,10 +122,10 @@ void    Server::bindSocket(void)
  * for sockfd may grow.
  * @return
  */
-void    Server::listenSocket(int sizeWaitingList)
+void	Server::listenSocket(int sizeWaitingList)
 {
-        if (listen(this->_server_sock, sizeWaitingList) < 0)
-            throw listenSocketFailed();
+		if (listen(this->_server_sock, sizeWaitingList) < 0)
+		throw listenSocketFailed();
 }
 
 /**
@@ -133,13 +133,13 @@ void    Server::listenSocket(int sizeWaitingList)
  * @param option allow to get different behavior, 0 is default.
  * @return
  */
-void    Server::setEpoll(int option)
+void	Server::setEpoll(int option)
 {
-        this->_epollfd = epoll_create1(option);
-        if (this->_epollfd == -1)
-            throw epollCreateFailed();
-        this->_ev[0].events = EPOLLIN;
-        this->_ev[0].data.fd = this->_server_sock;
+		this->_epollfd = epoll_create1(option);
+		if (this->_epollfd == -1)
+		throw epollCreateFailed();
+		this->_ev[0].events = EPOLLIN;
+		this->_ev[0].data.fd = this->_server_sock;
 }
 
 /**
@@ -150,10 +150,10 @@ void    Server::setEpoll(int option)
  * @param event, data structure that contains information about possible events with epoll.
  * @return
  */
-void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
+void	Server::controlEpoll(int op, int fd, struct epoll_event* event)
 {
-        if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
-            throw controlEpollFailed();
+		if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
+		throw controlEpollFailed();
 }
 
 /**
@@ -161,12 +161,12 @@ void    Server::controlEpoll(int op, int fd, struct epoll_event* event)
  * @param addrlen  pointer to a variable that specifies the length of the adress structure.
  * @return new file descriptor referring to the first connection request from the queue of pending connections for the listening socket.
  */
-int    Server::acceptConnexion(socklen_t* addrlen)
+int	Server::acceptConnexion(socklen_t* addrlen)
 {
-    int fd = accept(this->_server_sock, (struct sockaddr *)&this->_addr, addrlen);
-    if (fd < 0)
-        throw acceptFailed(); 
-    return (fd);
+	int fd = accept(this->_server_sock, (struct sockaddr *)&this->_addr, addrlen);
+	if (fd < 0)
+		throw acceptFailed(); 
+	return (fd);
 }
 
 /**
@@ -176,12 +176,12 @@ int    Server::acceptConnexion(socklen_t* addrlen)
  * We can see that like an operation in order to extract element inside the ready event list of epoll.
  * @return number of file descriptors ready for the requested I/O or -1 of an error occurs.
  */
-int    Server::epollWaitOperation(int max_events, int timeout)
+int	Server::epollWaitOperation(int max_events, int timeout)
 {
-    int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
-    if (nfds < 0)
-        throw epollWaitFailed();
-    return (nfds);
+	int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
+	if (nfds < 0)
+		throw epollWaitFailed();
+	return (nfds);
 }
 
 /**
@@ -190,21 +190,21 @@ int    Server::epollWaitOperation(int max_events, int timeout)
  * @param fd file descriptor where data will be sent.
  * @return
  */
-void    Server::sendData(int fd, std::string data)
+void	Server::sendData(int fd, std::string data)
 {
-    if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
-        throw sendFailed();
+	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
+		throw sendFailed();
 }
 
 /**
  * @brief function to set up the behavior of the socket.
  * @return
  */
-void    Server::setAddr(void)
+void	Server::setAddr(void)
 {
-        this->_addr.sin_family = AF_INET;
-        this->_addr.sin_addr.s_addr = INADDR_ANY;
-        this->_addr.sin_port = htons(this->_port);
+	this->_addr.sin_family = AF_INET;
+	this->_addr.sin_addr.s_addr = INADDR_ANY;
+	this->_addr.sin_port = htons(this->_port);
 }
 
 /**
@@ -213,18 +213,18 @@ void    Server::setAddr(void)
 */
 void Server::setNonBlocking(int sock)
 {
-    int result;
-    int flags;
+	int result;
+	int flags;
 
-    flags = ::fcntl(sock, F_GETFL, 0);
-    if (flags == -1)
-        throw setnonblockingFailed();
-    flags |= O_NONBLOCK;
-    result = fcntl(sock , F_SETFL , flags);
-    if (result == -1)
-    {
-        throw setnonblockingFailed();
-    }
+	flags = ::fcntl(sock, F_GETFL, 0);
+	if (flags == -1)
+		throw setnonblockingFailed();
+	flags |= O_NONBLOCK;
+	result = fcntl(sock , F_SETFL , flags);
+	if (result == -1)
+	{
+		throw setnonblockingFailed();
+	}
 }
 
 Server::Server()
@@ -233,7 +233,7 @@ Server::Server()
 	  _fd(-1),
 	  _serverName("ircserv"),
 	  _password(""),
-          _opt(1)
+	  _opt(1)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Server created: " RESET << *this << std::endl;
@@ -276,17 +276,21 @@ std::string const &Server::getPassword() const
 
 std::map<std::string, Channel *> const &Server::getChannelMap() const
 {
-        return (this->_channels);
+	return (this->_channels);
 }
 
 std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(std::string name, std::string password)
-{
-        Channel *newChan = new Channel(name, password);
+{ 
+	Channel *newChan = new Channel(name, password);
 
-        std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
-        pair = this->_channels.insert(std::make_pair(name, newChan));
-        std::cout << DBUG GREEN "Created channel : " RESET << name << std::endl;
-        return (pair);
+	std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
+	pair = this->_channels.insert(std::make_pair(name, newChan));
+	std::cout << DBUG GREEN "Added channel: " RESET << name << std::endl;
+	std::cout << DBUG GREEN "Current channels: " RESET;
+	for (std::map<std::string, Channel *>::const_iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
+		std::cout << it->first << " ";
+	std::cout << std::endl;
+	return (pair);
 }
 
 void Server::removeChannel(const std::string &name)
@@ -302,15 +306,15 @@ void Server::removeChannel(const std::string &name)
 
 std::map<int, Client*> const &Server::getClientmap() const
 {
-        return (this->_clients);
+	return (this->_clients);
 }
 
 Channel *Server::getChannelByName(std::string const &name) const
 {
-        std::map<std::string, Channel *>::const_iterator it = this->_channels.find(name);
-        if (it != this->_channels.end())
-                return (it->second);
-        return (NULL);
+	std::map<std::string, Channel *>::const_iterator it = this->_channels.find(name);
+	if (it != this->_channels.end())
+		return (it->second);
+	return (NULL);
 }
 std::ostream &operator<<(std::ostream &o, const Server &obj)
 {
@@ -320,8 +324,8 @@ std::ostream &operator<<(std::ostream &o, const Server &obj)
 
 Client *Server::getClientByFd(const int fd) const
 {
-        std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
-        if (it != this->_clients.end())
-                return (it->second);
-        return (NULL);
+	std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
+	if (it != this->_clients.end())
+		return (it->second);
+	return (NULL);
 }

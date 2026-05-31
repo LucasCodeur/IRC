@@ -103,6 +103,5 @@ protected:
 	std::string								_trailer;
 
 };
-std::ostream &operator<<(std::ostream &o, const Command &obj);
 
 #endif // !COMMAND_HPP

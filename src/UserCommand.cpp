@@ -27,8 +27,8 @@ void	UserCommand::execute() const
 	// PRINT(this->_params[2][0], GREEN, "\n");
 	// PRINT("this->params[4][0]: ", GREEN, "");
 	// PRINT(this->_params[4][0], GREEN, "\n");
-	PRINT("RealName: ", RED, "");
-	PRINT(it->second->getRealname(), WHITE, "\n");
+	// PRINT("RealName: ", RED, "");
+	// PRINT(it->second->getRealname(), WHITE, "\n");
 
 	Director director;
 	std::string message = "User information complete successfully\n";
@@ -36,7 +36,7 @@ void	UserCommand::execute() const
 
 	try 
 	{
-		PRINT("Inside try to reply in USER", BLUE, "\n");
+		// PRINT("Inside try to reply in USER", BLUE, "\n");
 		std::string reply = director.rplWelcome(*(it->second));
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
@@ -47,7 +47,7 @@ void	UserCommand::execute() const
 	}
 	catch (std::exception& e)
 	{
-            std::cout << "Caught: " << e.what() << std::endl;
-			return ;
+        // std::cout << "Caught: " << e.what() << std::endl;
+		return ;
 	}
 }

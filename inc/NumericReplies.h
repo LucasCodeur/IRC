@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 13:39:39 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/28 17:35:23 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/31 16:51:54 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@
 # define ERR_BADCHANNELKEY		"475"
 # define ERR_CHANOPRIVSNEEDED	"482"
 # define ERR_ERRUNKNOWNMODE		"472"
-
 # define RPL_CHANNELMODEIS		"324"
 # define RPL_TOPIC				"332"
 # define RPL_NOTOPIC			"331"
-
+# define RPL_NAMREPLY			"353"
+# define RPL_ENDOFNAMES			"366"
 # define LF "\r"
 # define CR "\n"
 

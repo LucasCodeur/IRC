@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/29 14:08:01 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/05/31 16:38:59 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ void    Server::receiveData(int clientFd)
         Command* command;
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
-        // PRINT("received: ", GREEN, "");
-        // PRINT(clientFd, GREEN, "\n");
-        // PRINT(buffer, GREEN, "\n");
+        PRINT("received: ", GREEN, "");
+        PRINT(clientFd, GREEN, "\n");
+        PRINT(buffer, GREEN, "\n");
         try
         {
             stringBuf += buffer;

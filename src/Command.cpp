@@ -14,16 +14,9 @@ Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::
 	  _prefix(specs.prefix),
 	  _command(specs.command),
 	  _trailer(specs.trailer)
-{
-	if (DEBUG == 1)
-		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
-}
+{}
 
-Command::~Command()
-{
-	if (DEBUG == 1)
-		std::cout << DBUG RED "Command destroyed: " RESET << *this <<std::endl;
-}
+Command::~Command(){}
 
 Command::Command(Command const &original)
 	:
@@ -32,8 +25,7 @@ Command::Command(Command const &original)
 	  _params(original._params),
 	  _server(original._server)
 {
-	if (DEBUG == 1)
-		std::cout << DBUG BLUE "Command copied: " RESET << *this <<std::endl;
+
 }
 
 /* === OPERATOR OVERRIDE === */
@@ -46,32 +38,9 @@ Command &Command::operator=(Command const &other)
 		this->_clientFd = other._clientFd;
 		this->_commandType = other._commandType;
 		this->_params = other._params;
-		if (DEBUG == 1)
-			std::cout << BLUE "Command assigned: " RESET << *this << std::endl;
+
 	}
 	return (*this);
-}
-
-std::ostream &operator<<(std::ostream &o, const Command &obj)
-{
-	std::vector<std::vector<std::string> > const &params = obj.getParams();
-
-	o << "Command: clientFd " << obj.getClientFd() << ", " << obj.commandTypeToString() << ", args : ";
-	for (size_t i = 0; i < params.size(); ++i)
-	{
-		std::cout << "[" ;
-		for (size_t j = 0; j < params[i].size(); ++j)
-		{
-		o << params[i][j];
-		if (j < params[i].size() - 1)
-			o << ", ";
-		}
-		o << "]";
-		if (i < params.size() - 1)
-			o << ", ";
-	}
-
-	return (o);
 }
 
 /* === GETTERS === */

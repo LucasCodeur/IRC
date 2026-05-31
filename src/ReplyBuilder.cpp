@@ -86,14 +86,12 @@ std::string	ReplyBuilder::buildReply()
 	std::string reply;
 
 	reply += this->_reply.getPrefix();
-	reply += SPACE;
-	PRINT("Build reply", RED, "\n");
-	PRINT(this->_reply.getNumeric(), BLUE, "\n");
-	reply += this->_reply.getNumeric();
-	reply += SPACE;
-	reply += this->_reply.getParams();
-	reply += SPACE;
-	reply += this->_reply.getTrailing();
+	if (!this->_reply.getNumeric().empty())
+		reply += SPACE + this->_reply.getNumeric();
+	if (!this->_reply.getParams().empty())
+		reply += SPACE + this->_reply.getParams();
+	if (!this->_reply.getTrailing().empty())
+		reply += SPACE + this->_reply.getTrailing();
 	reply += this->_reply.getCrln();
 
 	return (reply);
@@ -382,6 +380,26 @@ std::string Director::rplJoin(Client const &client, Channel const &channel)
 	return (reply);
 }
 
+std::string Director::rplPart(Client const &client, Channel const &channel, std::string const &reason) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("PART")
+				.addParams(channel.getName())
+				.addTrailing(reason)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 std::string Director::rplTopic(Client const &client, Channel const &channel)
 {
 	ReplyBuilder builder;
@@ -429,7 +447,7 @@ std::string Director::rplNameReply(Client const &client, Channel const &channel,
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
-				.addNumeric("353")
+				.addNumeric(RPL_NAMREPLY)
 				.addParams(client.getNickname() + " = " + channel.getName())
 				.addTrailing(namesList)
 				.addCrln()
@@ -449,7 +467,7 @@ std::string Director::rplEndOfNames(Client const &client, Channel const &channel
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
-				.addNumeric("366")
+				.addNumeric(RPL_ENDOFNAMES)
 				.addParams(client.getNickname() + " " + channel.getName())
 				.addTrailing("End of /NAMES list")
 				.addCrln()

@@ -14,9 +14,9 @@ PartCommand::PartCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 		std::string reply = this->_director.errNeedMoreParams(*_server->getClientByFd(this->getClientFd()), "PART");
 		this->_server->sendData(this->getClientFd(), reply);
 	}
-	else if (params.size() > PartCommand::max_params)
+	else if (PartCommand::max_params != 0 && params.size() > PartCommand::max_params)
 	{
-		throw IncorrectParametersException("Too much parameters in PART"); // TODO: maybe just ignore extra parameters instead of throwing error
+		throw IncorrectParametersException("Too much parameters in PART");
 	}
 }
 
@@ -38,10 +38,10 @@ void PartCommand::execute() const
 			if (it->second->removeUser(fd))
 			{
 				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
-				std::stringstream ss;
-				ss << ":" << this->_server->getClientByFd(fd)->getNickname() << " PART " << it->first << "\r\n";
-				send(fd, ss.str().c_str(), ss.str().size(), 0); //TODO: change after the builder is done
-				it->second->sendMessageToAll(ss.str()); //TODO: change after the builder is done
+				std::string reason = this->_trailer.empty() ? "Leaving" : this->_trailer;
+				std::string reply = this->_director.rplPart(*this->_server->getClientByFd(fd), *it->second, reason);
+				it->second->sendMessageToAll(reply);
+				this->_server->sendData(fd, reply);
 				if (it->second->getUsers().empty())
 				{
 					std::cout << DBUG << "deleting empty channel " << it->first << std::endl;
@@ -56,8 +56,9 @@ void PartCommand::execute() const
 		}
 		else // if channel does not exist
 		{
-			std::string reply = this->_director.errNoSuchChannel(*_server->getClientByFd(fd), it->second->getName());
+			std::string reply = this->_director.errNoSuchChannel(*_server->getClientByFd(fd), params[i]);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
 }
+	
