@@ -37,19 +37,7 @@ void JoinCommand::confirmJoin(Client const &client, Channel const &channel) cons
 	else
 		this->_server->sendData(client.getFd(), director.rplTopic(client, channel));
 
-	std::string namesList;
-	std::vector<int> const &users = channel.getUsers();
-	for (size_t i = 0; i < users.size(); i++)
-	{
-		Client *member = this->_server->getClientByFd(users[i]);
-		if (!member) continue;
-		if (i > 0) namesList += " ";
-		if (channel.isOp(users[i]))
-			namesList += "@";
-		namesList += member->getNickname();
-	}
-
-	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, namesList)); //send names list
+	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, this->_server->getChannelNamesList(channel))); //send names list
 	this->_server->sendData(client.getFd(), director.rplEndOfNames(client, channel));//send end of names list
 }
 
@@ -109,6 +97,8 @@ void JoinCommand::execute() const
 		}
 
 		providedPassword = "";
+		if (!distChan_it->second->isUserInChannel(this->getClientFd())) // if already in channel, ignore
+			continue;
 		if (key_it != keys.end())
 			providedPassword = *key_it++;
 

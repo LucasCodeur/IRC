@@ -329,3 +329,19 @@ Client *Server::getClientByFd(const int fd) const
 		return (it->second);
 	return (NULL);
 }
+
+std::string Server::getChannelNamesList(Channel const &channel) const
+{
+	std::string namesList;
+	std::vector<int> const &users = channel.getUsers();
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		Client *member = this->getClientByFd(users[i]);
+		if (!member) continue;
+		if (!namesList.empty()) namesList += " ";
+		if (channel.isOp(users[i]))
+			namesList += "@";
+		namesList += member->getNickname();
+	}
+	return namesList;
+}

@@ -48,6 +48,7 @@ class Server
 		void															handleJoin(Command const &cmd);
 		void															handleCommand(Command const &cmd);
 		void															sendData(int fd, std::string data);
+		std::string														getChannelNamesList(Channel const &channel) const;
 	private :
 		int									_port;
 		int									_fd;

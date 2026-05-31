@@ -141,10 +141,10 @@ std::string	Director::rplWelcome(Client client) const
 std::string	Director::rplChannelModeIs(Client client, std::string channelName, std::string modes) const
 {
 	ReplyBuilder	builder;
-	
+	(void)client;
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_CHANNELMODEIS)
 				.addParams(channelName)
 				.addParams(modes)
@@ -282,7 +282,7 @@ std::string		Director::errChanOPrivsNeeded(Client client, std::string channelNam
 	std::string reply = builder
 				.reset()
 				.addPrefix(client.getNickname())
-				.addNumeric(ERR_NOTONCHANNEL)
+				.addNumeric(ERR_CHANOPRIVSNEEDED)
 				.addParams(channelName)
 				.addTrailing(": You're not channel operator")
 				.addCrln()

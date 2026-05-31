@@ -246,3 +246,8 @@ void Channel::sendMessageToAllOther(const std::string &message, int senderFd) co
 			send(this->_users[i], message.c_str(), message.size(), 0);
 	}
 }
+
+bool Channel::isUserInChannel(int clientFd) const
+{
+	return (std::find(this->_users.begin(), this->_users.end(), clientFd) != this->_users.end());
+}

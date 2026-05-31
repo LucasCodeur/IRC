@@ -42,6 +42,7 @@ class Channel
 	int						isTopicRestricted() const;
 	int						hasUserLimit() const;
 	int						isChanOp(std::string userName) const;
+	bool					isUserInChannel(int clientFd) const;
 
 	// SETTERS
 	void setTopic(std::string const &topic);
