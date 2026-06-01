@@ -85,8 +85,8 @@ void    Server::receiveData(int clientFd)
             // print_info_client(*(it->second));
 
         }
-        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        // print_info_client(*(it->second));
+        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        print_info_client(*(it->second));
     }
 }
 

@@ -21,9 +21,23 @@ void	UserCommand::execute() const
 	
 	if (it->second->authState.getNickReceived() == true)
 	{
+		// PRINT("MESSAGE SPECS", BLUE, "\n");
+		// PRINT(this->_prefix, BLUE, "\n");
+		// PRINT(this->_command, BLUE, "\n");
+		// PRINT(this->_trailer, BLUE, "\n");
+
+		// PRINT("this->params[1][0]: ", GREEN, "");
+		//      PRINT(this->_params[1][0], GREEN, "\n");
+		//      PRINT("this->params[2][0]: ", GREEN, "");
+		//      PRINT(this->_params[2][0], GREEN, "\n");
+		//     PRINT("this->params[3][0]: ", RED, "");
+		//      PRINT(this->_params[3][0], WHITE, "\n");
+		//      PRINT("this->params[4][0]: ", GREEN, "");
+		//     PRINT(this->_params[4][0], GREEN, "\n");
 		it->second->authState.setFullyRegistered(true);
 		it->second->setUsername(this->_params[0][0]);
-		it->second->setRealname(this->_params[3][0]);
+		// WARN: Maybe change I'm not sure if is it normal to put trailer in order to set realname
+		it->second->setRealname(this->_trailer);
 		Director director;
 		std::string client = it->second->getNickname();
 
