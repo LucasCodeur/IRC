@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/27 10:44:22 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/05/29 14:23:18 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,18 @@ void    Server::receiveData(int clientFd)
         }
         catch(Command::UnknownCommandException& e)
         {
-            Client *originClient = this->getClientByFd(clientFd);
             std::cout << "Caught: " << e.what() << std::endl;
             std::string cmdKeyword = e.what();
-            std::string reply = command->getDirector()->errUnknownCommand(*originClient, cmdKeyword);
+            std::string reply = command->getDirector()->errUnknownCommand(cmdKeyword);
             this->sendData(clientFd, reply);
             continue ;
+        }
+        catch (Command::NotEnoughParametersException& e)
+        {
+            std::cout << "Caught: " << e.what() << std::endl;
+            std::string reply = command->getDirector()->errNeedMoreParams(e.what());
+            this->sendData(clientFd, reply);
+            continue;
         }
         catch(std::exception& e)
         {
