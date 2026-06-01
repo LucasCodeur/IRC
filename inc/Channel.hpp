@@ -6,13 +6,15 @@
 #include <vector>
 #include <bitset>
 
+#include "Client.hpp"
+
 class Channel
 {
 	private:
 	std::string			_name;
 	std::string			_topic;
 	std::string			_password;
-	std::vector<int>	_users;
+	std::vector<Client *>	_users;
 	std::vector<int>	_operators;
 	std::vector<int>	_invited;
 	std::bitset<4>		_mode; // itkl = 0100
@@ -34,7 +36,7 @@ class Channel
 	std::string const &getName() const;
 	std::string const &getTopic() const;
 	std::string const &getPassword() const;
-	std::vector<int> const &getUsers() const;
+	std::vector<Client *> const &getUsers() const;
 	std::vector<int> const &getOperators() const;
 	std::vector<int> const &getInvited() const;
 	int						getMode(int i) const;
@@ -51,14 +53,18 @@ class Channel
 	void setModeItem(unsigned int item, bool value);
 
 	// METHODS
-	bool addUser(int clientFd);
+	bool addUser(Client *client);
+	bool removeUser(Client *client);
 	bool removeUser(int clientFd);
+	bool removeUser(std::string nickname);
 	bool setOperator(int clientFd);
 	bool removeOperator(int clientFd);
 	bool isOp(int clientFd);
 	bool isOnChan(int clientFd);
+	bool isOnChan(std::string nickname);
 	void sendMessageToAll(const std::string &message) const;
 	void sendMessageToAllOther(const std::string &message, int senderFd) const;
+	std::vector<std::string> listNames();
 
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);

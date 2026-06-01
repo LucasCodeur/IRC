@@ -46,6 +46,7 @@ void    Server::receiveData(int clientFd)
     while (1)
     {
         Command* command;
+        Client *client = this->getClient(clientFd);
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
         PRINT("command received from client ", GREEN, "");
@@ -64,14 +65,14 @@ void    Server::receiveData(int clientFd)
         {
             std::cout << "Caught: " << e.what() << std::endl;
             std::string cmdKeyword = e.what();
-            std::string reply = command->getDirector()->errUnknownCommand(cmdKeyword);
+            std::string reply = command->getDirector()->errUnknownCommand(client->getNickname(), cmdKeyword);
             this->sendData(clientFd, reply);
             continue ;
         }
         catch (Command::NotEnoughParametersException& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
-            std::string reply = command->getDirector()->errNeedMoreParams(e.what());
+            std::string reply = command->getDirector()->errNeedMoreParams(client->getNickname(), e.what());
             this->sendData(clientFd, reply);
             continue;
         }

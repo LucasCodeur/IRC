@@ -27,12 +27,20 @@ JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 
 JoinCommand::~JoinCommand() {}
 
+void JoinCommand::sendNames(Channel *channel) const
+{
+
+	std::cout << DBUG << "sending " << this->_director.rplNameReply(this->getClient()->getNickname(), *channel) << " to " << this->getClientFd() << std::endl;
+	this->getServer()->sendData(this->getClientFd(), this->_director.rplNameReply(this->getClient()->getNickname(), *channel));
+	this->getServer()->sendData(this->getClientFd(), this->_director.rplEndofNames(this->getClient()->getNickname(), *channel));
+}
+
 /**
 * @brief executes itself.
 * @param server the server in which the JoinCommand should be executed.
 * A JoinCommand is in the form JOIN channel_1, channel_2 ... pass1, pass2 ...
 * the function iterates over each channel_i and verifies wether :
-	* - the channel already exists (if not, create it)
+* - the channel already exists (if not, create it)
 	* - the provided pass_i is correct.
 * if everything is good for a given channel, call server::addUser to add the current user to said channel.
 * then proceed for next provided channel.
@@ -73,10 +81,11 @@ void JoinCommand::execute() const
 				std::cerr << "Error : channel could not be created" << std::endl;
 				return ;
 			}
-			distChan_it->second->addUser(this->getClientFd());
+			distChan_it->second->addUser(this->getServer()->getClient(this->getClientFd()));
 			distChan_it->second->setOperator(this->getClientFd());
 			std::string reply = director.rplJoin(*(it->second), *chan_it);
 			distChan_it->second->sendMessageToAll(reply.c_str());
+			this->sendNames(distChan_it->second);
 			if (key_it != keys.end())
 				key_it++;
 			continue ;
@@ -90,7 +99,7 @@ void JoinCommand::execute() const
 		{
 			if (DEBUG)
 				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with no pass required" RESET << std::endl;
-			distChan_it->second->addUser(this->getClientFd());
+			distChan_it->second->addUser(this->getServer()->getClient(this->getClientFd()));
 			{
 				std::string reply = director.rplJoin(*(it->second), *chan_it);
 				distChan_it->second->sendMessageToAll(reply.c_str()); //TODO: change after the builder is done
@@ -100,16 +109,18 @@ void JoinCommand::execute() const
 		{
 			if (DEBUG)
 				std::cout << DBUG << this->getClientFd() << GREEN " joining " << *chan_it << " with correct pass '" << providedPassword << "'" RESET << std::endl;
-			distChan_it->second->addUser(this->getClientFd());
+			distChan_it->second->addUser(this->getServer()->getClient(this->getClientFd()));
 			{
 				std::stringstream joinMsg;
 				joinMsg << ":" << this->_server->getClientNickname(this->getClientFd()) << " JOIN " << *chan_it << "\r\n";
 				distChan_it->second->sendMessageToAll(joinMsg.str()); //TODO: change after the builder is done
+				std::cout << DBUG << "sending " << this->_director.rplNameReply(this->getClient()->getNickname(), *distChan_it->second) << " to " << this->getClientFd() << std::endl;
+				this->getServer()->sendData(this->getClientFd(), this->_director.rplNameReply(this->getClient()->getNickname(), *distChan_it->second));
 			}
 		}
 		else // if password incorrect
 		{
-			reply = this->_director.errBadChannelKey(*chan_it);
+			reply = this->_director.errBadChannelKey(this->getClient()->getNickname(), *chan_it);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}

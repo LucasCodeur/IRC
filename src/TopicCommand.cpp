@@ -49,19 +49,19 @@ void TopicCommand::execute() const
 	}
 	else if (this->_newTopic.empty())
 	{
-		reply = this->_director.rplNoTopic(this->_targetChannel);
+		reply = this->_director.rplNoTopic(this->getClient()->getNickname(), this->_targetChannel);
 		this->_server->sendData(this->getClientFd(), reply);
 	}
 	else
 	{
 		if (!distTargetChannel->isOp(this->getClientFd()))
 		{
-			reply = this->_director.errChanOPrivsNeeded(this->_targetChannel);
+			reply = this->_director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 		else
 		{
-			reply = this->_director.rplTopic(this->_targetChannel, distTargetChannel->getTopic());
+			reply = this->_director.rplTopic(this->getClient()->getNickname(), this->_targetChannel, distTargetChannel->getTopic());
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 

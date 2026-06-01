@@ -9,6 +9,7 @@ class JoinCommand : public Command
 public:
 	JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 	~JoinCommand();
+	void sendNames(Channel *channel) const;
 
 	void	execute() const;
 

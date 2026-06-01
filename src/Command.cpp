@@ -15,6 +15,7 @@ Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::
 	  _command(specs.command),
 	  _trailer(specs.trailer)
 {
+	this->_client = server->getClient(clientFd);
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Command created: " RESET << *this <<std::endl;
 }
@@ -79,6 +80,11 @@ std::ostream &operator<<(std::ostream &o, const Command &obj)
 int Command::getClientFd() const
 {
 	return (_clientFd);
+}
+
+Client *Command::getClient() const
+{
+	return (this->_client);
 }
 
 Command::commandType Command::getCommandType() const

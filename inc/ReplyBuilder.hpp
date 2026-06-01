@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/29 14:20:06 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/06/01 16:21:38 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,15 +80,17 @@ class Director
 		std::string		rplWelcome(Client client) const;
 		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
 		std::string		rplYourhost(Client client) const;
-		std::string		errNeedMoreParams(std::string command) const;
-		std::string		errNoSuchChannel(std::string channelName) const;
-		std::string		errUnknownMode(std::string modeChar) const;
-		std::string		rplTopic(std::string channelName, std::string topic) const;
-		std::string		rplNoTopic(std::string channelName) const;
-		std::string		errNotOnChannel(std::string channelName) const;
-		std::string		errChanOPrivsNeeded(std::string channelName) const;
-		std::string		errBadChannelKey(std::string channelName) const;
-		std::string		errNoSuchNick(std::string channelName) const;
-		std::string		errUnknownCommand(std::string cmdKeyword) const;
+		std::string		errNeedMoreParams(std::string clientNick, std::string command) const;
+		std::string		errNoSuchChannel(std::string clientNick, std::string channelName) const;
+		std::string		errUnknownMode(std::string clientNick, std::string modeChar) const;
+		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
+		std::string		rplNoTopic(std::string clientNick, std::string channelName) const;
+		std::string		errNotOnChannel(std::string clientNick, std::string channelName) const;
+		std::string		errChanOPrivsNeeded(std::string clientNick, std::string channelName) const;
+		std::string		errBadChannelKey(std::string clientNick, std::string channelName) const;
+		std::string		errNoSuchNick(std::string clientNick, std::string channelName) const;
+		std::string		errUnknownCommand(std::string clientNick, std::string cmdKeyword) const;
+		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
+		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 };
 #endif

@@ -6,7 +6,7 @@
 /*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 13:51:13 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/29 14:43:58 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/06/01 14:12:57 by kbarru           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 	}
 
 		
-	if ((this->_modeChar == "k" || this->_modeChar == "o") && this->_params.size() < 3)
+	if (((this->_operationChar == "+" && this->_modeChar == "k") || this->_modeChar == "o") && this->_params.size() < 3)
 	{
 		throw Command::NotEnoughParametersException(this->_command);
 	}
@@ -87,8 +87,8 @@ void ModeCommand::execute() const
 {
 
 	std::string		possibleOperations = "+-";
-	std::string		possibleModes = "itkol";
-	unsigned int	operationNumber = possibleModes.find(this->_modeChar);
+	std::string		possibleChanModes = "lkti";
+	unsigned int	operationNumber = possibleChanModes.find(this->_modeChar);
 	std::string		reply;
 
 	if (this->_params.size() == 1)
@@ -100,16 +100,22 @@ void ModeCommand::execute() const
 	std::cerr << "mode char : " << this->_modeChar << std::endl;
 	std::cerr << "operation char : " << this->_operationChar << std::endl;
 
+	if (!this->_targetChannel->isOp(this->getClientFd()))
+	{
+		reply = _director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel->getName());
+		return ;
+	}
+
 	if (!this->_targetChannel->isOnChan(this->getClientFd()))
 	{
-		reply = _director.errNotOnChannel(this->_targetChannel->getName());
+		reply = _director.errNotOnChannel(this->getClient()->getNickname(), this->_targetChannel->getName());
 		this->_server->sendData(this->getClientFd(), reply);
 		return ;
 	}
 
-	if (possibleModes.find(_modeChar) == possibleModes.npos)
+	if (possibleChanModes.find(_modeChar) == possibleChanModes.npos && _modeChar != "o")
 	{
-		reply = this->_director.errUnknownMode(_operationChar);
+		reply = this->_director.errUnknownMode(this->getClient()->getNickname(), _modeChar);
 		this->_server->sendData(this->getClientFd(), reply);
 		return;
 	}
@@ -122,13 +128,18 @@ void ModeCommand::execute() const
 		int	target = -1;
 		if (!this->_targetChannel->isOp(this->getClientFd()))
 		{
-			reply = this->_director.errChanOPrivsNeeded(this->_targetChannel->getName());
+			std::cerr << "client " << this->_server->getClient(this->getClientFd())->getNickname() << " is not an operator on channel " << this->_targetChannel->getName() << std::endl;
+			reply = this->_director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel->getName());
 			this->_server->sendData(this->getClientFd(), reply);
 			return ;
 		}
 		if (targetClient == NULL || !(this->_targetChannel->isOnChan(target = this->_server->getClient(clientNick)->getFd())))
 		{
-			reply = this->_director.errNoSuchNick(clientNick);
+			if (targetClient == NULL)
+				std::cerr << "no client with nick " << clientNick << std::endl;
+			else
+				std::cerr << "client " << clientNick << " is not on channel " << this->_targetChannel->getName() << std::endl;
+			reply = this->_director.errNoSuchNick(this->getClient()->getNickname(), clientNick);
 			this->_server->sendData(this->getClientFd(), reply);
 			return ;
 		}
@@ -136,8 +147,16 @@ void ModeCommand::execute() const
 			this->_targetChannel->setOperator(target);
 		if (this->_operationChar == "-")
 			this->_targetChannel->removeOperator(target);
+		return ;
+	}
+
+	if (this->_modeChar == "k")
+	{
+		if (this->_operationChar == "+")
+			this->_targetChannel->setPassword(this->_params.back().front());
+		else
+			this->_targetChannel->setPassword("");
 	}
 	this->_targetChannel->setModeItem(operationNumber, _operationChar[0] == '+');
 	this->replyChannelMode();
-	
 }
