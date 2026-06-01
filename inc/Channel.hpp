@@ -14,11 +14,12 @@ class Channel
 	std::string			_password;
 	std::vector<int>	_users;
 	std::vector<int>	_operators;
-	std::vector<int>	_invited; // FIXME: what happens if I want to invite someone not connected to the server yet?
+	std::vector<int>	_invited;
 	std::bitset<4>		_mode; // itkl = 0100
 
 	public:
-	enum inviteMode {i = 0, t, k, l};
+	enum inviteMode {l = 0, k, t, i};
+
 	// CONSTRUCTOR
 	Channel();
 	Channel(std::string const &name, std::string const &password);

@@ -363,10 +363,21 @@ std::string const Server::getClientNickname(int clientFd) const
 	return ("");
 }
 
-Client *Server::getClientByFd(const int fd) const
+Client *Server::getClient(const int fd) const
 {
         std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
         if (it != this->_clients.end())
                 return (it->second);
         return (NULL);
 }
+
+Client *Server::getClient(const std::string nick) const
+{
+        for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); ++it)
+        {
+                if (it->second->getNickname() == nick)
+                        return (it->second);
+        }
+        return (NULL);
+}
+

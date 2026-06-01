@@ -109,7 +109,7 @@ void JoinCommand::execute() const
 		}
 		else // if password incorrect
 		{
-			reply = this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
+			reply = this->_director.errBadChannelKey(*chan_it);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}

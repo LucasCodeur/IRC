@@ -70,15 +70,16 @@ class Director
 		std::string		rplMyInfo(Client client) const;
 		std::string		rplJoin(Client const &client, Channel const &channel);
 		std::string		rplWelcome(Client client) const;
-		std::string		rplChannelModeIs(Client client, std::string channelName, std::string modes) const;
-		std::string		errNeedMoreParams(Client client, std::string command) const;
-		std::string		errNoSuchChannel(Client client, std::string channelName) const;
-		std::string		errUnknownMode(Client client, std::string modeChar) const;
-		std::string		rplTopic(Client client, std::string channelName, std::string topic) const;
-		std::string		rplNoTopic(Client client, std::string channelName) const;
-		std::string		errNotOnChannel(Client client, std::string channelName) const;
-		std::string		errChanOPrivsNeeded(Client client, std::string channelName) const;
-		std::string		errBadChannelKey(Client client, std::string channelName) const;
-		std::string		errUnknownCommand(Client client, std::string cmdKeyword) const;
+		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
+		std::string		errNeedMoreParams(std::string command) const;
+		std::string		errNoSuchChannel(std::string channelName) const;
+		std::string		errUnknownMode(std::string modeChar) const;
+		std::string		rplTopic(std::string channelName, std::string topic) const;
+		std::string		rplNoTopic(std::string channelName) const;
+		std::string		errNotOnChannel(std::string channelName) const;
+		std::string		errChanOPrivsNeeded(std::string channelName) const;
+		std::string		errBadChannelKey(std::string channelName) const;
+		std::string		errNoSuchNick(std::string channelName) const;
+		std::string		errUnknownCommand(std::string cmdKeyword) const;
 };
 #endif

@@ -11,7 +11,7 @@ Channel::Channel()
 	: _name(""),
 	  _topic(""),
 	  _password(""),
-	  _mode(0100)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -22,7 +22,7 @@ Channel::Channel(std::string const &name)
 	: _name(name),
 	  _topic(""),
 	  _password(""),
-	  _mode(0100)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -32,7 +32,7 @@ Channel::Channel(std::string const &name, std::string const &password)
 	: _name(name),
 	  _topic(""),
 	  _password(password),
-	  _mode(0)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
