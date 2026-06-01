@@ -81,5 +81,6 @@ class Director
 		std::string		errBadChannelKey(std::string channelName) const;
 		std::string		errNoSuchNick(std::string channelName) const;
 		std::string		errUnknownCommand(std::string cmdKeyword) const;
+		std::string		errAlreadyRegistred(void) const;
 };
 #endif

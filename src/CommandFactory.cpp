@@ -98,15 +98,11 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	std::stringstream ss;
 	ss << (str.substr(prefixEndIndex, colon_pos));
 
-	PRINT("INSIDE COMMAND have to split : str", RED, "\n");
-	PRINT(str, WHITE, "\n");
 	while(getline(ss, stringSlice, ' '))
 	{
 		size_t pos = stringSlice.find(" ");
 		if (pos != std::string::npos)
 			stringSlice.erase(pos, 1);
-		PRINT("INSIDE COMMAND", RED, "\n");
-		PRINT(stringSlice, WHITE, "\n");
 		formattedMessage.push_back(stringSlice);
 	}
 

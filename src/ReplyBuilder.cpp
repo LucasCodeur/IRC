@@ -447,10 +447,29 @@ std::string Director::rplJoin(Client const &client, Channel const &channel)
 				.addCrln()
 				.buildReply();
 
-	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
+/**
+* @brief
+* @param
+* @param
+* @return
+*/
+std::string		Director::errAlreadyRegistred(void) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ALREADYREGISTRED)
+				.addTrailing(":You may not reregister")
+				.addCrln()
+				.buildReply();
+
+	return (reply);
+}
 ReplyBuilder::ReplyBuilder()
 {
 	std::cout << "Default constructor Reply_builder called" << std::endl;
