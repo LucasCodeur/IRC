@@ -138,7 +138,7 @@ std::string	Director::rplWelcome(Client client) const
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplChannelModeIs(Client client, std::string channelName, std::string modes, std::string password) const
+std::string	Director::rplChannelModeIs(std::string channelName, std::string modes, std::string password) const
 {
 	ReplyBuilder	builder;
 	
@@ -158,7 +158,7 @@ std::string	Director::rplChannelModeIs(Client client, std::string channelName, s
 	return (reply);
 }
 
-std::string Director::errNeedMoreParams(Client client, std::string command) const
+std::string Director::errNeedMoreParams(std::string command) const
 {
 	ReplyBuilder	builder;
 	
@@ -180,7 +180,7 @@ std::string Director::errNeedMoreParams(Client client, std::string command) cons
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::errNoSuchChannel(Client client, std::string channelName) const
+std::string	Director::errNoSuchChannel(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
@@ -199,13 +199,13 @@ std::string	Director::errNoSuchChannel(Client client, std::string channelName) c
 	return (reply);
 }
 
-std::string		Director::errNoSuchNick(Client client, std::string channelName) const
+std::string		Director::errNoSuchNick(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_NOSUCHNICK)
 				.addParams(channelName)
 				.addTrailing("There was no such nickname")
@@ -217,13 +217,13 @@ std::string		Director::errNoSuchNick(Client client, std::string channelName) con
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
-std::string		Director::errUnknownMode(Client client, std::string modeChar) const
+std::string		Director::errUnknownMode(std::string modeChar) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_UNKNOWNMODE)
 				.addParams(modeChar)
 				.addTrailing("is unknown mode char to me")
@@ -236,13 +236,13 @@ std::string		Director::errUnknownMode(Client client, std::string modeChar) const
 	return (reply);
 }
 
-std::string		Director::rplTopic(Client client, std::string channelName, std::string topic) const
+std::string		Director::rplTopic(std::string channelName, std::string topic) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_NOTOPIC)
 				.addParams(channelName)
 				.addTrailing(":")
@@ -256,13 +256,13 @@ std::string		Director::rplTopic(Client client, std::string channelName, std::str
 	return (reply);
 }
 
-std::string		Director::rplNoTopic(Client client, std::string channelName) const
+std::string		Director::rplNoTopic(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_NOTOPIC)
 				.addParams(channelName)
 				.addTrailing("No topic is set")
@@ -275,13 +275,13 @@ std::string		Director::rplNoTopic(Client client, std::string channelName) const
 	return (reply);
 }
 
-std::string		Director::errNotOnChannel(Client client, std::string channelName) const
+std::string		Director::errNotOnChannel(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_NOTONCHANNEL)
 				.addParams(channelName)
 				.addTrailing("You're not on that channel")
@@ -294,13 +294,13 @@ std::string		Director::errNotOnChannel(Client client, std::string channelName) c
 	return (reply);
 }
 
-std::string		Director::errChanOPrivsNeeded(Client client, std::string channelName) const
+std::string		Director::errChanOPrivsNeeded(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_NOTONCHANNEL)
 				.addParams(channelName)
 				.addTrailing("You're not channel operator")
@@ -314,13 +314,13 @@ std::string		Director::errChanOPrivsNeeded(Client client, std::string channelNam
 }
 
 
-std::string		Director::errBadChannelKey(Client client, std::string channelName) const
+std::string		Director::errBadChannelKey(std::string channelName) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_BADCHANNELKEY)
 				.addParams(channelName)
 				.addTrailing("Cannot join channel (+k)")
@@ -333,13 +333,13 @@ std::string		Director::errBadChannelKey(Client client, std::string channelName) 
 	return (reply);
 }
 
-std::string		Director::errUnknownCommand(Client client, std::string cmdKeyword) const
+std::string		Director::errUnknownCommand(std::string cmdKeyword) const
 {
 	ReplyBuilder	builder;
 	
 	std::string reply = builder
 				.reset()
-				.addPrefix(client.getNickname())
+				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_UNKNOWNCOMMAND)
 				.addParams(cmdKeyword)
 				.addTrailing("Unknown command")

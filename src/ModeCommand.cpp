@@ -78,7 +78,7 @@ void ModeCommand::replyChannelMode() const
 		rplParam = '+' + rplParam;
 	if (DEBUG)
 		std::cerr << "Channel mode : " << rplParam << std::endl;
-	std::string reply = director.rplChannelModeIs(*this->_server->getClient(this->getClientFd()), this->_targetChannel->getName(), rplParam, this->_targetChannel->getPassword());
+	std::string reply = director.rplChannelModeIs(this->_targetChannel->getName(), rplParam, this->_targetChannel->getPassword());
 	this->_server->sendData(this->getClientFd(), reply);
 
 }
@@ -102,14 +102,14 @@ void ModeCommand::execute() const
 
 	if (!this->_targetChannel->isOnChan(this->getClientFd()))
 	{
-		reply = _director.errNotOnChannel(*this->_server->getClient(this->getClientFd()), this->_targetChannel->getName());
+		reply = _director.errNotOnChannel(this->_targetChannel->getName());
 		this->_server->sendData(this->getClientFd(), reply);
 		return ;
 	}
 
 	if (possibleModes.find(_modeChar) == possibleModes.npos)
 	{
-		reply = this->_director.errUnknownMode(*_server->getClient(this->getClientFd()), _operationChar);
+		reply = this->_director.errUnknownMode(_operationChar);
 		this->_server->sendData(this->getClientFd(), reply);
 		return;
 	}
@@ -122,13 +122,13 @@ void ModeCommand::execute() const
 		int	target = -1;
 		if (!this->_targetChannel->isOp(this->getClientFd()))
 		{
-			reply = this->_director.errChanOPrivsNeeded(*this->_server->getClient(clientNick), this->_targetChannel->getName());
+			reply = this->_director.errChanOPrivsNeeded(this->_targetChannel->getName());
 			this->_server->sendData(this->getClientFd(), reply);
 			return ;
 		}
 		if (targetClient == NULL || !(this->_targetChannel->isOnChan(target = this->_server->getClient(clientNick)->getFd())))
 		{
-			reply = this->_director.errNoSuchNick(*this->_server->getClient(this->getClientFd()), clientNick);
+			reply = this->_director.errNoSuchNick(clientNick);
 			this->_server->sendData(this->getClientFd(), reply);
 			return ;
 		}
