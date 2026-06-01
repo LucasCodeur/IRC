@@ -5,14 +5,12 @@
 #include "Exceptions.hpp"
 
 
-UserCommand::UserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
-	if (params.size() < UserCommand::min_params)
+	if (params.size() < UserCommand::min_params || this->_trailer.empty())
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > UserCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != USER)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 }
 
 UserCommand::~UserCommand() {};
@@ -31,7 +29,8 @@ void	UserCommand::execute() const
 
 		try 
 		{
-			std::string reply = director.rplWelcome(*(it->second));
+			std::string reply;
+			reply = director.rplWelcome(*(it->second));
 			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 				throw sendFailed();
 

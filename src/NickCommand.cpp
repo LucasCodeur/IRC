@@ -12,18 +12,16 @@
 
 #include "NickCommand.hpp"
 #include "Client.hpp"
-#include "Exceptions.hpp"
 #include "debug.hpp"
+#include "Exceptions.hpp"
 
-NickCommand::NickCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	size_t sizeParams = params.size();
 	if (sizeParams < NickCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (sizeParams > NickCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != NICK)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 }
 
 NickCommand::~NickCommand() {};

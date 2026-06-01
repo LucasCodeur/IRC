@@ -26,6 +26,7 @@ class Client
 	public:
 	authState		authState;
 	private:
+	
 	std::string		_username;
 	std::string		_hostname;
 	std::string		_realname;

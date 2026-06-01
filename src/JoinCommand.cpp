@@ -8,14 +8,12 @@
 #include "JoinCommand.hpp"
 #include "NumericReplies.h"
 
-JoinCommand::JoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, type, params)
+JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < JoinCommand::min_params)
 		throw Command::IncorrectParametersException("Not enough parameters");
 	else if (params.size() > JoinCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
-	if (type != JOIN)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 	
 	std::vector<std::string> channels = params.front();
 	std::vector<std::string> keys;
@@ -56,6 +54,7 @@ void JoinCommand::execute() const
 	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(this->getClientFd());
 
 	std::string providedPassword = "";
+	std::string reply;
 
 	for (chan_it = channels.begin(); chan_it != channels.end(); ++chan_it)
 	{
@@ -110,9 +109,8 @@ void JoinCommand::execute() const
 		}
 		else // if password incorrect
 		{
-			std::stringstream ss;
-			ss << this->_server->getClientNickname(this->getClientFd()) << " " << *chan_it;
-			this->returnErrorReply(ERR_BADCHANNELKEY, ss.str(), *this->_server);//TODO: change after the builder is done
+			reply = this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}
 }

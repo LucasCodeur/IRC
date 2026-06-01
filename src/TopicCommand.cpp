@@ -12,17 +12,14 @@
 
 #include "TopicCommand.hpp"
 #include "NumericReplies.h"
-#include <iostream>
 #include <sstream>
 
-TopicCommand::TopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, type, params)
+TopicCommand::TopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < min_params)
 		throw IncorrectParametersException("Not enough parameters");
 	if (params.size() > max_params)
 		throw IncorrectParametersException("Too much parameters in TOPIC");
-	if (type != TOPIC)
-		throw UnknownCommandException(); //FIXME: use appropriate exception for this
 	if (params.front().size() > 1)
 		throw IncorrectParametersException("Only 1 channel is supported in TOPIC command");
 	if (params.size() == 2 && params.back().size() > 1)
@@ -38,6 +35,7 @@ TopicCommand::~TopicCommand() {}
 void TopicCommand::execute() const
 {
 	std::ostringstream responseStream;
+	std::string reply;
 
 	std::map<std::string, Channel *> channels = _server->getChannelMap();
 	Channel *distTargetChannel = channels.find(this->_targetChannel)->second;
@@ -51,20 +49,21 @@ void TopicCommand::execute() const
 	}
 	else if (this->_newTopic.empty())
 	{
-		this->returnErrorReply(RPL_NOTOPIC, "", *_server);
+		reply = this->_director.rplNoTopic(*_server->getClientByFd(this->getClientFd()), this->_targetChannel);
+		this->_server->sendData(this->getClientFd(), reply);
 	}
 	else
 	{
 		if (!distTargetChannel->isOp(this->getClientFd()))
 		{
-			this->returnErrorReply(ERR_CHANOPRIVSNEEDED, "", *_server);
+			reply = this->_director.errChanOPrivsNeeded(*_server->getClientByFd(this->getClientFd()), this->_targetChannel);
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 		else
 		{
-			distChanIt->second->setTopic(this->_newTopic);
-			responseStream << RPL_TOPIC << this->_targetChannel << ":" << distTargetChannel->getTopic() << LF << CR;
+			reply = this->_director.rplTopic(*_server->getClientByFd(this->getClientFd()), this->_targetChannel, distTargetChannel->getTopic());
+			this->_server->sendData(this->getClientFd(), reply);
 		}
 
 	}
-	_server->sendData(this->getClientFd() , responseStream.str());
 }

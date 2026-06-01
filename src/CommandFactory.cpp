@@ -1,5 +1,6 @@
 #include "CommandFactory.hpp"
 #include "JoinCommand.hpp"
+#include "ModeCommand.hpp"
 #include "TopicCommand.hpp"
 #include "PassCommand.hpp"
 #include "NickCommand.hpp"
@@ -8,11 +9,13 @@
 #include "ModeCommand.hpp"
 #include "PrivmsgCommand.hpp"
 #include "Command.hpp"
-#include <sstream>
+#include "debug.hpp"
 #include "string.h"
 
+#include <sstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 CommandFactory::CommandFactory() {}
 
@@ -38,128 +41,164 @@ std::vector<std::string> split(std::string str,   char delimiter)
 
 Command *CommandFactory::createCommand(Server *server, const int clientFd, const std::string str)
 {
-	std::cout << "Command :" << str << std::endl;
+	if (DEBUG)
+		std::cout << "	creating command from : '" << str << "'" << std::endl;
 	const char *types[12] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
 
-	Command *(*creators[12])(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > parameters);
+	Command *(*creators[12])(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > arguments);
 
 	for (int i = 0; i < 12; i++)
 		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
+	// creators[3] = &CommandFactory::createKickCommand;
+	// creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
-	// creators[6] = &CommandFactory::createModeCommand;
+	creators[6] = &CommandFactory::createModeCommand;
+	// creators[7] = &CommandFactory::createWhoCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
 	creators[11] = &CommandFactory::createPartCommand;
 
 	std::vector<std::string>	commandTypes(types, types + COMMAND_TYPES_AMOUNT);
-	std::vector<std::string>	formattedCommand;
-	std::string					mainContent = "";
-	std::string					splitString;
-	size_t						type;
+	std::vector<std::string>	formattedMessage;
+	std::string					stringSlice = "";
+	std::string					prefix = "";
+	std::string					command = "";
+	std::vector<std::vector<std::string> > arguments;
+	std::string					trailer = "";
+	size_t						type = 0;
+	size_t						prefixEndIndex = 0;
 
-	size_t	colon_pos = str.find(':');
+	//TODO: WIP : create arguments data members inside Command instead of shoving them in "parameters"
+	// Then use the command variable instead of using formattedMessage[0]
+
+	if (str.length() == 0)
+		throw Command::EmptyCommandException();
+	if (str[0] == ':')
+	{
+		prefixEndIndex = str.find(' ');
+		prefix = str.substr(0, prefixEndIndex);
+	}
+
+	size_t	colon_pos = str.find(':', prefixEndIndex);
 	if (colon_pos != str.npos)
-		mainContent = str.substr(colon_pos + 1);
+		trailer = str.substr(colon_pos + 1);
 	
-	std::vector<std::string> mainContentContainer;
-	mainContentContainer.push_back(mainContent);
+	if (DEBUG)
+	{
+			
+	}
+
+	std::vector<std::string> trailerContainer;
+	trailerContainer.push_back(trailer);
 
 
 	std::stringstream ss;
-	ss << (str.substr(0, colon_pos));
+	ss << (str.substr(prefixEndIndex, colon_pos));
 
-	while(getline(ss, splitString, ' '))
+	while(getline(ss, stringSlice, ' '))
 	{
-		size_t pos = splitString.find(" ");
+		size_t pos = stringSlice.find(" ");
 		if (pos != std::string::npos)
-			splitString.erase(pos, 1);
-		formattedCommand.push_back(splitString);
+			stringSlice.erase(pos, 1);
+		formattedMessage.push_back(stringSlice);
 	}
 
-	if (formattedCommand.size() <= 0)
-	{
-		std::cerr << "Formatted command size :" << formattedCommand.size() << std::endl << "first element : " << formattedCommand.front() << std::endl;
+	if (formattedMessage.size() == 0)
 		throw Command::EmptyCommandException();
-	}
-	std::vector<std::vector<std::string> > parameters;
+	command = formattedMessage[0];
 
-	for (std::vector<std::string>::iterator it = formattedCommand.begin() + 1; it != formattedCommand.end(); ++it)
+	if (DEBUG)
 	{
-		parameters.push_back(split(*it, ','));
+		std::cerr << "		whole command : " << str << std::endl;
+		std::cerr << "		prefix : " << prefix << std::endl;
+		std::cerr << "		Command : " << command << std::endl;
+		std::cerr << "		trailer : " << trailer << std::endl;
+	}
+	
+	Command::t_msgSpecs msgSpecs;
+
+	msgSpecs.prefix = prefix;
+	msgSpecs.command = command;
+	msgSpecs.trailer =  trailer;
+
+	for (std::vector<std::string>::iterator it = formattedMessage.begin() + 1; it != formattedMessage.end(); ++it)
+	{
+		arguments.push_back(split(*it, ','));
 	}
 
-	if (!mainContent.empty())
-		parameters.push_back(mainContentContainer);
-
-	for (type = 0; type < commandTypes.size(); ++type)
+	for (type = 0; type < commandTypes.size() - 1; ++type)
 	{
-		if (formattedCommand[0] == commandTypes[type])
+		if (formattedMessage[0] == commandTypes[type])
 		{
 			if (creators[type] == NULL)
-				throw Command::UnknownCommandException();
-			return (*creators[type])(server, clientFd, (enum Command::commandType)type, parameters);
+				throw Command::UnknownCommandException(std::string(formattedMessage[0]));
+			return (*creators[type])(server, clientFd, msgSpecs, arguments);
 		}
-		if (type == commandTypes.size() - 1)
-			throw Command::UnknownCommandException();
 	}
-	throw Command::UnknownCommandException();
+	throw Command::UnknownCommandException(std::string(formattedMessage[0]));
 }
 
 
-Command *CommandFactory::createJoinCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createJoinCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
-	return (new JoinCommand(server, clientFd, type, params));
+	return (new JoinCommand(server, clientFd, specs, params));
 }
 
-Command *CommandFactory::createPrivmsgCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createPrivmsgCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
-	return (new PrivmsgCommand(server, clientFd, type, params));
+	return (new PrivmsgCommand(server, clientFd, specs, params));
 }
 
-// Command *createInviteCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
+// Command *CommandFactory::createInviteCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 // {
-// 	return (new InviteCommand(clientFd, type, params));
+// 	return (new InviteCommand(server, clientFd, specs, params));
 // }
 
-Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+// Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
+// {
+// 	return (new KickCommand(server, clientFd, specs, params));
+// }
+//
+
+Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
-	return (new TopicCommand(server, clientFd, type, params));
+	return (new TopicCommand(server, clientFd, specs, params));
 }
 
-// Command *createKickCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
+// Command *createKickCommand(const int clientFd, Command::t_msgSpecs specs, const std::vector<std::string> params)
 // {
-// 	return (new KickCommand(clientFd, type, params));
+// 	return (new KickCommand(clientFd, specs, params));
 // }
 
-Command *CommandFactory::createModeCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createModeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
-	return (new ModeCommand(server, clientFd, type, params));
+	return (new ModeCommand(server, clientFd, specs, params));
 }
 
-// Command *createWhoCommand(const int clientFd, const enum Command::commandType type, const std::vector<std::string> params)
+// Command *createWhoCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 // {
-// 	return (new WhoCommand(clientFd, type, params));
+// 	return (new WhoCommand(server, clientFd, specs, params));
 // }
 
-Command *CommandFactory::createPassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+Command *CommandFactory::createPassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
-	return (new PassCommand(server, clientFd, type, params));
+	return (new PassCommand(server, clientFd, specs, params));
 }
 
-Command *CommandFactory::createNickCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> >params)
+Command *CommandFactory::createNickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
-	return (new NickCommand(server, clientFd, type, params));
+	return (new NickCommand(server, clientFd, specs, params));
 }
 
-Command *CommandFactory::createUserCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createUserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
-	return (new UserCommand(server, clientFd, type, params));
+	return (new UserCommand(server, clientFd, specs, params));
 }
 
-Command *CommandFactory::createPartCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params)
+Command *CommandFactory::createPartCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
-	return (new PartCommand(server, clientFd, type, params));
+	return (new PartCommand(server, clientFd, specs, params));
 }

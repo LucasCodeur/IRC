@@ -7,7 +7,7 @@
 class PassCommand : public Command
 {
 	public:
-		PassCommand(Server *server, const int clientFd, const enum Command::commandType type, const std::vector<std::vector<std::string> > params);
+		PassCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 		~PassCommand();
 
 		void	execute() const;
