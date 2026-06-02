@@ -82,6 +82,8 @@ class Director
 		std::string		rplNoTopic(Client const &client, Channel const &channel);
 		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList);
 		std::string		rplEndOfNames(Client const &client, Channel const &channel);
+		std::string		rplWhoReply(Client const &requester, std::string const &channel, Client const &target, bool isOp) const;
+		std::string		rplEndOfWho(Client const &requester, std::string const &mask) const;
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
 		std::string		rplWelcome(Client client) const;
 		std::string		rplChannelModeIs(Client client, std::string channelName, std::string modes) const;

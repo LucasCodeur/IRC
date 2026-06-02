@@ -44,6 +44,7 @@ SRC =			main.cpp	\
 				ModeCommand.cpp \
 				TopicCommand.cpp \
 				PrivmsgCommand.cpp \
+				WhoCommand.cpp \
 				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\

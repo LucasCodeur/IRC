@@ -480,6 +480,51 @@ std::string Director::rplEndOfNames(Client const &client, Channel const &channel
 	return (reply);
 }
 
+std::string Director::rplWhoReply(Client const &requester, std::string const &channel, Client const &target, bool isOp) const
+{
+	ReplyBuilder builder;
+
+	std::string flags = isOp ? "H@" : "H";
+	std::string params = requester.getNickname() + " " + channel + " "
+		+ target.getUsername() + " " + target.getHostname() + " "
+		+ SERVERNAME + " " + target.getNickname() + " " + flags;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_WHOREPLY)
+				.addParams(params)
+				.addTrailing("0 " + target.getRealname())
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string Director::rplEndOfWho(Client const &requester, std::string const &mask) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_ENDOFWHO)
+				.addParams(requester.getNickname() + " " + mask)
+				.addTrailing("End of WHO list")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 ReplyBuilder::ReplyBuilder()
 {
 }

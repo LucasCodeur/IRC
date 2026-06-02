@@ -8,6 +8,7 @@
 #include "PartCommand.hpp"
 #include "ModeCommand.hpp"
 #include "PrivmsgCommand.hpp"
+#include "WhoCommand.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
 #include "string.h"
@@ -54,7 +55,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	// creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
 	creators[6] = &CommandFactory::createModeCommand;
-	// creators[7] = &CommandFactory::createWhoCommand;
+	creators[7] = &CommandFactory::createWhoCommand;
 	creators[8] = &CommandFactory::createPassCommand;
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
@@ -177,10 +178,10 @@ Command *CommandFactory::createModeCommand(Server *server, const int clientFd, C
 	return (new ModeCommand(server, clientFd, specs, params));
 }
 
-// Command *createWhoCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
-// {
-// 	return (new WhoCommand(server, clientFd, specs, params));
-// }
+Command *CommandFactory::createWhoCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
+{
+	return (new WhoCommand(server, clientFd, specs, params));
+}
 
 Command *CommandFactory::createPassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
