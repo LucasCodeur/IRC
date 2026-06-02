@@ -323,3 +323,17 @@ std::vector<std::string> Channel::listNames()
 	}
 	return nicknamesList;
 }
+
+std::string Channel::getChannelNamesList() const
+{
+	std::string namesList;
+	std::vector<Client *> const &users = this->getUsers();
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (!namesList.empty()) namesList += " ";
+		if (this->isOp(users[i]->getFd()))
+			namesList += "@";
+		namesList += users[i]->getNickname();
+	}
+	return namesList;
+}

@@ -35,7 +35,7 @@ void JoinCommand::confirmJoin(Client const &client, Channel const &channel) cons
 	else
 		this->_server->sendData(client.getFd(), this->_director.rplTopic(client, channel));
 
-	this->_server->sendData(client.getFd(), this->_director.rplNameReply(client, channel, this->_server->getChannelNamesList(channel)));
+	this->_server->sendData(client.getFd(), this->_director.rplNameReply(client, channel, channel.getChannelNamesList()));
 	this->_server->sendData(client.getFd(), this->_director.rplEndOfNames(client, channel));
 }
 

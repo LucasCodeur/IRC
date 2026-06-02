@@ -66,6 +66,8 @@ class Channel
 	void sendMessageToAll(const std::string &message) const;
 	void sendMessageToAllOther(const std::string &message, int senderFd) const;
 	std::vector<std::string> listNames();
+	std::string getChannelNamesList() const;
+
 
 };
 std::ostream &operator<<(std::ostream &o, const Channel &obj);
