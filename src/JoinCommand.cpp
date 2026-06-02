@@ -28,25 +28,24 @@ JoinCommand::~JoinCommand() {}
 
 void JoinCommand::confirmJoin(Client const &client, Channel const &channel) const
 {
-	Director director;
+	channel.sendMessageToAll(this->_director.rplJoin(client, channel).c_str());
 
-	channel.sendMessageToAll(director.rplJoin(client, channel).c_str());
-
-	if (channel.getTopic().empty()) //send topic or no topic reply
-		this->_server->sendData(client.getFd(), director.rplNoTopic(client, channel));
+	if (channel.getTopic().empty())
+		this->_server->sendData(client.getFd(), this->_director.rplNoTopic(client, channel));
 	else
-		this->_server->sendData(client.getFd(), director.rplTopic(client, channel));
+		this->_server->sendData(client.getFd(), this->_director.rplTopic(client, channel));
 
-	this->_server->sendData(client.getFd(), director.rplNameReply(client, channel, this->_server->getChannelNamesList(channel))); //send names list
-	this->_server->sendData(client.getFd(), director.rplEndOfNames(client, channel));//send end of names list
+	this->_server->sendData(client.getFd(), this->_director.rplNameReply(client, channel, this->_server->getChannelNamesList(channel)));
+	this->_server->sendData(client.getFd(), this->_director.rplEndOfNames(client, channel));
 }
+
 
 /**
 * @brief executes itself.
 * @param server the server in which the JoinCommand should be executed.
 * A JoinCommand is in the form JOIN channel_1, channel_2 ... pass1, pass2 ...
 * the function iterates over each channel_i and verifies wether :
-	* - the channel already exists (if not, create it)
+* - the channel already exists (if not, create it)
 	* - the provided pass_i is correct.
 * if everything is good for a given channel, call server::addUser to add the current user to said channel.
 * then proceed for next provided channel.
@@ -85,12 +84,9 @@ void JoinCommand::execute() const
 				std::cerr << "Error : channel could not be created" << std::endl;
 				return ;
 			}
-
-			distChan_it->second->addUser(this->getClientFd());
+			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
 			distChan_it->second->setOperator(this->getClientFd());
-
 			this->confirmJoin(*(it->second), *(distChan_it->second));
-
 			if (key_it != keys.end())
 				key_it++;
 			continue;
@@ -104,20 +100,17 @@ void JoinCommand::execute() const
 
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
-			distChan_it->second->addUser(this->getClientFd());
-
+			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
 			this->confirmJoin(*(it->second), *(distChan_it->second));
-
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
-			distChan_it->second->addUser(this->getClientFd());
-
+			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else // if password incorrect
 		{
-			std::string reply =	this->_director.errBadChannelKey(*_server->getClientByFd(this->getClientFd()), *chan_it);
+			std::string reply = this->_director.errBadChannelKey(this->getClient()->getNickname(), *chan_it);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}

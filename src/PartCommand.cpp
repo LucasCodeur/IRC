@@ -10,7 +10,7 @@ PartCommand::PartCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 {
 	if (params.size() < PartCommand::min_params)
 	{
-		std::string reply = this->_director.errNeedMoreParams(*_server->getClientByFd(this->getClientFd()), "PART");
+		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "PART");
 		this->_server->sendData(this->getClientFd(), reply);
 	}
 	else if (PartCommand::max_params != 0 && params.size() > PartCommand::max_params)
@@ -38,7 +38,7 @@ void PartCommand::execute() const
 			{
 				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
 				std::string reason = this->_trailer.empty() ? "Leaving" : this->_trailer;
-				std::string reply = this->_director.rplPart(*this->_server->getClientByFd(fd), *it->second, reason);
+				std::string reply = this->_director.rplPart(*this->_server->getClient(fd), *it->second, reason);
 				it->second->sendMessageToAll(reply);
 				this->_server->sendData(fd, reply);
 				if (it->second->getUsers().empty())
@@ -49,13 +49,13 @@ void PartCommand::execute() const
 			}
 			else // if user was not on channel
 			{
-				std::string reply = this->_director.errNotOnChannel(*_server->getClientByFd(fd), it->second->getName());
+				std::string reply = this->_director.errNotOnChannel(this->getClient()->getNickname(), it->second->getName());
 				this->_server->sendData(this->getClientFd(), reply);
 			}
 		}
 		else // if channel does not exist
 		{
-			std::string reply = this->_director.errNoSuchChannel(*_server->getClientByFd(fd), params[i]);
+			std::string reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), params[i]);
 			this->_server->sendData(this->getClientFd(), reply);
 		}
 	}

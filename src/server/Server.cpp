@@ -322,7 +322,15 @@ std::ostream &operator<<(std::ostream &o, const Server &obj)
 			  << " port: " << obj.getPort());
 }
 
-Client *Server::getClientByFd(const int fd) const
+std::string const Server::getClientNickname(int clientFd) const
+{
+	std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+	if (it != this->_clients.end())
+		return (it->second->getNickname());
+	return ("");
+}
+
+Client *Server::getClient(const int fd) const
 {
 	std::map<int, Client*>::const_iterator it = this->_clients.find(fd);
 	if (it != this->_clients.end())
@@ -333,15 +341,24 @@ Client *Server::getClientByFd(const int fd) const
 std::string Server::getChannelNamesList(Channel const &channel) const
 {
 	std::string namesList;
-	std::vector<int> const &users = channel.getUsers();
+	std::vector<Client *> const &users = channel.getUsers();
 	for (size_t i = 0; i < users.size(); i++)
 	{
-		Client *member = this->getClientByFd(users[i]);
-		if (!member) continue;
 		if (!namesList.empty()) namesList += " ";
-		if (channel.isOp(users[i]))
+		if (channel.isOp(users[i]->getFd()))
 			namesList += "@";
-		namesList += member->getNickname();
+		namesList += users[i]->getNickname();
 	}
 	return namesList;
 }
+
+Client *Server::getClient(const std::string nick) const
+{
+        for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); ++it)
+        {
+                if (it->second->getNickname() == nick)
+                        return (it->second);
+        }
+        return (NULL);
+}
+

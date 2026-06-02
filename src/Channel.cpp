@@ -11,7 +11,7 @@ Channel::Channel()
 	: _name(""),
 	  _topic(""),
 	  _password(""),
-	  _mode(0100)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -22,7 +22,7 @@ Channel::Channel(std::string const &name)
 	: _name(name),
 	  _topic(""),
 	  _password(""),
-	  _mode(0100)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -32,7 +32,7 @@ Channel::Channel(std::string const &name, std::string const &password)
 	: _name(name),
 	  _topic(""),
 	  _password(password),
-	  _mode(0)
+	  _mode(4)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -104,7 +104,7 @@ std::string const &Channel::getPassword() const
 	return (_password);
 }
 
-std::vector<int> const &Channel::getUsers() const
+std::vector<Client *> const &Channel::getUsers() const
 {
 	return (_users);
 }
@@ -176,26 +176,68 @@ void Channel::setModeItem(unsigned int item, bool value)
 
 /**
  * @brief Adds a user to the channel if they are not already present. Sends a JOIN message to all other users in the channel.
- * @param clientFd the file descriptor of the user to add.
+ * @param client pointer to the Client object to add to the channel.
  * @return true if the user was successfully added, false if the user was already in the channel.
  */
-bool Channel::addUser(int clientFd)
+bool Channel::addUser(Client *client)
 {
-	if (std::find(this->_users.begin(), this->_users.end(), clientFd) == this->_users.end())
+	if (std::find(this->_users.begin(), this->_users.end(), client) == this->_users.end())
 	{
-		this->_users.push_back(clientFd);
+		this->_users.push_back(client);
+		return (true);
+	}
+	return (false);
+}
+/**
+ * @brief removes the specified client from the Channel.
+ * @param client pointer to the Client object to remove from the channel.
+ * @return true if the user was successfully removed, false if the user was not in the channel.
+ */
+bool Channel::removeUser(Client *client)
+{
+	std::vector<Client *>::iterator it = std::find(this->_users.begin(), this->_users.end(), client);
+	if (it != this->_users.end())
+	{
+		this->_users.erase(it);
 		return (true);
 	}
 	return (false);
 }
 
+/**
+ * @brief removes the specified client from the Channel.
+ * @param clientFd fd of the client to remove.
+ * @return true if the user was successfully removed, false if the user was not in the channel.
+ */
 bool Channel::removeUser(int clientFd)
 {
-	std::vector<int>::iterator it = std::find(this->_users.begin(), this->_users.end(), clientFd);
-	if (it != this->_users.end())
+	std::vector<Client *>::iterator it;
+	for (it = this->_users.begin(); it != this->_users.end(); ++it)
 	{
-		this->_users.erase(it);
-		return (true);
+		if ((*it)->getFd() == clientFd)
+		{
+			this->_users.erase(it);
+			return (true);
+		}
+	}
+	return (false);
+}
+
+/**
+ * @brief removes the specified client from the Channel.
+ * @param clientFd nickname of the user to remove.
+ * @return true if the user was successfully removed, false if the user was not in the channel.
+ */
+bool Channel::removeUser(std::string nickname)
+{
+	std::vector<Client *>::iterator it;
+	for (it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if ((*it)->getNickname() == nickname)
+		{
+			this->_users.erase(it);
+			return (true);
+		}
 	}
 	return (false);
 }
@@ -227,14 +269,29 @@ bool Channel::isOp(int clientFd) const
 
 bool Channel::isOnChan(int clientFd)
 {
-	return (std::find(this->_users.begin(), this->_users.end(), clientFd) != this->_users.end());
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if ((*it)->getFd() == clientFd)
+			return (true);
+	}
+	return (false);
+}
+
+bool Channel::isOnChan(std::string nickname)
+{
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if ((*it)->getNickname() == nickname)
+			return (true);
+	}
+	return (false);
 }
 
 void Channel::sendMessageToAll(const std::string &message) const
 {
 	for (size_t i = 0; i < this->_users.size(); ++i)
 	{
-		send(this->_users[i], message.c_str(), message.size(), 0);
+		send(this->_users[i]->getFd(), message.c_str(), message.size(), 0);
 	}
 }
 
@@ -242,12 +299,27 @@ void Channel::sendMessageToAllOther(const std::string &message, int senderFd) co
 {
 	for (size_t i = 0; i < this->_users.size(); ++i)
 	{
-		if (this->_users[i] != senderFd)
-			send(this->_users[i], message.c_str(), message.size(), 0);
+		if (this->_users[i]->getFd() != senderFd)
+			send(this->_users[i]->getFd(), message.c_str(), message.size(), 0);
 	}
 }
 
 bool Channel::isUserInChannel(int clientFd) const
 {
-	return (std::find(this->_users.begin(), this->_users.end(), clientFd) != this->_users.end());
+	for (size_t i = 0; i < this->_users.size(); i++)
+		if (this->_users[i]->getFd() == clientFd) return true;
+	return false;
+}
+
+std::vector<std::string> Channel::listNames()
+{
+	std::vector<std::string> nicknamesList;
+	for (std::vector<Client *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if (isChanOp((*it)->getNickname()))
+			nicknamesList.push_back("@" + (*it)->getNickname());
+		else
+			nicknamesList.push_back((*it)->getNickname());
+	}
+	return nicknamesList;
 }

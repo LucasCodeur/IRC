@@ -12,7 +12,9 @@ Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::
 	  _prefix(specs.prefix),
 	  _command(specs.command),
 	  _trailer(specs.trailer)
-{}
+{
+	this->_client = server->getClient(clientFd);
+}
 
 Command::~Command(){}
 
@@ -46,6 +48,11 @@ Command &Command::operator=(Command const &other)
 int Command::getClientFd() const
 {
 	return (_clientFd);
+}
+
+Client *Command::getClient() const
+{
+	return (this->_client);
 }
 
 Command::commandType Command::getCommandType() const
@@ -133,3 +140,8 @@ Command::EmptyCommandException::~EmptyCommandException() throw() {}
 Command::IncorrectParametersException::IncorrectParametersException() : std::runtime_error("number of parameters incorrect") {}
 Command::IncorrectParametersException::IncorrectParametersException(std::string msg) : std::runtime_error(msg) {}
 Command::IncorrectParametersException::~IncorrectParametersException() throw() {}
+
+Command::NotEnoughParametersException::NotEnoughParametersException() : std::runtime_error("Need more params") {}
+Command::NotEnoughParametersException::NotEnoughParametersException(std::string msg) : std::runtime_error(msg) {}
+Command::NotEnoughParametersException::~NotEnoughParametersException() throw() {}
+

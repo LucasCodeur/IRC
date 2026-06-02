@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/28 17:35:37 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/06/02 14:26:18 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,26 +76,29 @@ class Director
 		ReplyBuilder*	builder;
 		void			setBuilderType(ReplyBuilder* builder);
 
-		std::string		rplJoin(Client const &client, Channel const &channel);
+		std::string		rplJoin(Client const &client, Channel const &channel) const;
 		std::string		rplPart(Client const &client, Channel const &channel, std::string const &reason) const;
-		std::string		rplTopic(Client const &client, Channel const &channel);
-		std::string		rplNoTopic(Client const &client, Channel const &channel);
-		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList);
-		std::string		rplEndOfNames(Client const &client, Channel const &channel);
+		std::string		rplTopic(Client const &client, Channel const &channel) const;
+		std::string		rplNoTopic(Client const &client, Channel const &channel) const;
+		std::string		rplNameReply(Client const &client, Channel const &channel, std::string const &namesList) const;
+		std::string		rplEndOfNames(Client const &client, Channel const &channel) const;
 		std::string		rplWhoReply(Client const &requester, std::string const &channel, Client const &target, bool isOp) const;
 		std::string		rplEndOfWho(Client const &requester, std::string const &mask) const;
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
 		std::string		rplWelcome(Client client) const;
-		std::string		rplChannelModeIs(Client client, std::string channelName, std::string modes) const;
+		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
 		std::string		rplYourhost(Client client) const;
-		std::string		errNeedMoreParams(Client client, std::string command) const;
-		std::string		errNoSuchChannel(Client client, std::string channelName) const;
-		std::string		errUnknownMode(Client client, std::string modeChar) const;
-		std::string		rplTopic(Client client, std::string channelName, std::string topic) const;
-		std::string		rplNoTopic(Client client, std::string channelName) const;
-		std::string		errNotOnChannel(Client client, std::string channelName) const;
-		std::string		errChanOPrivsNeeded(Client client, std::string channelName) const;
-		std::string		errBadChannelKey(Client client, std::string channelName) const;
-		std::string		errUnknownCommand(Client client, std::string cmdKeyword) const;
+		std::string		errNeedMoreParams(std::string clientNick, std::string command) const;
+		std::string		errNoSuchChannel(std::string clientNick, std::string channelName) const;
+		std::string		errUnknownMode(std::string clientNick, std::string modeChar) const;
+		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
+		std::string		rplNoTopic(std::string clientNick, std::string channelName) const;
+		std::string		errNotOnChannel(std::string clientNick, std::string channelName) const;
+		std::string		errChanOPrivsNeeded(std::string clientNick, std::string channelName) const;
+		std::string		errBadChannelKey(std::string clientNick, std::string channelName) const;
+		std::string		errNoSuchNick(std::string clientNick, std::string channelName) const;
+		std::string		errUnknownCommand(std::string clientNick, std::string cmdKeyword) const;
+		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
+		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 };
 #endif

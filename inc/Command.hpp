@@ -63,6 +63,14 @@ class Command
 			~IncorrectParametersException() throw();
 	};
 
+	class NotEnoughParametersException : public std::runtime_error
+	{
+		public:
+			NotEnoughParametersException();
+			NotEnoughParametersException(std::string msg);
+			~NotEnoughParametersException() throw();
+	};
+
 	// CONSTRUCTOR
 	Command(Server *server, int clientFd, t_msgSpecs specs, std::vector<std::vector<std::string> > const &params);
 	virtual ~Command();
@@ -77,6 +85,7 @@ class Command
 	commandType getCommandType() const;
 	Director	*getDirector() ;
 	std::vector<std::vector<std::string> > const &getParams() const;
+	Client *getClient() const;
 
 	// SETTERS
 	void setClientFd(int clientFd);
@@ -101,6 +110,7 @@ protected:
 	std::string								_prefix;
 	std::string								_command;
 	std::string								_trailer;
+	Client									*_client;
 
 };
 

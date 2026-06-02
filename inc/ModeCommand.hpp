@@ -17,8 +17,9 @@ public:
 
 private:
 	static const unsigned int	min_params = 1;
-	static const unsigned int	max_params = 2;
-	std::string					operationChar;
+	static const unsigned int	max_params = 3;
+	std::string					_operationChar;
+	std::string					_modeChar;
 	Channel *					_targetChannel;
 };
 
