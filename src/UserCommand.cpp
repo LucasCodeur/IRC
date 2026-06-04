@@ -18,7 +18,14 @@ UserCommand::~UserCommand() {};
 void	UserCommand::execute() const
 {
 	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
-	
+	if (it->second->authState.getFullyRegistered() == true)
+	{
+		std::string reply;
+		reply = this->_director.errAlreadyRegistred();
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
 	if (it->second->authState.getNickReceived() == true)
 	{
 		// PRINT("MESSAGE SPECS", BLUE, "\n");

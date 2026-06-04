@@ -8,9 +8,6 @@
 
 PassCommand::PassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
-	std::map<int, Client*>::const_iterator	it = _server->getClientmap().find(this->getClientFd());
-	if (it->second->authState.getFullyRegistered() == true)
-			throw NotEnoughParametersException(""); //FIXME: Have to change, maybe throw other things
 	if (params.size() < PassCommand::min_params)
 			throw NotEnoughParametersException("PASS");
 	else if (params.size() > PassCommand::max_params)
@@ -21,7 +18,16 @@ PassCommand::~PassCommand() {};
 
 void	PassCommand::execute() const
 {
-	std::map<int, Client*>::const_iterator	it = _server->getClientmap().find(this->getClientFd());
+	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
+
+	if (it->second->authState.getFullyRegistered() == true)
+	{
+		std::string reply;
+		reply = this->_director.errAlreadyRegistred();
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
 	std::string								message = "Password correct\n";
 	std::string								password = this->_params[0][0];
 

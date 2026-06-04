@@ -693,13 +693,7 @@ std::string Director::errNickcollision(const std::string& nickname) const
 				.addCrln()
 				.buildReply();
 	PRINT(reply, YELLOW, "\n")
-	return (reply);
-}
-
-/**
-* @brief Error reply after receiving a NICK message which contains
-* characters which do not fall in the defined set.
-* @param nickname string Nickname is already in use
+	return (reply); } /** @brief Error reply after receiving a NICK message which contains characters which do not fall in the defined set. @param nickname string Nickname is already in use
 * @return the reply in order to send it to the client.
 */
 std::string Director::errErroneusnickname(const std::string& nickname) const
@@ -736,6 +730,27 @@ std::string Director::errNicknameinuse(const std::string& nickname) const
 				.addTrailing(":")
 				.addParams(nickname)
 				.addTrailing("Nickname is already in use")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief error reply returned by the server to any link which tries to
+* change part of the registered details (such as
+* password or user details from second USER message).
+* @return the reply in order to send it to the client.
+*/
+std::string		Director::errAlreadyRegistred(void) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ERRONEUSNICKNAME)
+				.addTrailing("You may not reregister")
 				.addCrln()
 				.buildReply();
 	PRINT(reply, YELLOW, "\n")
