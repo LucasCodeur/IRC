@@ -25,18 +25,28 @@ void    Server::receiveData(int clientFd)
         temp->setFd(clientFd);
         this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
     }
-    int bytes_read;
-    char buffer[BUFFER_SIZE] = {"0"};
+    int         bytes_read;
+    char        buffer[BUFFER_SIZE] = {"0"};
     std::string strCommand;
-
+    Command*    command = NULL;
+    PRINT("BEFORE", RED, "\n");
+    print_all_clients(this->_clients);
     while (1)
     {
-        Command* command;
         Client *client = this->getClient(clientFd);
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
+        if (bytes_read <= 0)
+        {
+            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+            {
+                PRINT("client disconnected: ", RED, "");
+                PRINT(clientFd, RED, "\n");
+                close(clientFd);
+                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+                return ;
+            }
+        }
         buffer[bytes_read] = '\0';
-        PRINT("command received from client ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
         try
         {
             std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
@@ -66,25 +76,17 @@ void    Server::receiveData(int clientFd)
         }
         catch(std::exception& e)
         {
+            PRINT("AFTER", RED, "\n");
+            print_all_clients(this->_clients);
             std::cout << "Caught: " << e.what() << std::endl;
+            this->_clients.erase(clientFd);
             return ; //FIXME: Maybe take off the client instead.
-        }
-        if (bytes_read <= 0)
-        {
-            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
-            {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
-                close(clientFd);
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-            }
         }
         // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
         // print_info_client(*(it->second));
     }
 }
 
-#include <stdlib.h>  // <cstdlib> en C++
 /**
  * @brief function to extract a valid command from the buffer.
  * @param buffer, string to extract the command.
@@ -95,30 +97,14 @@ static std::string    extractCommand(std::string& buffer)
     std::string     res;
     size_t          pos = buffer.find("\n");
 
-    // PRINT("STR BUFFER: ", YELLOW, "");
-    // PRINT(buffer, WHITE, "\n");
-    // PRINT("Pos: ", BLUE, "\n");
-    // PRINT(pos, RED, "\n");
     if (pos != 0)
     {
-        // PRINT("inside if pos", RED, "\n");
         res = buffer.substr(0, pos + 1);
         buffer.erase(0, pos + 1);
     }
     int size = res.size();
-    // std::cout << "res: "  << res << "size: " << size << std::endl;
-    // if (res[size - 1] == '\n')
-    // {
-    //     std::cout << "new_line present" << std::endl;
-    // }
-    // if (res[size - 2] == '\r')
-    // {
-    //     std::cout << "carriage present" << std::endl;
-    // }
     if (size <= 2 && res[size - 1] != '\n' && res[size - 2] != '\r')
         throw std::runtime_error("Not carriage or newline at the end of the command");
     res = res.substr(0, size - 2);
-    // PRINT("STR COMMAND: ", YELLOW, "");
-    // PRINT(res, RED, "\n");
     return (res);
 }
