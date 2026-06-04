@@ -14,6 +14,7 @@
 #include "Client.hpp"
 #include "debug.hpp"
 #include "Exceptions.hpp"
+#include <cctype>
 
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -32,7 +33,45 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 
 NickCommand::~NickCommand() {};
 
-static bool	checkNickname(std::map<int, Client*>& map,  std::string nickname)
+static bool	check_nickname(std::string& nickname);
+static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname);
+
+void	NickCommand::execute() const
+{
+	std::map<int, Client*> map = _server->getClientmap();
+	std::map<int, Client*>::const_iterator it = map.find(this->getClientFd());
+	Client* client = it->second;
+	std::string nickname = this->_params[0][0];
+	
+	if (checkCollisionNickname(map, nickname) == false && client->authState.getFullyRegistered() == true)
+	{
+		std::string reply;
+		reply = this->_director.errNicknameinuse(nickname);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	else if (checkCollisionNickname(map, nickname) == false)
+	{
+		std::string reply;
+		reply = this->_director.errNickcollision(nickname);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	else if (check_nickname(nickname) == false)
+	{
+		std::string reply;
+		reply = this->_director.errErroneusnickname(nickname);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	client->setNickname(nickname);
+	client->authState.setNickReceived(true);
+}
+
+static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname)
 {
 	for (std::map<int, Client*>::const_iterator it = map.begin(); it != map.end(); ++it)
 	{
@@ -42,20 +81,23 @@ static bool	checkNickname(std::map<int, Client*>& map,  std::string nickname)
 	return (true);
 }
 
-void	NickCommand::execute() const
+static bool	special_charset(char c);
+
+static bool	check_nickname(std::string& nickname)
 {
-	std::map<int, Client*> map = _server->getClientmap();
-	std::map<int, Client*>::const_iterator it = map.find(this->getClientFd());
-	std::string nickname = this->_params[0][0];
-	
-	if (checkNickname(map, nickname) == false)
+	if (std::isalpha(nickname[0]) == false)
+		return (false);
+	for (int i = 1; nickname[i]; i++)
 	{
-		PRINT("replicated nickname", BLUE, "\n");
-		return ;
+		if (std::isalpha(nickname[i]) == false && std::isdigit(nickname[i]) == false && special_charset(nickname[i]) == false)
+			return (false);
 	}
-	it->second->setNickname(nickname);
-	it->second->authState.setNickReceived(true);
-	// std::string message = "Nick information complete successfully\n";
-	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-	// 	throw sendFailed();
+	return (true);
+}
+
+static bool	special_charset(char c)
+{
+	if (c == '-' || c == '[' || c ==']' || c == '\\' || c =='`' || c== '^' || c == '{' || c == '}')
+		return (true);
+	return (false);
 }

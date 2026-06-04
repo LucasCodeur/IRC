@@ -653,6 +653,11 @@ std::string Director::rplEndofNames(std::string clientNick, Channel &channel) co
 	return (reply);
 }
 
+/**
+ * @brief Error reply Returned when a nickname parameter expected for a
+ * command and isn't found.
+ * @return the reply in order to send it to the client.
+ */
 std::string Director::errNonicknamegiven() const
 {
 	ReplyBuilder builder;
@@ -662,6 +667,75 @@ std::string Director::errNonicknamegiven() const
 				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_NONICKNAMEGIVEN)
 				.addTrailing("No nickname given")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief Error reply returned by a server to a client when it detects a
+* nickname collision.
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errNickcollision(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NICKCOLLISION)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Nickname collision KILL")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief Error reply after receiving a NICK message which contains
+* characters which do not fall in the defined set.
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errErroneusnickname(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ERRONEUSNICKNAME)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Erroneus nickname")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief Error reply when a NICK message is processed that results 
+* in an attempt to change to a currently existing nickname.
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errNicknameinuse(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ERRONEUSNICKNAME)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Nickname is already in use")
 				.addCrln()
 				.buildReply();
 	PRINT(reply, YELLOW, "\n")

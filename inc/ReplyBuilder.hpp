@@ -80,10 +80,10 @@ class Director
 		std::string		rplEndOfWho(Client const &requester, std::string const &mask) const;
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
 		std::string		rplYourhost(Client client) const;
+		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
 		std::string		errNeedMoreParams(std::string clientNick, std::string command) const;
 		std::string		errNoSuchChannel(std::string clientNick, std::string channelName) const;
 		std::string		errUnknownMode(std::string clientNick, std::string modeChar) const;
-		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
 		std::string		rplNoTopic(std::string clientNick, std::string channelName) const;
 		std::string		errNotOnChannel(std::string clientNick, std::string channelName) const;
 		std::string		errChanOPrivsNeeded(std::string clientNick, std::string channelName) const;
@@ -93,5 +93,9 @@ class Director
 		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
 		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 		std::string		errAlreadyRegistred(void) const;
+		std::string		errNonicknamegiven() const;
+		std::string		errNickcollision(const std::string& nickname) const;
+		std::string		errErroneusnickname(const std::string& nickname) const;
+		std::string		errNicknameinuse(const std::string& nickname) const;
 };
 #endif
