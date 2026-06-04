@@ -28,7 +28,6 @@ void    Server::receiveData(int clientFd)
     }
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
-    std::string stringBuf;
     std::string strCommand;
 
     while (1)
@@ -37,13 +36,16 @@ void    Server::receiveData(int clientFd)
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
         PRINT("command received from client ", GREEN, "");
-        PRINT(clientFd, GREEN, "");
-        PRINT("\n", GREEN, "");
+        PRINT(clientFd, GREEN, "\n");
         try
         {
-            stringBuf += buffer;
-            // std::cout << "stringBuf: " << stringBuf << std::endl;
-            strCommand = extractCommand(stringBuf);
+            std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+            std::string& clientBuffer = (*it).second->getBuf();
+            // std::cout << "clientBuffer before: " << clientBuffer << std::endl;
+            // clientBuffer += buffer;
+            // std::cout << "clientBuffer after: " << clientBuffer << std::endl;
+            // strCommand = extractCommand(clientBuffer);
+            // std::cout << "clientBuffer after strcommand: " << clientBuffer << std::endl;
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();

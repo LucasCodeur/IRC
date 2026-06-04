@@ -80,7 +80,7 @@ std::string const &Client::getPassword() const
 	return (_password);
 }
 
-std::string const &Client::getBuf() const
+std::string &Client::getBuf()
 {
 	return (_buf);
 }

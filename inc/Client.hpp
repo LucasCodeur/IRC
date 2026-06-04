@@ -52,7 +52,7 @@ class Client
 	std::string const &getPassword() const;
 	std::string const &getRealname() const;
 	std::string const &getServername() const;
-	std::string const &getBuf() const;
+	std::string &getBuf();
 	int getFd() const;
 
 	// SETTERS
