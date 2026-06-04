@@ -14,6 +14,7 @@ public:
 
 	void execute() const;
 	void replyChannelMode() const;
+	void	changeUserMode() const;
 
 private:
 	static const unsigned int	min_params = 1;

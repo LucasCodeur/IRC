@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ModeCommand.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/29 13:51:13 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/29 14:43:58 by kbarru           ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ModeCommand.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
@@ -21,9 +9,7 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 	std::string	reply;
 
 	if (params.front().size() < ModeCommand::min_params)
-	{
 		throw Command::NotEnoughParametersException(this->_command);
-	}
 
 	std::string	targetChannelName = params.front().front();
 
@@ -31,9 +17,7 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 		modeEdition = params[1].front(); // eg. +i
 
 	if (params.size() == 2 && (modeEdition.length() != 2 || (modeEdition[0] != '+' && modeEdition[0] != '-')))
-	{
 		throw Command::IncorrectParametersException(); //NOTE: maybe just silently ignore?
-	}
 
 	std::cout << "Mode edition : " << modeEdition << std::endl;
 	if (modeEdition.length() > 1)
@@ -49,15 +33,11 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 
 		
 	if ((this->_modeChar == "k" || this->_modeChar == "o") && this->_params.size() < 3)
-	{
 		throw Command::NotEnoughParametersException(this->_command);
-	}
 
 	this->_targetChannel = this->_server->getChannelByName(targetChannelName);
 	if (this->_targetChannel == NULL)
-	{
 		throw Command::IncorrectParametersException("MODE : No such channel");
-	}
 }
 
 ModeCommand::~ModeCommand() {}
@@ -83,6 +63,34 @@ void ModeCommand::replyChannelMode() const
 
 }
 
+void	ModeCommand::changeUserMode() const
+{
+	std::string	reply;
+	std::string clientNick = this->_params.back().front();
+
+	if (DEBUG)
+		std::cerr << "trying to add/remove " << clientNick << "op status on channel " << this->_targetChannel << std::endl;
+	Client	*targetClient = this->_server->getClient(clientNick);
+	int	target = this->_server->getClient(clientNick)->getFd();
+	if (!this->_targetChannel->isOp(this->getClientFd()))
+	{
+		reply = this->_director.errChanOPrivsNeeded(this->_targetChannel->getName());
+		this->_server->sendData(this->getClientFd(), reply);
+		return ;
+	}
+
+	if (targetClient == NULL || !(this->_targetChannel->isOnChan(target)))
+	{
+		reply = this->_director.errNoSuchNick(clientNick);
+		this->_server->sendData(this->getClientFd(), reply);
+		return ;
+	}
+	if (this->_operationChar == "+")
+		this->_targetChannel->setOperator(target);
+	if (this->_operationChar == "-")
+		this->_targetChannel->removeOperator(target);
+}
+
 void ModeCommand::execute() const
 {
 
@@ -97,8 +105,11 @@ void ModeCommand::execute() const
 		return ;
 	}
 
-	std::cerr << "mode char : " << this->_modeChar << std::endl;
-	std::cerr << "operation char : " << this->_operationChar << std::endl;
+	if (DEBUG)
+	{
+		std::cerr << "mode char : " << this->_modeChar << std::endl;
+		std::cerr << "operation char : " << this->_operationChar << std::endl;
+	}
 
 	if (!this->_targetChannel->isOnChan(this->getClientFd()))
 	{
@@ -115,29 +126,8 @@ void ModeCommand::execute() const
 	}
 
 	if (this->_modeChar == "o")
-	{
-		std::string clientNick = this->_params.back().front();
-		std::cerr << "trying to op " << clientNick << std::endl;
-		Client	*targetClient = this->_server->getClient(clientNick);
-		int	target = -1;
-		if (!this->_targetChannel->isOp(this->getClientFd()))
-		{
-			reply = this->_director.errChanOPrivsNeeded(this->_targetChannel->getName());
-			this->_server->sendData(this->getClientFd(), reply);
-			return ;
-		}
-		if (targetClient == NULL || !(this->_targetChannel->isOnChan(target = this->_server->getClient(clientNick)->getFd())))
-		{
-			reply = this->_director.errNoSuchNick(clientNick);
-			this->_server->sendData(this->getClientFd(), reply);
-			return ;
-		}
-		if (this->_operationChar == "+")
-			this->_targetChannel->setOperator(target);
-		if (this->_operationChar == "-")
-			this->_targetChannel->removeOperator(target);
-	}
+		this->changeUserMode();
+
 	this->_targetChannel->setModeItem(operationNumber, _operationChar[0] == '+');
 	this->replyChannelMode();
-	
 }
