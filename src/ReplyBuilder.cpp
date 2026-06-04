@@ -653,6 +653,21 @@ std::string Director::rplEndofNames(std::string clientNick, Channel &channel) co
 	return (reply);
 }
 
+std::string Director::errNonicknamegiven() const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NONICKNAMEGIVEN)
+				.addTrailing("No nickname given")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
 ReplyBuilder::ReplyBuilder()
 {
 }

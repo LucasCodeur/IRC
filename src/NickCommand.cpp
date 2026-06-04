@@ -18,8 +18,14 @@
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	size_t sizeParams = params.size();
+	std::string reply;
 	if (sizeParams < NickCommand::min_params)
+	{
+		reply = this->getDirector()->errNonicknamegiven();
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
 		throw Command::IncorrectParametersException("Not enough parameters");
+	}
 	else if (sizeParams > NickCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
 }
