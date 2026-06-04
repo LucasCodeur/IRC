@@ -42,6 +42,8 @@ void    Server::receiveData(int clientFd)
             std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
             std::string& clientBuffer = (*it).second->getBuf();
             clientBuffer += buffer;
+            if (clientBuffer.size() == 0)
+                return ;
             strCommand = extractCommand(clientBuffer);
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
