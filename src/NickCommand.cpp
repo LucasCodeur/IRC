@@ -1,5 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   NickCommand.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/28 14:58:58 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/05/28 14:59:04 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "NickCommand.hpp"
 #include "Client.hpp"
+#include "debug.hpp"
 #include "Exceptions.hpp"
 
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
@@ -13,12 +26,30 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 
 NickCommand::~NickCommand() {};
 
+static bool	checkNickname(std::map<int, Client*>& map,  std::string nickname)
+{
+	for (std::map<int, Client*>::const_iterator it = map.begin(); it != map.end(); ++it)
+	{
+		if (nickname == it->second->getNickname())
+			return (false);
+	}
+	return (true);
+}
+
 void	NickCommand::execute() const
 {
+	std::map<int, Client*> map = _server->getClientmap();
+	std::map<int, Client*>::const_iterator it = map.find(this->getClientFd());
 	std::string nickname = this->_params[0][0];
-	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
+	
+	if (checkNickname(map, nickname) == false)
+	{
+		PRINT("replicated nickname", BLUE, "\n");
+		return ;
+	}
 	it->second->setNickname(nickname);
-	std::string message = "Nick information complete successfully\n";
-	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-		throw sendFailed();
+	it->second->authState.setNickReceived(true);
+	// std::string message = "Nick information complete successfully\n";
+	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
+	// 	throw sendFailed();
 }

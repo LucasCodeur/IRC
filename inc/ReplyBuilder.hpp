@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ReplyBuilder.hpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/25 18:26:21 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/02 14:26:18 by enchevri         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef REPLY_BUILDER_HPP
 # define REPLY_BUILDER_HPP
 
@@ -17,6 +5,8 @@
 #include "Channel.hpp"
 
 # define SERVERNAME "irc_server"
+# define SERVER_VERSION "running version 1.0"
+# define CHANNEL_MODES  "+i, +t, +k, +o, +l"
 # define PREFIX_MARKER ":"
 # define SPACE " "
 
@@ -75,7 +65,11 @@ class Director
 	public:
 		ReplyBuilder*	builder;
 		void			setBuilderType(ReplyBuilder* builder);
-
+		std::string		rplCreated(Client client) const;
+		std::string		rplMyInfo(Client client) const;
+		std::string		rplJoin(Client const &client, Channel const &channel);
+		std::string		rplWelcome(Client client) const;
+		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
 		std::string		rplJoin(Client const &client, Channel const &channel) const;
 		std::string		rplPart(Client const &client, Channel const &channel, std::string const &reason) const;
 		std::string		rplTopic(Client const &client, Channel const &channel) const;
@@ -85,8 +79,6 @@ class Director
 		std::string		rplWhoReply(Client const &requester, std::string const &channel, Client const &target, bool isOp) const;
 		std::string		rplEndOfWho(Client const &requester, std::string const &mask) const;
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
-		std::string		rplWelcome(Client client) const;
-		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
 		std::string		rplYourhost(Client client) const;
 		std::string		errNeedMoreParams(std::string clientNick, std::string command) const;
 		std::string		errNoSuchChannel(std::string clientNick, std::string channelName) const;
@@ -100,5 +92,6 @@ class Director
 		std::string		errUnknownCommand(std::string clientNick, std::string cmdKeyword) const;
 		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
 		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
+		std::string		errAlreadyRegistred(void) const;
 };
 #endif

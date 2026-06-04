@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# define PORT 8080
 # define MAX_EVENTS 30
 # define MAX_WAITING_LIST 3
 # define TIMEOUT -1 

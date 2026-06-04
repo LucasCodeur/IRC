@@ -1,8 +1,10 @@
 #include "ReplyBuilder.hpp"
+#include "NumericReplies.h"
 #include "Channel.hpp"
 #include "NumericReplies.h"
 #include "debug.hpp"
 
+#include <ctime>
 /**
  * @brief allows to setting the params.
  * @param string params to add inside the reply.
@@ -119,11 +121,12 @@ std::string	Director::rplWelcome(Client client) const
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
-				.addNumeric("001")
+				.addNumeric(RPL_WELCOME)
 				.addParams(client.getNickname())
 				.addTrailing("Welcome to the IRC Network")
 				.addCrln()
 				.buildReply();
+
 	//WARN: Maybe change the content of the runtime or even the runtime
 
 	if (reply.size() > 512) 
@@ -371,7 +374,8 @@ std::string	Director::rplYourhost(Client client) const
 
 	std::string trailing = "Your host is ";
 	trailing += SERVERNAME;
-	trailing += ", running version 1.0";
+	trailing += ", ";
+	trailing += SERVER_VERSION;
 
 	std::string reply = builder
 				.reset()
@@ -385,7 +389,61 @@ std::string	Director::rplYourhost(Client client) const
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
-	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+/**
+* @brief creates the numeric reply to indicate when the server was created.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
+std::string	Director::rplCreated(Client client) const
+{
+	ReplyBuilder	builder;
+	std::string		trailing = "This server was created ";
+
+	trailing += "01/01/2026";
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_CREATED)
+				.addParams(client.getNickname())
+				.addTrailing(trailing)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	return (reply);
+}
+
+std::string	Director::rplMyInfo(Client client) const
+{
+	ReplyBuilder	builder;
+	std::string		params = client.getNickname();
+
+	params += " ";
+	params += SERVERNAME;
+	params += " ";
+	params += SERVER_VERSION;
+	params += " ";
+	params += "none user modes";
+	params += " ";
+	params += CHANNEL_MODES;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_MYINFO)
+				.addParams(params)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
 	return (reply);
 }
 
@@ -636,8 +694,6 @@ void reply::setPrefix(std::string prefix)
 
 void reply::setNumeric(std::string numeric)
 {
-	// PRINT("Set numeric: ", BLUE, "\n");
-	// PRINT(numeric, WHITE, "\n");
 	this->_numeric = numeric;
 }
 
@@ -652,6 +708,7 @@ void reply::setTrailing(std::string trailing)
 {
 	this->_trailing = trailing;
 }
+
 void reply::setCrln(std::string crln)
 {
 	this->_crln = crln;

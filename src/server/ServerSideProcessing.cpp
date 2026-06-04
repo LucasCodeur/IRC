@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ServerSideProcessing.cpp                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/21 14:30:46 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/31 17:18:10 by enchevri         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include "Command.hpp"
 #include "debug.hpp"
@@ -39,7 +27,6 @@ void    Server::receiveData(int clientFd)
     }
     int bytes_read;
     char buffer[BUFFER_SIZE] = {"0"};
-    std::string stringBuf;
     std::string strCommand;
 
     while (1)
@@ -48,14 +35,14 @@ void    Server::receiveData(int clientFd)
         Client *client = this->getClient(clientFd);
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         buffer[bytes_read] = '\0';
-        PRINT("received: ", GREEN, "");
+        PRINT("command received from client ", GREEN, "");
         PRINT(clientFd, GREEN, "\n");
-        PRINT(buffer, GREEN, "\n");
         try
         {
-            stringBuf += buffer;
-            // std::cout << "stringBuf: " << stringBuf << std::endl;
-            strCommand = extractCommand(stringBuf);
+            std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+            std::string& clientBuffer = (*it).second->getBuf();
+            clientBuffer += buffer;
+            strCommand = extractCommand(clientBuffer);
             memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();

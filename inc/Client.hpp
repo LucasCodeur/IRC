@@ -4,17 +4,27 @@
 #include <ostream>
 #include <string>
 
+struct authState
+{
+	public:
+		authState();
+		authState(const authState& other);
+		bool	getPasswordReceived();
+		bool	getNickReceived();
+		bool	getFullyRegistered();
+		void	setPasswordReceived(bool state);
+		void	setNickReceived(bool state);
+		void	setFullyRegistered(bool state);
+	private:
+		bool	passwordReceived;
+		bool	nickReceived;
+		bool	fullyRegistered;
+};
+
 class Client
 {
 	public:
-	enum authState
-	{
-		EMPTY,
-		PASSWORD_RECEIVED,
-		NICK_RECEIVED,
-		FULLY_REGISTERED
-	};
-
+	authState		authState;
 	private:
 	
 	std::string		_username;
@@ -25,7 +35,6 @@ class Client
 	std::string		_password; // take off
 	std::string		_buf;
 	int				_fd;
-	authState		_authState;
 
 	public:
 	// CONSTRUCTOR
@@ -43,20 +52,17 @@ class Client
 	std::string const &getPassword() const;
 	std::string const &getRealname() const;
 	std::string const &getServername() const;
-	std::string const &getBuf() const;
+	std::string &getBuf();
 	int getFd() const;
-	authState getAuthState() const;
 
 	// SETTERS
 	void setFd(int fd);
 	void setUsername(std::string const &username);
 	void setNickname(std::string const &nickname);
 	void setPassword(std::string const &password);
-	void setAuthState(authState state);
+	void setAuthState(const std::string state);
 	void setRealname(std::string const &realname);
 
-	// HELPERS
-	static const char *authStateToString(authState state);
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 

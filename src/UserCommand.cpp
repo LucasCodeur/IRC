@@ -19,35 +19,54 @@ void	UserCommand::execute() const
 {
 	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
 	
-	it->second->setUsername(this->_trailer);
-	it->second->setRealname(this->_trailer);
-	// PRINT("this->params[1][0]: ", GREEN, "");
-	// PRINT(this->_params[1][0], GREEN, "\n");
-	// PRINT("this->params[2][0]: ", GREEN, "");
-	// PRINT(this->_params[2][0], GREEN, "\n");
-	// PRINT("this->params[4][0]: ", GREEN, "");
-	// PRINT(this->_params[4][0], GREEN, "\n");
-	// PRINT("RealName: ", RED, "");
-	// PRINT(it->second->getRealname(), WHITE, "\n");
-
-	Director director;
-	std::string message = "User information complete successfully\n";
-	std::string client = it->second->getNickname();
-
-	try 
+	if (it->second->authState.getNickReceived() == true)
 	{
-		// PRINT("Inside try to reply in USER", BLUE, "\n");
-		std::string reply = director.rplWelcome(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		// PRINT("MESSAGE SPECS", BLUE, "\n");
+		// PRINT(this->_prefix, BLUE, "\n");
+		// PRINT(this->_command, BLUE, "\n");
+		// PRINT(this->_trailer, BLUE, "\n");
 
-		reply = director.rplYourhost(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		// PRINT("this->params[1][0]: ", GREEN, "");
+		//      PRINT(this->_params[1][0], GREEN, "\n");
+		//      PRINT("this->params[2][0]: ", GREEN, "");
+		//      PRINT(this->_params[2][0], GREEN, "\n");
+		//     PRINT("this->params[3][0]: ", RED, "");
+		//      PRINT(this->_params[3][0], WHITE, "\n");
+		//      PRINT("this->params[4][0]: ", GREEN, "");
+		//     PRINT(this->_params[4][0], GREEN, "\n");
+		it->second->authState.setFullyRegistered(true);
+		it->second->setUsername(this->_params[0][0]);
+		// WARN: Maybe change I'm not sure if is it normal to put trailer in order to set realname
+		it->second->setRealname(this->_trailer);
+		Director director;
+		std::string client = it->second->getNickname();
+
+		try 
+		{
+			std::string reply;
+			reply = director.rplWelcome(*(it->second));
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+
+			reply = director.rplYourhost(*(it->second));
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+
+
+			reply = director.rplCreated(*(it->second));
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+
+			reply = director.rplMyInfo(*(it->second));
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+		}
+		catch (std::exception& e)
+		{
+		    std::cout << "Caught: " << e.what() << std::endl;
+				return ;
+		}
 	}
-	catch (std::exception& e)
-	{
-        std::cout << "Caught: " << e.what() << std::endl;
-		return ;
-	}
+	else
+		throw std::runtime_error("nickname not received\n");
 }
