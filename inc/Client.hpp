@@ -4,11 +4,11 @@
 #include <ostream>
 #include <string>
 
-struct authState
+class AuthState
 {
 	public:
-		authState();
-		authState(const authState& other);
+		AuthState();
+		AuthState(const AuthState& other);
 		bool	getPasswordReceived();
 		bool	getNickReceived();
 		bool	getFullyRegistered();
@@ -24,7 +24,7 @@ struct authState
 class Client
 {
 	public:
-	authState		authState;
+	AuthState		authState;
 	private:
 	
 	std::string		_username;

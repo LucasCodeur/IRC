@@ -135,14 +135,14 @@ void Client::setRealname(std::string const &realname)
 	this->_realname = realname;
 }
 
-authState::authState()
+AuthState::AuthState()
 {
 	this->nickReceived = false;
 	this->passwordReceived = false;
 	this->fullyRegistered = false;
 }
 
-authState::authState(const authState& other)
+AuthState::AuthState(const AuthState& other)
 {
 	if (this != &other)
 	{
@@ -152,32 +152,32 @@ authState::authState(const authState& other)
 	}
 }
 
-bool	authState::getPasswordReceived()
+bool	AuthState::getPasswordReceived()
 {
 	return (this->passwordReceived);
 }
 
-bool	authState::getNickReceived()
+bool	AuthState::getNickReceived()
 {
 	return (this->nickReceived);
 }
 
-bool	authState::getFullyRegistered()
+bool	AuthState::getFullyRegistered()
 {
 	return (this->fullyRegistered);
 }
 
-void	authState::setPasswordReceived(bool state)
+void	AuthState::setPasswordReceived(bool state)
 {
 	this->passwordReceived = state;
 }
 
-void	authState::setNickReceived(bool state)
+void	AuthState::setNickReceived(bool state)
 {
 	this->nickReceived = state;
 }
 
-void	authState::setFullyRegistered(bool state)
+void	AuthState::setFullyRegistered(bool state)
 {
 	this->fullyRegistered = state;
 }
