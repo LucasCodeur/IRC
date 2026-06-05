@@ -46,6 +46,8 @@ class Channel
 	int						hasUserLimit() const;
 	int						isChanOp(std::string userName) const;
 	bool					isUserInChannel(int clientFd) const;
+	Client					*getClient(const int fd) const;
+	Client					*getClient(const std::string nickname) const;
 
 	// SETTERS
 	void setTopic(std::string const &topic);
@@ -65,6 +67,7 @@ class Channel
 	bool isOnChan(std::string nickname);
 	void sendMessageToAll(const std::string &message) const;
 	void sendMessageToAllOther(const std::string &message, int senderFd) const;
+	void addInvite(int fd);
 	std::vector<std::string> listNames();
 	std::string getChannelNamesList() const;
 

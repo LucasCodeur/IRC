@@ -147,8 +147,12 @@ int Channel::hasUserLimit() const
 
 int Channel::isChanOp(std::string userName) const
 {
-	//TODO: need chanops to be listed by name in Channel to do this
-	(void)userName;
+	int fd = this->getClient(userName)->getFd();
+	for (size_t i = 0; i < this->_operators.size(); ++i)
+	{
+		if (this->_operators[i] == fd)
+			return (1);
+	}
 	return (0);
 }
 
@@ -336,4 +340,30 @@ std::string Channel::getChannelNamesList() const
 		namesList += users[i]->getNickname();
 	}
 	return namesList;
+}
+
+void Channel::addInvite(int fd)
+{
+	if (std::find(this->_invited.begin(), this->_invited.end(), fd) == this->_invited.end())
+		this->_invited.push_back(fd);
+}
+
+Client *Channel::getClient(const int fd) const
+{
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if ((*it)->getFd() == fd)
+			return (*it);
+	}
+	return (NULL);
+}
+
+Client *Channel::getClient(const std::string nickname) const
+{
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+	{
+		if ((*it)->getNickname() == nickname)
+			return (*it);
+	}
+	return (NULL);
 }

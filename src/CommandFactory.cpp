@@ -6,6 +6,7 @@
 #include "NickCommand.hpp"
 #include "UserCommand.hpp"
 #include "PartCommand.hpp"
+#include "InviteCommand.hpp"
 #include "ModeCommand.hpp"
 #include "PrivmsgCommand.hpp"
 #include "WhoCommand.hpp"
@@ -52,7 +53,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
 	// creators[3] = &CommandFactory::createKickCommand;
-	// creators[4] = &CommandFactory::createInviteCommand;
+	creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
 	creators[6] = &CommandFactory::createModeCommand;
 	creators[7] = &CommandFactory::createWhoCommand;
@@ -70,9 +71,6 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	std::string					trailer = "";
 	size_t						type = 0;
 	size_t						prefixEndIndex = 0;
-
-	//TODO: WIP : create arguments data members inside Command instead of shoving them in "parameters"
-	// Then use the command variable instead of using formattedMessage[0]
 
 	if (str.length() == 0)
 		throw Command::EmptyCommandException();
@@ -152,10 +150,10 @@ Command *CommandFactory::createPrivmsgCommand(Server *server, const int clientFd
 	return (new PrivmsgCommand(server, clientFd, specs, params));
 }
 
-// Command *CommandFactory::createInviteCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
-// {
-// 	return (new InviteCommand(server, clientFd, specs, params));
-// }
+Command *CommandFactory::createInviteCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
+{
+	return (new InviteCommand(server, clientFd, specs, params));
+}
 
 // Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 // {
@@ -167,11 +165,6 @@ Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, 
 {
 	return (new TopicCommand(server, clientFd, specs, params));
 }
-
-// Command *createKickCommand(const int clientFd, Command::t_msgSpecs specs, const std::vector<std::string> params)
-// {
-// 	return (new KickCommand(clientFd, specs, params));
-// }
 
 Command *CommandFactory::createModeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {

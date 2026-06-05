@@ -653,6 +653,45 @@ std::string Director::rplEndofNames(std::string clientNick, Channel &channel) co
 	return (reply);
 }
 
+std::string Director::rplInviting(std::string clientNick, std::string invitedNick, std::string channelName) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_INVITING)
+				.addParams(clientNick)
+				.addParams(channelName)
+				.addParams(invitedNick)
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+std::string Director::errUserOnChannel(std::string clientNick, std::string invitedNick, std::string channelName) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_USERONCHANNEL)
+				.addParams(clientNick)
+				.addParams(invitedNick)
+				.addParams(channelName)
+				.addTrailing("is already on channel")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 ReplyBuilder::ReplyBuilder()
 {
 }
