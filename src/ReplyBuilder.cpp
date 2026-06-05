@@ -249,11 +249,10 @@ std::string		Director::rplTopic(std::string clientNick, std::string channelName,
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_NOTOPIC)
+				.addNumeric(RPL_TOPIC)
 				.addParams(clientNick)
 				.addParams(channelName)
-				.addTrailing(":")
-				.addParams(topic)
+				.addTrailing(topic)
 				.addCrln()
 				.buildReply();
 	//WARN: Maybe change the content of the runtime or even the runtime

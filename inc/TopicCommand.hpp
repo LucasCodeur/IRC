@@ -21,6 +21,7 @@ class TopicCommand : public Command
 
 public:
 	TopicCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector <std::vector<std::string> > params);
+	void executeTopicChange(Channel *distTargetChannel) const;
 	~TopicCommand();
 
 	void	execute() const;

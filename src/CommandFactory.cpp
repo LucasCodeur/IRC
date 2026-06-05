@@ -84,11 +84,6 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	if (colon_pos != str.npos)
 		trailer = str.substr(colon_pos + 1);
 	
-	if (DEBUG)
-	{
-			
-	}
-
 	std::vector<std::string> trailerContainer;
 	trailerContainer.push_back(trailer);
 
