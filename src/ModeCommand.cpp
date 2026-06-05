@@ -38,6 +38,22 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 	this->_targetChannel = this->_server->getChannelByName(targetChannelName);
 	if (this->_targetChannel == NULL)
 		throw Command::IncorrectParametersException("MODE : No such channel");
+
+
+	// print every parameter for debug
+	if (DEBUG)
+	{
+		std::cerr << "Mode command parameters :" << std::endl;
+		for (size_t i = 0; i < params.size(); i++)
+		{
+			std::cerr << "Parameter " << i << " : ";
+			for (size_t j = 0; j < params[i].size(); j++)
+			{
+				std::cerr << params[i][j] << " ";
+			}
+			std::cerr << std::endl;
+		}
+	}
 }
 
 ModeCommand::~ModeCommand() {}
@@ -67,9 +83,10 @@ void	ModeCommand::changeUserMode() const
 {
 	std::string	reply;
 	std::string clientNick = this->_params.back().front();
+	Channel	*targetChannel = this->_targetChannel;
 
 	if (DEBUG)
-		std::cerr << "trying to add/remove " << clientNick << "op status on channel " << this->_targetChannel << std::endl;
+		std::cerr << "trying to add/remove " << clientNick << " op status on channel " << this->_targetChannel << std::endl;
 	Client	*targetClient = this->_server->getClient(clientNick);
 	int	target = this->_server->getClient(clientNick)->getFd();
 	if (!this->_targetChannel->isOp(this->getClientFd()))
@@ -86,9 +103,15 @@ void	ModeCommand::changeUserMode() const
 		return ;
 	}
 	if (this->_operationChar == "+")
+	{
+		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
 		this->_targetChannel->setOperator(target);
+	}
 	if (this->_operationChar == "-")
+	{
+		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " -o " + clientNick + "\r\n");
 		this->_targetChannel->removeOperator(target);
+	}
 }
 
 void ModeCommand::execute() const
@@ -114,6 +137,7 @@ void ModeCommand::execute() const
 	if (!this->_targetChannel->isOp(this->getClientFd()))
 	{
 		reply = _director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel->getName());
+		this->_server->sendData(this->getClientFd(), reply);
 		return ;
 	}
 
