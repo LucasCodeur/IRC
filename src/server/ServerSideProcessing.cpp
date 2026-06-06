@@ -22,6 +22,8 @@ void    Server::receiveData(int clientFd)
     if (it == this->_clients.end())
     {
         Client* temp = new Client; 
+        if (this->getPassword().empty() == true)
+            temp->getAuthstate().setPasswordReceived(true);
         temp->setFd(clientFd);
         this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
     }
@@ -29,8 +31,6 @@ void    Server::receiveData(int clientFd)
     char        buffer[BUFFER_SIZE] = {"0"};
     std::string strCommand;
     Command*    command = NULL;
-    PRINT("BEFORE", RED, "\n");
-    print_all_clients(this->_clients);
     while (1)
     {
         Client *client = this->getClient(clientFd);
@@ -52,12 +52,13 @@ void    Server::receiveData(int clientFd)
             std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
             std::string& clientBuffer = (*it).second->getBuf();
             clientBuffer += buffer;
+            memset(buffer, 0, BUFFER_SIZE);
             if (clientBuffer.size() == 0)
                 return ;
             strCommand = extractCommand(clientBuffer);
-            memset(buffer, 0, BUFFER_SIZE);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
+            // print_info_client(*(it->second));
         }
         catch(Command::UnknownCommandException& e)
         {
@@ -76,14 +77,10 @@ void    Server::receiveData(int clientFd)
         }
         catch(std::exception& e)
         {
-            PRINT("AFTER", RED, "\n");
-            print_all_clients(this->_clients);
             std::cout << "Caught: " << e.what() << std::endl;
-            this->_clients.erase(clientFd);
-            return ; //FIXME: Maybe take off the client instead.
+            return ;
         }
         // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        // print_info_client(*(it->second));
     }
 }
 
@@ -99,12 +96,12 @@ static std::string    extractCommand(std::string& buffer)
 
     if (pos != 0)
     {
-        res = buffer.substr(0, pos + 1);
+        res = buffer.substr(0, pos);
         buffer.erase(0, pos + 1);
     }
     int size = res.size();
-    if (size <= 2 && res[size - 1] != '\n' && res[size - 2] != '\r')
+    if (res[size] != '\n' && res[size - 1] != '\r')
         throw std::runtime_error("Not carriage or newline at the end of the command");
-    res = res.substr(0, size - 2);
+    res = res.substr(0, size - 1);
     return (res);
 }

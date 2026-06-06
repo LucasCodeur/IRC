@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   NickCommand.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 14:58:58 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/28 14:59:04 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "NickCommand.hpp"
 #include "Client.hpp"
 #include "debug.hpp"
@@ -38,37 +26,32 @@ static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nic
 
 void	NickCommand::execute() const
 {
-	std::map<int, Client*> map = _server->getClientmap();
-	std::map<int, Client*>::const_iterator it = map.find(this->getClientFd());
-	Client* client = it->second;
-	std::string nickname = this->_params[0][0];
-	
-	if (checkCollisionNickname(map, nickname) == false && client->authState.getFullyRegistered() == true)
+	std::map<int, Client*>					map = _server->getClientmap();
+	std::map<int, Client*>::const_iterator	it = map.find(this->getClientFd());
+	Client*									client = it->second;
+	std::string								nickname = this->_params[0][0];
+	std::string								reply;
+	Authstate&								authstate = client->getAuthstate();
+
+	if (checkCollisionNickname(map, nickname) == true)
 	{
-		std::string reply;
-		reply = this->_director.errNicknameinuse(nickname);
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
-		return ;
-	}
-	else if (checkCollisionNickname(map, nickname) == false)
-	{
-		std::string reply;
-		reply = this->_director.errNickcollision(nickname);
+		if (authstate.getFullyRegistered() == true)
+			reply = this->_director.errNicknameinuse(nickname);
+		else
+			reply = this->_director.errNickcollision(nickname);
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
 		return ;
 	}
 	else if (check_nickname(nickname) == false)
 	{
-		std::string reply;
 		reply = this->_director.errErroneusnickname(nickname);
 		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 			throw sendFailed();
 		return ;
 	}
 	client->setNickname(nickname);
-	client->authState.setNickReceived(true);
+	authstate.setNickReceived(true);
 }
 
 static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname)
@@ -76,15 +59,17 @@ static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nic
 	for (std::map<int, Client*>::const_iterator it = map.begin(); it != map.end(); ++it)
 	{
 		if (nickname == it->second->getNickname())
-			return (false);
+			return (true);
 	}
-	return (true);
+	return (false);
 }
 
 static bool	special_charset(char c);
 
 static bool	check_nickname(std::string& nickname)
 {
+	if (nickname.size() > 9)
+		return (false);
 	if (std::isalpha(nickname[0]) == false)
 		return (false);
 	for (int i = 1; nickname[i]; i++)

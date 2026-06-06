@@ -3,6 +3,8 @@
 #include "ReplyBuilder.hpp"
 #include "Exceptions.hpp"
 #include <iostream>
+//WARN: take off
+#include <debug.hpp>
 
 UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -16,8 +18,11 @@ UserCommand::~UserCommand() {};
 
 void	UserCommand::execute() const
 {
-	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
-	if (it->second->authState.getFullyRegistered() == true)
+	std::map<int, Client*>::const_iterator	it = _server->getClientmap().find(this->getClientFd());
+	Client*									client = it->second;
+	Authstate&								authstate = client->getAuthstate();
+
+	if (authstate.getFullyRegistered() == true)
 	{
 		std::string reply;
 		reply = this->_director.errAlreadyRegistred();
@@ -25,35 +30,41 @@ void	UserCommand::execute() const
 			throw sendFailed();
 		return ;
 	}
-
-	it->second->authState.setFullyRegistered(true);
-	it->second->setUsername(this->_params[0][0]);
-	it->second->setRealname(this->_trailer);
-
-	std::string client = it->second->getNickname();
-	try 
+	if (this->getServer()->getPassword().empty() == true)
+		authstate.setPasswordReceived(true);
+	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true)
 	{
-		std::string reply;
+		authstate.setFullyRegistered(true);
+		client->setUsername(this->_params[0][0]);
+		client->setRealname(this->_trailer);
 
-		reply = this->_director.rplWelcome(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		std::string clientNickname = client->getNickname();
+		try 
+		{
+			std::string reply;
 
-		reply = this->_director.rplYourhost(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+			reply = this->_director.rplWelcome(clientNickname);
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
 
-		reply = this->_director.rplCreated(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+			reply = this->_director.rplYourhost(clientNickname);
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
 
-		reply = this->_director.rplMyInfo(*(it->second));
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+			reply = this->_director.rplCreated(clientNickname);
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+
+			reply = this->_director.rplMyInfo(clientNickname);
+			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+				throw sendFailed();
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "Caught: " << e.what() << std::endl;
+				return ;
+		}
 	}
-	catch (std::exception& e)
-	{
-		std::cout << "Caught: " << e.what() << std::endl;
-			return ;
-	}
+	else
+		std::cout << "Nick received or password are false" << std::endl;
 }
