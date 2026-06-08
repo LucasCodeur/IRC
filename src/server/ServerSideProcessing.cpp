@@ -41,8 +41,8 @@ void    Server::receiveData(int clientFd)
             {
                 PRINT("client disconnected: ", RED, "");
                 PRINT(clientFd, RED, "\n");
-                close(clientFd);
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+                close(clientFd);
                 return ;
             }
         }
