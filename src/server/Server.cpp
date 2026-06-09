@@ -298,9 +298,9 @@ void Server::removeChannel(const std::string &name)
 	std::map<std::string, Channel *>::iterator it = this->_channels.find(name);
 	if (it != this->_channels.end())
 	{
+		std::cout << DBUG RED "Deleting channel : " RESET << name << std::endl;
 		delete it->second;
 		this->_channels.erase(it);
-		std::cout << DBUG RED "Deleted channel : " RESET << name << std::endl;
 	}
 }
 
