@@ -37,7 +37,7 @@ void    Server::receiveData(int clientFd)
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
         if (bytes_read <= 0)
         {
-            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
+            if (bytes_read == 0 || (bytes_read == -1))// && (errno != EAGAIN && errno != EWOULDBLOCK)))
             {
                 PRINT("client disconnected: ", RED, "");
                 PRINT(clientFd, RED, "\n");
@@ -82,6 +82,11 @@ void    Server::receiveData(int clientFd)
         }
         // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
     }
+}
+
+static void    handlerRequest()
+{
+
 }
 
 /**
