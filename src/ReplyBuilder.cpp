@@ -5,6 +5,7 @@
 #include "debug.hpp"
 
 #include <ctime>
+#include <string>
 /**
  * @brief allows to setting the params.
  * @param string params to add inside the reply.
@@ -127,9 +128,7 @@ std::string	Director::rplWelcome(Client client) const
 				.addCrln()
 				.buildReply();
 
-	//WARN: Maybe change the content of the runtime or even the runtime
-
-	if (reply.size() > 512) 
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
 
 	PRINT(reply, YELLOW, "\n");
@@ -154,9 +153,10 @@ std::string	Director::rplChannelModeIs(std::string clientNick, std::string chann
 				.addParams(password)
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -174,8 +174,10 @@ std::string Director::errNeedMoreParams(std::string clientNick, std::string comm
 				.addTrailing("Not enough parameters")
 				.addCrln()
 				.buildReply();
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -197,9 +199,10 @@ std::string	Director::errNoSuchChannel(std::string clientNick, std::string chann
 				.addTrailing("No such channel")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -217,9 +220,10 @@ std::string		Director::errNoSuchNick(std::string clientNick, std::string channel
 				.addTrailing("There was no such nickname")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -236,9 +240,10 @@ std::string		Director::errUnknownMode(std::string clientNick, std::string modeCh
 				.addTrailing("is unknown mode char to me")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -256,9 +261,50 @@ std::string		Director::rplTopic(std::string clientNick, std::string channelName,
 				.addTrailing(topic)
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string	Director::rplPrivmsg(Client const &client, Channel const &channel, std::string const &msgContent) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("PRIVMSG")
+				.addParams(channel.getName())
+				.addTrailing(msgContent)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string	Director::rplPrivmsg(Client const &client, Client const &target, std::string const &msgContent) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("PRIVMSG")
+				.addParams(target.getNickname())
+				.addTrailing(msgContent)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -276,9 +322,10 @@ std::string		Director::rplNoTopic(std::string clientNick, std::string channelNam
 				.addTrailing("No topic is set")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -296,9 +343,10 @@ std::string		Director::errNotOnChannel(std::string clientNick, std::string chann
 				.addTrailing("You're not on that channel")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -316,9 +364,10 @@ std::string		Director::errChanOPrivsNeeded(std::string clientNick, std::string c
 				.addTrailing("You're not channel operator")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -337,9 +386,10 @@ std::string		Director::errBadChannelKey(std::string clientNick, std::string chan
 				.addTrailing("Cannot join channel (+k)")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -357,9 +407,10 @@ std::string		Director::errUnknownCommand(std::string clientNick, std::string cmd
 				.addTrailing("Unknown command")
 				.addCrln()
 				.buildReply();
-	//WARN: Maybe change the content of the runtime or even the runtime
-	if (reply.size() > 512) 
+
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -386,9 +437,10 @@ std::string	Director::rplYourhost(Client client) const
 				.addCrln()
 				.buildReply();
 
-	if (reply.size() > 512) 
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
 
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -413,9 +465,10 @@ std::string	Director::rplCreated(Client client) const
 				.addCrln()
 				.buildReply();
 
-	if (reply.size() > 512) 
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
 
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -441,9 +494,10 @@ std::string	Director::rplMyInfo(Client client) const
 				.addCrln()
 				.buildReply();
 
-	if (reply.size() > 512) 
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
 
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -459,9 +513,9 @@ std::string Director::rplJoin(Client const &client, Channel const &channel) cons
 				.addCrln()
 				.buildReply();
 
-	if (reply.size() > 512) 
+	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-	
+
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -617,7 +671,7 @@ std::string Director::rplNameReply(std::string clientNick, Channel &channel) con
 	std::vector<std::string> nicknamesVector = channel.listNames();
 	std::string nicknames = "";
 
-		for (std::vector<std::string>::iterator it = nicknamesVector.begin(); it != nicknamesVector.end(); ++it)
+	for (std::vector<std::string>::iterator it = nicknamesVector.begin(); it != nicknamesVector.end(); ++it)
 	{
 		nicknames += (*it);	
 		if (it + 1 == nicknamesVector.end())
@@ -632,7 +686,11 @@ std::string Director::rplNameReply(std::string clientNick, Channel &channel) con
 				.addTrailing(nicknames)
 				.addCrln()
 				.buildReply();
-	PRINT(reply, YELLOW, "\n")
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -649,7 +707,11 @@ std::string Director::rplEndofNames(std::string clientNick, Channel &channel) co
 				.addTrailing("End of /NAMES list")
 				.addCrln()
 				.buildReply();
-	PRINT(reply, YELLOW, "\n")
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -666,7 +728,11 @@ std::string Director::rplInviting(std::string clientNick, std::string invitedNic
 				.addParams(invitedNick)
 				.addCrln()
 				.buildReply();
-	PRINT(reply, YELLOW, "\n")
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 

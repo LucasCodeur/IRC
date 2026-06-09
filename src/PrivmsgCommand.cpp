@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include "Channel.hpp"
+#include "Client.hpp"
 #include "Command.hpp"
 #include "PrivmsgCommand.hpp"
 
@@ -13,5 +15,38 @@ PrivmsgCommand::~PrivmsgCommand() {}
 
 void PrivmsgCommand::execute() const
 {
-	std::cout << "Executing PRIVMSG command from client " << std::endl;
+	std::vector<std::string> 	target = this->_params.front();
+	std::string 				msgContent = this->_trailer;
+
+	if (target[0][0] == '#')
+	{
+		std::map<std::string, Channel *> const &m = this->_server->getChannelMap();
+		if (m.end() == m.find(target.front()))
+		{
+			std::string reply = this->_director.errNoSuchChannel(this->_client->getNickname(), target.front());
+			this->_server->sendData(this->getClientFd(), reply);
+			return ;
+		}
+
+		Channel *chan = m.find(target.front())->second;
+		if (chan->isUserInChannel(this->_client->getFd()))
+			chan->sendMessageToAllOther(this->_director.rplPrivmsg(*this->_client, *chan, msgContent), this->_client->getFd());
+		else
+		{
+			std::string reply = this->_director.errNotOnChannel(this->_client->getNickname(), target.front());
+			this->_server->sendData(this->getClientFd(), reply);
+		}	
+	}
+	else
+	{
+		Client *targetClient = this->_server->getClient(target.front());
+		if (targetClient == NULL)
+		{
+			std::string reply = this->_director.errNoSuchNick(this->_client->getNickname(), target.front());
+			this->_server->sendData(this->getClientFd(), reply);
+			return ;
+		}
+		std::string reply = this->_director.rplPrivmsg(*this->_client, *targetClient, msgContent);
+		this->_server->sendData(targetClient->getFd(), reply);
+	}
 }
