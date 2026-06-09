@@ -1,9 +1,6 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#define COMMAND_TYPES_AMOUNT 12 // TODO: is it the right way to do this?
-
-#include <ostream>
 #include <string>
 #include <vector>
 #include "ReplyBuilder.hpp"
@@ -22,22 +19,6 @@ class Command
 		std::string command;
 		std::string trailer;
 	}				t_msgSpecs;
-
-	enum commandType
-	{
-		EMPTY = 0,
-		JOIN, // Enzo
-		PRIVMSG,
-		KICK,
-		INVITE,
-		TOPIC, // Killian
-		MODE, // Killian
-		WHO, // Enzo
-		PASS, // Lucas
-		NICK, // Lucas
-		USER, // Lucas
-		PART // Enzo
-	};
 
 	class UnknownCommandException : public std::runtime_error
 	{
@@ -82,18 +63,13 @@ class Command
 	// GETTERS
 	int getClientFd() const;
 	Server *getServer() const;
-	commandType getCommandType() const;
 	Director	*getDirector() ;
 	std::vector<std::vector<std::string> > const &getParams() const;
 	Client *getClient() const;
 
 	// SETTERS
 	void setClientFd(int clientFd);
-	void setCommandType(commandType type);
 	void setParams(std::vector<std::vector<std::string> > const &params);
-
-	// HELPER
-	std::string commandTypeToString() const;
 
 	// METHODS
 	virtual void	execute() const = 0;
@@ -101,7 +77,6 @@ class Command
 private:
 	Command();
 	int							_clientFd;
-	commandType					_commandType;
 
 protected:
 	Director								_director;
