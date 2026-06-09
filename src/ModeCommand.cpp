@@ -74,7 +74,7 @@ void ModeCommand::replyChannelMode() const
 		rplParam = '+' + rplParam;
 	if (DEBUG)
 		std::cerr << "Channel mode : " << rplParam << std::endl;
-	std::string reply = director.rplChannelModeIs(this->_targetChannel->getName(), rplParam, this->_targetChannel->getPassword());
+	std::string reply = director.rplChannelModeIs(this->getClient()->getNickname(), this->_targetChannel->getName(), rplParam, this->_targetChannel->getPassword());
 	this->_server->sendData(this->getClientFd(), reply);
 
 }

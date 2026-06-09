@@ -69,7 +69,7 @@ class Director
 		std::string		rplMyInfo(Client client) const;
 		std::string		rplJoin(Client const &client, Channel const &channel);
 		std::string		rplWelcome(Client client) const;
-		std::string		rplChannelModeIs(std::string channelName, std::string modes, std::string password) const;
+		std::string		rplChannelModeIs(std::string clientNick, std::string channelName, std::string modes, std::string password) const;
 		std::string		rplJoin(Client const &client, Channel const &channel) const;
 		std::string		rplPart(Client const &client, Channel const &channel, std::string const &reason) const;
 		std::string		rplTopic(Client const &client, Channel const &channel) const;

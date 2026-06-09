@@ -141,13 +141,14 @@ std::string	Director::rplWelcome(Client client) const
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplChannelModeIs(std::string channelName, std::string modes, std::string password) const
+std::string	Director::rplChannelModeIs(std::string clientNick, std::string channelName, std::string modes, std::string password) const
 {
 	ReplyBuilder	builder;
 	std::string reply = builder
 				.reset()
 				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_CHANNELMODEIS)
+				.addParams(clientNick)
 				.addParams(channelName)
 				.addParams(modes)
 				.addParams(password)
