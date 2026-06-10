@@ -48,7 +48,7 @@ void	NickCommand::execute() const
 		return ;
 	}
 	it->second->setNickname(nickname);
-	it->second->authState.setNickReceived(true);
+	it->second->getAuthState().setNickReceived(true);
 	// std::string message = "Nick information complete successfully\n";
 	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
 	// 	throw sendFailed();

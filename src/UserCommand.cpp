@@ -19,7 +19,7 @@ void	UserCommand::execute() const
 {
 	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
 	
-	if (it->second->authState.getNickReceived() == true)
+	if (it->second->getAuthState().getNickReceived() == true)
 	{
 		// PRINT("MESSAGE SPECS", BLUE, "\n");
 		// PRINT(this->_prefix, BLUE, "\n");
@@ -34,7 +34,7 @@ void	UserCommand::execute() const
 		//      PRINT(this->_params[3][0], WHITE, "\n");
 		//      PRINT("this->params[4][0]: ", GREEN, "");
 		//     PRINT(this->_params[4][0], GREEN, "\n");
-		it->second->authState.setFullyRegistered(true);
+		it->second->getAuthState().setFullyRegistered(true);
 		it->second->setUsername(this->_params[0][0]);
 		// WARN: Maybe change I'm not sure if is it normal to put trailer in order to set realname
 		it->second->setRealname(this->_trailer);

@@ -22,7 +22,7 @@ Client::~Client()
 
 Client::Client(Client const &original)
 	: 
-	   authState(original.authState),
+	  _authState(original._authState),
 	  _username(original._username),
 	  _hostname(original._hostname),
 	  _realname(original._realname),
@@ -47,7 +47,7 @@ Client &Client::operator=(Client const &other)
 		this->_password = other._password;
 		this->_buf = other._buf;
 		this->_fd = other._fd;
-		this->authState = other.authState;
+		this->_authState = other._authState;
 		if (DEBUG == 1)
 			std::cout << DBUG BLUE "Client assigned: " RESET << *this << std::endl;
 	}
@@ -56,7 +56,7 @@ Client &Client::operator=(Client const &other)
 
 std::ostream &operator<<(std::ostream &o, const Client &obj)
 {
-	// Client::authState currentState = obj.authState;
+	// Client::authState currentState = obj._authState;
 
 	return (o << "Client: " << obj.getNickname()
 			  << " (Username: " << obj.getUsername()
@@ -78,6 +78,11 @@ std::string const &Client::getNickname() const
 std::string const &Client::getPassword() const
 {
 	return (_password);
+}
+
+AuthState &Client::getAuthState()
+{
+	return (_authState);
 }
 
 std::string &Client::getBuf()
@@ -152,17 +157,17 @@ AuthState::AuthState(const AuthState& other)
 	}
 }
 
-bool	AuthState::getPasswordReceived()
+bool	AuthState::getPasswordReceived() const
 {
 	return (this->passwordReceived);
 }
 
-bool	AuthState::getNickReceived()
+bool	AuthState::getNickReceived() const
 {
 	return (this->nickReceived);
 }
 
-bool	AuthState::getFullyRegistered()
+bool	AuthState::getFullyRegistered() const
 {
 	return (this->fullyRegistered);
 }

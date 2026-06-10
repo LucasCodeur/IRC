@@ -9,9 +9,9 @@ class AuthState
 	public:
 		AuthState();
 		AuthState(const AuthState& other);
-		bool	getPasswordReceived();
-		bool	getNickReceived();
-		bool	getFullyRegistered();
+		bool	getPasswordReceived() const;
+		bool	getNickReceived() const;
+		bool	getFullyRegistered() const;
 		void	setPasswordReceived(bool state);
 		void	setNickReceived(bool state);
 		void	setFullyRegistered(bool state);
@@ -23,10 +23,9 @@ class AuthState
 
 class Client
 {
-	public:
-	AuthState		authState;
 	private:
 	
+	AuthState		_authState;
 	std::string		_username;
 	std::string		_hostname;
 	std::string		_realname;
@@ -52,6 +51,7 @@ class Client
 	std::string const &getPassword() const;
 	std::string const &getRealname() const;
 	std::string const &getServername() const;
+	AuthState	&getAuthState();
 	std::string &getBuf();
 	int getFd() const;
 

@@ -4,6 +4,7 @@
 #include "TopicCommand.hpp"
 #include "PassCommand.hpp"
 #include "NickCommand.hpp"
+#include "KickCommand.hpp"
 #include "UserCommand.hpp"
 #include "PartCommand.hpp"
 #include "InviteCommand.hpp"
@@ -55,7 +56,7 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
-	// creators[3] = &CommandFactory::createKickCommand;
+	creators[3] = &CommandFactory::createKickCommand;
 	creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
 	creators[6] = &CommandFactory::createModeCommand;
@@ -115,6 +116,10 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		std::cerr << "		trailer : " << trailer << std::endl;
 	}
 	
+	const AuthState as = server->getClient(clientFd)->getAuthState();
+	if (command != "PASS" && command != "USER" && command != "NICK" && as.getFullyRegistered())
+		return NULL;
+
 	Command::t_msgSpecs msgSpecs;
 
 	msgSpecs.prefix = prefix;
@@ -154,11 +159,10 @@ Command *CommandFactory::createInviteCommand(Server *server, const int clientFd,
 	return (new InviteCommand(server, clientFd, specs, params));
 }
 
-// Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
-// {
-// 	return (new KickCommand(server, clientFd, specs, params));
-// }
-//
+Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
+{
+	return (new KickCommand(server, clientFd, specs, params));
+}
 
 Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
