@@ -3,6 +3,9 @@
 #include "CommandFactory.hpp"
 #include "Command.hpp"
 #include <iostream>
+#include <csignal>
+
+void signalHandler(int signum);
 
 void launchCmd(unsigned int fd, const std::string& cmd, Server& server)
 {
@@ -19,6 +22,7 @@ int	main(int argc, char* argv[])
 		std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
 		return 2;
 	}
+	signal(SIGINT, signalHandler);
 	Server test;
 
 	test.launcherServer(argv[1], argv[2]);

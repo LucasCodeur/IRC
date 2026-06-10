@@ -16,6 +16,15 @@
 #include <iostream>
 #include <string>
 
+int stopVar = false;
+
+void signalHandler(int signum)
+{
+	(void)signum;
+	std::cerr << "shutting down server..." << std::endl;
+	stopVar = true;
+}
+
 /**
  * @brief set up the server and launch it.
  * @return true if no errors occur.
@@ -54,9 +63,16 @@ void	Server::listenConnexionsEpoll(void)
 	socklen_t addrlen = sizeof(this->_addr);
 	int nfds = 1;
 
-	while (true) 
+	while (stopVar == false)
 	{
-		nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
+		try
+		{
+			nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
+		}
+		catch (std::exception &e)
+		{
+			continue;
+		}
 		for (int n = 0; n < nfds; n++)
 		{
 			int fd;
@@ -67,9 +83,11 @@ void	Server::listenConnexionsEpoll(void)
 				this->_ev[n + 1].events = EPOLLIN | EPOLLET;
 				this->_ev[n + 1].data.fd = fd;
 				this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
-			} 
+			}
 			else if (this->_ev[n].events & EPOLLIN)
+			{
 				this->receiveData(this->_ev[n].data.fd);
+			}
 	   }
 	}
 }
