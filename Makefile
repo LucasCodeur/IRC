@@ -45,6 +45,7 @@ SRC =			main.cpp	\
 				TopicCommand.cpp \
 				InviteCommand.cpp \
 				PrivmsgCommand.cpp \
+				QuitCommand.cpp \
 				WhoCommand.cpp \
 				debug.cpp \
 
