@@ -1,55 +1,88 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   NickCommand.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 14:58:58 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/05/28 14:59:04 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "NickCommand.hpp"
 #include "Client.hpp"
 #include "debug.hpp"
 #include "Exceptions.hpp"
+#include <cctype>
 
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	size_t sizeParams = params.size();
+	std::string reply;
 	if (sizeParams < NickCommand::min_params)
+	{
+		reply = this->getDirector()->errNonicknamegiven();
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
 		throw Command::IncorrectParametersException("Not enough parameters");
+	}
 	else if (sizeParams > NickCommand::max_params)
 		throw Command::IncorrectParametersException("Too much parameters");
 }
 
 NickCommand::~NickCommand() {};
 
-static bool	checkNickname(std::map<int, Client*>& map,  std::string nickname)
+static bool	check_nickname(std::string& nickname);
+static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname);
+
+void	NickCommand::execute() const
+{
+	std::map<int, Client*>					map = _server->getClientmap();
+	std::map<int, Client*>::const_iterator	it = map.find(this->getClientFd());
+	Client*									client = it->second;
+	std::string								nickname = this->_params[0][0];
+	std::string								reply;
+	Authstate&								authstate = client->getAuthstate();
+
+	if (checkCollisionNickname(map, nickname) == true)
+	{
+		if (authstate.getFullyRegistered() == true)
+			reply = this->_director.errNicknameinuse(nickname);
+		else
+			reply = this->_director.errNickcollision(nickname);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	else if (check_nickname(nickname) == false)
+	{
+		reply = this->_director.errErroneusnickname(nickname);
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	client->setNickname(nickname);
+	authstate.setNickReceived(true);
+}
+
+static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname)
 {
 	for (std::map<int, Client*>::const_iterator it = map.begin(); it != map.end(); ++it)
 	{
 		if (nickname == it->second->getNickname())
+			return (true);
+	}
+	return (false);
+}
+
+static bool	special_charset(char c);
+
+static bool	check_nickname(std::string& nickname)
+{
+	if (nickname.size() > 9)
+		return (false);
+	if (std::isalpha(nickname[0]) == false)
+		return (false);
+	for (int i = 1; nickname[i]; i++)
+	{
+		if (std::isalpha(nickname[i]) == false && std::isdigit(nickname[i]) == false && special_charset(nickname[i]) == false)
 			return (false);
 	}
 	return (true);
 }
 
-void	NickCommand::execute() const
+static bool	special_charset(char c)
 {
-	std::map<int, Client*> map = _server->getClientmap();
-	std::map<int, Client*>::const_iterator it = map.find(this->getClientFd());
-	std::string nickname = this->_params[0][0];
-	
-	if (checkNickname(map, nickname) == false)
-	{
-		PRINT("replicated nickname", BLUE, "\n");
-		return ;
-	}
-	it->second->setNickname(nickname);
-	it->second->getAuthState().setNickReceived(true);
-	// std::string message = "Nick information complete successfully\n";
-	// if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-	// 	throw sendFailed();
+	if (c == '-' || c == '[' || c ==']' || c == '\\' || c =='`' || c== '^' || c == '{' || c == '}')
+		return (true);
+	return (false);
 }

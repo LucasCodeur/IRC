@@ -65,11 +65,13 @@ class Director
 	public:
 		ReplyBuilder*	builder;
 		void			setBuilderType(ReplyBuilder* builder);
-		std::string		rplCreated(Client client) const;
-		std::string		rplMyInfo(Client client) const;
 		std::string		rplJoin(Client const &client, Channel const &channel);
-		std::string		rplWelcome(Client client) const;
 		std::string		rplChannelModeIs(std::string clientNick, std::string channelName, std::string modes, std::string password) const;
+		std::string		rplWelcome(const std::string& nickname) const;
+		std::string		rplCreated(const std::string& nickname) const;
+		std::string		rplMyInfo(const std::string& nickname) const;
+		std::string		rplYourhost(const std::string& nickname) const;
+
 		std::string		rplJoin(Client const &client, Channel const &channel) const;
 		std::string		rplPart(Client const &client, Channel const &channel, std::string const &reason) const;
 		std::string		rplTopic(Client const &client, Channel const &channel) const;
@@ -79,11 +81,10 @@ class Director
 		std::string		rplWhoReply(Client const &requester, std::string const &channel, Client const &target, bool isOp) const;
 		std::string		rplEndOfWho(Client const &requester, std::string const &mask) const;
 		std::string		rplError(std::string const &numeric, Client const &client, Channel const &channel);
-		std::string		rplYourhost(Client client) const;
+		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
 		std::string		errNeedMoreParams(std::string clientNick, std::string command) const;
 		std::string		errNoSuchChannel(std::string clientNick, std::string channelName) const;
 		std::string		errUnknownMode(std::string clientNick, std::string modeChar) const;
-		std::string		rplTopic(std::string clientNick, std::string channelName, std::string topic) const;
 		std::string		rplNoTopic(std::string clientNick, std::string channelName) const;
 		std::string		errNotOnChannel(std::string clientNick, std::string channelName) const;
 		std::string		errUserOnChannel(std::string clientNick, std::string invitedNick, std::string channelName) const;
@@ -95,5 +96,9 @@ class Director
 		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 		std::string		rplInviting(std::string clientNick, std::string invitedNick, std::string channelName) const;
 		std::string		errAlreadyRegistred(void) const;
+		std::string		errNonicknamegiven() const;
+		std::string		errNickcollision(const std::string& nickname) const;
+		std::string		errErroneusnickname(const std::string& nickname) const;
+		std::string		errNicknameinuse(const std::string& nickname) const;
 };
 #endif

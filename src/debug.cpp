@@ -3,6 +3,7 @@
 #include <string>
 #include <Client.hpp>
 #include "debug.hpp"
+#include <map>
 
 void print_vec(const std::vector<std::vector<std::string> > params)
 {
@@ -31,4 +32,12 @@ void print_info_client(const Client& toPrint)
 	PRINT(toPrint.getNickname(), WHITE, "\n");
 	PRINT("Password: ", GREEN, "");
 	PRINT(toPrint.getPassword(), WHITE, "\n");
+}
+
+void	print_all_clients(std::map<int, Client*> maps)
+{
+	for (std::map<int, Client*>::const_iterator it = maps.begin(); it != maps.end(); it++)
+	{
+		print_info_client(*(it->second));
+	}
 }

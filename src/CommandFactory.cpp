@@ -116,9 +116,9 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		std::cerr << "		trailer : " << trailer << std::endl;
 	}
 	
-	const AuthState as = server->getClient(clientFd)->getAuthState();
-	if (command != "PASS" && command != "USER" && command != "NICK" && as.getFullyRegistered())
-		return NULL;
+	// Authstate as = server->getClient(clientFd)->getAuthstate();
+	// if (command != "PASS" && command != "USER" && command != "NICK" && as.getFullyRegistered())
+	// 	return NULL;
 
 	Command::t_msgSpecs msgSpecs;
 

@@ -114,7 +114,7 @@ void Director::setBuilderType(ReplyBuilder* builder)
 * @param client, the name of the person successfully connect.
 * @return the reply in order to send it to the client.
 */
-std::string	Director::rplWelcome(Client client) const
+std::string	Director::rplWelcome(const std::string& nickname) const
 {
 	ReplyBuilder	builder;
 	
@@ -122,7 +122,7 @@ std::string	Director::rplWelcome(Client client) const
 				.reset()
 				.addPrefix(SERVERNAME)
 				.addNumeric(RPL_WELCOME)
-				.addParams(client.getNickname())
+				.addParams(nickname)
 				.addTrailing("Welcome to the IRC Network")
 				.addCrln()
 				.buildReply();
@@ -132,6 +132,109 @@ std::string	Director::rplWelcome(Client client) const
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
 
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+/**
+* @brief creates the numeric reply to indicate the servername and the version, when a client successfully connects to a irc server.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
+std::string	Director::rplYourhost(const std::string& nickname) const
+{
+	ReplyBuilder	builder;
+
+	std::string trailing = "Your host is ";
+	trailing += SERVERNAME;
+	trailing += ", ";
+	trailing += SERVER_VERSION;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_YOURHOST)
+				.addParams(nickname)
+				.addTrailing(trailing)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	return (reply);
+}
+
+/**
+* @brief creates the numeric reply to indicate when the server was created.
+* @param client, the name of the person successfully connect.
+* @return the reply in order to send it to the client.
+*/
+std::string	Director::rplCreated(const std::string& nickname) const
+{
+	ReplyBuilder	builder;
+	std::string		trailing = "This server was created ";
+
+	trailing += "01/01/2026";
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_CREATED)
+				.addParams(nickname)
+				.addTrailing(trailing)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	return (reply);
+}
+
+std::string	Director::rplMyInfo(const std::string& nickname) const
+{
+	ReplyBuilder	builder;
+	std::string		params = nickname;
+
+	params += " ";
+	params += SERVERNAME;
+	params += " ";
+	params += SERVER_VERSION;
+	params += " ";
+	params += "none user modes";
+	params += " ";
+	params += CHANNEL_MODES;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(RPL_MYINFO)
+				.addParams(params)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	return (reply);
+}
+
+std::string Director::rplJoin(Client const &client, Channel const &channel) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("JOIN")
+				.addParams(channel.getName())
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512) 
+		throw std::runtime_error("Reply longer than 512 characters");
+	
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -363,108 +466,6 @@ std::string		Director::errUnknownCommand(std::string clientNick, std::string cmd
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
-/**
-* @brief creates the numeric reply to indicate the servername and the version, when a client successfully connects to a irc server.
-* @param client, the name of the person successfully connect.
-* @return the reply in order to send it to the client.
-*/
-std::string	Director::rplYourhost(Client client) const
-{
-	ReplyBuilder	builder;
-
-	std::string trailing = "Your host is ";
-	trailing += SERVERNAME;
-	trailing += ", ";
-	trailing += SERVER_VERSION;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_YOURHOST)
-				.addParams(client.getNickname())
-				.addTrailing(trailing)
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512) 
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	return (reply);
-}
-
-/**
-* @brief creates the numeric reply to indicate when the server was created.
-* @param client, the name of the person successfully connect.
-* @return the reply in order to send it to the client.
-*/
-std::string	Director::rplCreated(Client client) const
-{
-	ReplyBuilder	builder;
-	std::string		trailing = "This server was created ";
-
-	trailing += "01/01/2026";
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_CREATED)
-				.addParams(client.getNickname())
-				.addTrailing(trailing)
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512) 
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	return (reply);
-}
-
-std::string	Director::rplMyInfo(Client client) const
-{
-	ReplyBuilder	builder;
-	std::string		params = client.getNickname();
-
-	params += " ";
-	params += SERVERNAME;
-	params += " ";
-	params += SERVER_VERSION;
-	params += " ";
-	params += "none user modes";
-	params += " ";
-	params += CHANNEL_MODES;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_MYINFO)
-				.addParams(params)
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512) 
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	return (reply);
-}
-
-std::string Director::rplJoin(Client const &client, Channel const &channel) const
-{
-	ReplyBuilder builder;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(client.getNickname())
-				.addParams("JOIN")
-				.addParams(channel.getName())
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512) 
-		throw std::runtime_error("Reply longer than 512 characters");
-	
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
 
 std::string Director::rplPart(Client const &client, Channel const &channel, std::string const &reason) const
 {
@@ -670,6 +671,26 @@ std::string Director::rplInviting(std::string clientNick, std::string invitedNic
 	return (reply);
 }
 
+/**
+ * @brief Error reply Returned when a nickname parameter expected for a
+ * command and isn't found.
+ * @return the reply in order to send it to the client.
+ */
+std::string Director::errNonicknamegiven() const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NONICKNAMEGIVEN)
+				.addTrailing("No nickname given")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
 std::string Director::errUserOnChannel(std::string clientNick, std::string invitedNick, std::string channelName) const
 {
 	ReplyBuilder builder;
@@ -689,6 +710,94 @@ std::string Director::errUserOnChannel(std::string clientNick, std::string invit
 		throw std::runtime_error("Reply longer than 512 characters");
 
 	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+/**
+* @brief Error reply returned by a server to a client when it detects a
+* nickname collision.
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errNickcollision(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NICKCOLLISION)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Nickname collision KILL")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/** @brief Error reply after receiving a NICK message which contains characters which* do not fall in the defined set. 
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errErroneusnickname(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ERRONEUSNICKNAME)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Erroneus nickname")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief Error reply when a NICK message is processed that results 
+* in an attempt to change to a currently existing nickname.
+* @param nickname string Nickname is already in use
+* @return the reply in order to send it to the client.
+*/
+std::string Director::errNicknameinuse(const std::string& nickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NICKNAMEINUSE)
+				.addTrailing(":")
+				.addParams(nickname)
+				.addTrailing("Nickname is already in use")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
+/**
+* @brief error reply returned by the server to any link which tries to
+* change part of the registered details (such as
+* password or user details from second USER message).
+* @return the reply in order to send it to the client.
+*/
+std::string		Director::errAlreadyRegistred(void) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_ALREADYREGISTRED)
+				.addTrailing("You may not reregister")
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
 	return (reply);
 }
 

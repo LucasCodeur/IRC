@@ -86,7 +86,6 @@ protected:
 	std::string								_command;
 	std::string								_trailer;
 	Client									*_client;
-
 };
 
 #endif // !COMMAND_HPP

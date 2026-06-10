@@ -3,7 +3,8 @@
 #include "ReplyBuilder.hpp"
 #include "Exceptions.hpp"
 #include <iostream>
-
+//WARN: take off
+#include <debug.hpp>
 
 UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -17,56 +18,53 @@ UserCommand::~UserCommand() {};
 
 void	UserCommand::execute() const
 {
-	std::map<int, Client*>::const_iterator it = _server->getClientmap().find(this->getClientFd());
-	
-	if (it->second->getAuthState().getNickReceived() == true)
+	std::map<int, Client*>::const_iterator	it = _server->getClientmap().find(this->getClientFd());
+	Client*									client = it->second;
+	Authstate&								authstate = client->getAuthstate();
+
+	if (authstate.getFullyRegistered() == true)
 	{
-		// PRINT("MESSAGE SPECS", BLUE, "\n");
-		// PRINT(this->_prefix, BLUE, "\n");
-		// PRINT(this->_command, BLUE, "\n");
-		// PRINT(this->_trailer, BLUE, "\n");
+		std::string reply;
+		reply = this->_director.errAlreadyRegistred();
+		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
+			throw sendFailed();
+		return ;
+	}
+	if (this->getServer()->getPassword().empty() == true)
+		authstate.setPasswordReceived(true);
+	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true)
+	{
+		authstate.setFullyRegistered(true);
+		client->setUsername(this->_params[0][0]);
+		client->setRealname(this->_trailer);
 
-		// PRINT("this->params[1][0]: ", GREEN, "");
-		//      PRINT(this->_params[1][0], GREEN, "\n");
-		//      PRINT("this->params[2][0]: ", GREEN, "");
-		//      PRINT(this->_params[2][0], GREEN, "\n");
-		//     PRINT("this->params[3][0]: ", RED, "");
-		//      PRINT(this->_params[3][0], WHITE, "\n");
-		//      PRINT("this->params[4][0]: ", GREEN, "");
-		//     PRINT(this->_params[4][0], GREEN, "\n");
-		it->second->getAuthState().setFullyRegistered(true);
-		it->second->setUsername(this->_params[0][0]);
-		// WARN: Maybe change I'm not sure if is it normal to put trailer in order to set realname
-		it->second->setRealname(this->_trailer);
-		Director director;
-		std::string client = it->second->getNickname();
-
+		std::string clientNickname = client->getNickname();
 		try 
 		{
 			std::string reply;
-			reply = director.rplWelcome(*(it->second));
+
+			reply = this->_director.rplWelcome(clientNickname);
 			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 				throw sendFailed();
 
-			reply = director.rplYourhost(*(it->second));
+			reply = this->_director.rplYourhost(clientNickname);
 			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 				throw sendFailed();
 
-
-			reply = director.rplCreated(*(it->second));
+			reply = this->_director.rplCreated(clientNickname);
 			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 				throw sendFailed();
 
-			reply = director.rplMyInfo(*(it->second));
+			reply = this->_director.rplMyInfo(clientNickname);
 			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
 				throw sendFailed();
 		}
 		catch (std::exception& e)
 		{
-		    std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << "Caught: " << e.what() << std::endl;
 				return ;
 		}
 	}
 	else
-		throw std::runtime_error("nickname not received\n");
+		std::cout << "Nick received or password are false" << std::endl;
 }

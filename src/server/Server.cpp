@@ -59,20 +59,17 @@ void	Server::listenConnexionsEpoll(void)
 		nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
 		for (int n = 0; n < nfds; n++)
 		{
-		int fd;
-		if (this->_ev[n].data.fd == this->_server_sock)
-		{
-			fd = this->acceptConnexion(&addrlen);
-			this->setNonBlocking(fd);
-			this->_ev[n + 1].events = EPOLLIN | EPOLLET;
-			this->_ev[n + 1].data.fd = fd;
-			this->sendData(fd, "Welcome to the IRC SERVER\n");
-			this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
-			PRINT("Client connected: ", GREEN, "");
-			PRINT(fd, WHITE, "\n");
-		} 
-		else if (this->_ev[n].events & EPOLLIN)
-			this->receiveData(this->_ev[n].data.fd);
+			int fd;
+			if (this->_ev[n].data.fd == this->_server_sock)
+			{
+				fd = this->acceptConnexion(&addrlen);
+				this->setNonBlocking(fd);
+				this->_ev[n + 1].events = EPOLLIN | EPOLLET;
+				this->_ev[n + 1].data.fd = fd;
+				this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
+			} 
+			else if (this->_ev[n].events & EPOLLIN)
+				this->receiveData(this->_ev[n].data.fd);
 	   }
 	}
 }
@@ -337,8 +334,6 @@ Client *Server::getClient(const int fd) const
 		return (it->second);
 	return (NULL);
 }
-
-
 
 Client *Server::getClient(const std::string nick) const
 {
