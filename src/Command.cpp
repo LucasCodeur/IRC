@@ -21,7 +21,6 @@ Command::~Command(){}
 Command::Command(Command const &original)
 	:
 	  _clientFd(original._clientFd),
-	  _commandType(original._commandType),
 	  _params(original._params),
 	  _server(original._server)
 {
@@ -36,7 +35,6 @@ Command &Command::operator=(Command const &other)
 	{
 		this->_server = other._server;
 		this->_clientFd = other._clientFd;
-		this->_commandType = other._commandType;
 		this->_params = other._params;
 
 	}
@@ -53,11 +51,6 @@ int Command::getClientFd() const
 Client *Command::getClient() const
 {
 	return (this->_client);
-}
-
-Command::commandType Command::getCommandType() const
-{
-	return (_commandType);
 }
 
 std::vector<std::vector<std::string> > const &Command::getParams() const
@@ -82,49 +75,10 @@ void Command::setClientFd(int fd)
 	this->_clientFd = fd;
 }
 
-void Command::setCommandType(commandType type)
-{
-	this->_commandType = type;
-}
 
 void Command::setParams(std::vector<std::vector<std::string> > const &params)
 {
 	this->_params = params;
-}
-
-/* === HELPERS === */
-
-std::string Command::commandTypeToString() const
-{
-	switch (this->_commandType)
-	{
-		case EMPTY:
-			return ("EMPTY");
-		case JOIN:
-			return ("JOIN");
-		case PRIVMSG:
-			return ("PRIVMSG");
-		case KICK:
-			return ("KICK");
-		case INVITE:
-			return ("INVITE");
-		case TOPIC:
-			return ("TOPIC");
-		case MODE:
-			return ("MODE");
-		case WHO:
-			return ("WHO");
-		case PASS:
-			return ("PASS");
-		case NICK:
-			return ("NICK");
-		case USER:
-			return ("USER");
-		case PART:
-			return ("PART");
-		default:
-			return ("UNKNOWN");
-	}
 }
 
 /* === EXCEPTIONS === */

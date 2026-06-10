@@ -4,11 +4,12 @@
 #include <ostream>
 #include <string>
 
-class AuthState
+class Authstate
 {
 	public:
-		AuthState();
-		AuthState(const AuthState& other);
+		Authstate();
+		Authstate(bool statePassword);
+		Authstate(const Authstate& other);
 		bool	getPasswordReceived();
 		bool	getNickReceived();
 		bool	getFullyRegistered();
@@ -23,10 +24,9 @@ class AuthState
 
 class Client
 {
-	public:
-	AuthState		authState;
 	private:
 	
+	Authstate		_authstate;
 	std::string		_username;
 	std::string		_hostname;
 	std::string		_realname;
@@ -52,6 +52,7 @@ class Client
 	std::string const &getPassword() const;
 	std::string const &getRealname() const;
 	std::string const &getServername() const;
+	Authstate	&getAuthstate();
 	std::string &getBuf();
 	int getFd() const;
 

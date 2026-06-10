@@ -22,32 +22,43 @@ void    Server::receiveData(int clientFd)
     if (it == this->_clients.end())
     {
         Client* temp = new Client; 
+        if (this->getPassword().empty() == true)
+            temp->getAuthstate().setPasswordReceived(true);
         temp->setFd(clientFd);
         this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
     }
-    int bytes_read;
-    char buffer[BUFFER_SIZE] = {"0"};
+    int         bytes_read;
+    char        buffer[BUFFER_SIZE] = {"0"};
     std::string strCommand;
-
+    Command*    command = NULL;
     while (1)
     {
-        Command* command;
         Client *client = this->getClient(clientFd);
         bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
+        if (bytes_read <= 0)
+        {
+            if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
+            {
+                PRINT("client disconnected: ", RED, "");
+                PRINT(clientFd, RED, "\n");
+                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+                close(clientFd);
+                return ;
+            }
+        }
         buffer[bytes_read] = '\0';
-        PRINT("command received from client ", GREEN, "");
-        PRINT(clientFd, GREEN, "\n");
         try
         {
             std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
             std::string& clientBuffer = (*it).second->getBuf();
             clientBuffer += buffer;
-        	PRINT("Clientbuffer = ", YELLOW, "");
-			PRINT(clientBuffer, YELLOW, "\n")
-            strCommand = extractCommand(clientBuffer);
             memset(buffer, 0, BUFFER_SIZE);
+            if (clientBuffer.size() == 0)
+                return ;
+            strCommand = extractCommand(clientBuffer);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
+            // print_info_client(*(it->second));
         }
         catch(Command::UnknownCommandException& e)
         {
@@ -67,24 +78,12 @@ void    Server::receiveData(int clientFd)
         catch(std::exception& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
-            return ; //FIXME: Maybe take off the client instead.
-        }
-        if (bytes_read <= 0)
-        {
-            if (bytes_read == 0 || (bytes_read == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)))
-            {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
-                close(clientFd);
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-            }
+            return ;
         }
         // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-        // print_info_client(*(it->second));
     }
 }
 
-#include <stdlib.h>  // <cstdlib> en C++
 /**
  * @brief function to extract a valid command from the buffer.
  * @param buffer, string to extract the command.
@@ -95,30 +94,14 @@ static std::string    extractCommand(std::string& buffer)
     std::string     res;
     size_t          pos = buffer.find("\n");
 
-    // PRINT("STR BUFFER: ", YELLOW, "");
-    // PRINT(buffer, WHITE, "\n");
-    // PRINT("Pos: ", BLUE, "\n");
-    // PRINT(pos, RED, "\n");
     if (pos != 0)
     {
-        // PRINT("inside if pos", RED, "\n");
-        res = buffer.substr(0, pos + 1);
+        res = buffer.substr(0, pos);
         buffer.erase(0, pos + 1);
     }
     int size = res.size();
-    // std::cout << "res: "  << res << "size: " << size << std::endl;
-    // if (res[size - 1] == '\n')
-    // {
-    //     std::cout << "new_line present" << std::endl;
-    // }
-    // if (res[size - 2] == '\r')
-    // {
-    //     std::cout << "carriage present" << std::endl;
-    // }
-    if (size <= 2 && res[size - 1] != '\n' && res[size - 2] != '\r')
+    if (res[size] != '\n' && res[size - 1] != '\r')
         throw std::runtime_error("Not carriage or newline at the end of the command");
-    res = res.substr(0, size - 2);
-    // PRINT("STR COMMAND: ", YELLOW, "");
-    // PRINT(res, RED, "\n");
+    res = res.substr(0, size - 1);
     return (res);
 }

@@ -13,7 +13,7 @@ class NickCommand : public Command
 		void	execute() const;
 	private:
 		static const unsigned int min_params = 1;
-		static const unsigned int max_params = 1;
+		static const unsigned int max_params = 2;
 };
 
 #endif

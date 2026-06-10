@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "Client.hpp"
 
@@ -25,4 +26,5 @@
 
 void print_vec(const std::vector<std::vector<std::string> > params);
 void print_info_client(const Client& toPrint);
+void print_all_clients(std::map<int, Client*> maps);
 #endif

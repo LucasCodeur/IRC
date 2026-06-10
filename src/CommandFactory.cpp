@@ -4,10 +4,12 @@
 #include "TopicCommand.hpp"
 #include "PassCommand.hpp"
 #include "NickCommand.hpp"
+#include "KickCommand.hpp"
 #include "UserCommand.hpp"
 #include "PartCommand.hpp"
 #include "InviteCommand.hpp"
 #include "ModeCommand.hpp"
+#include "QuitCommand.hpp"
 #include "PrivmsgCommand.hpp"
 #include "WhoCommand.hpp"
 #include "Command.hpp"
@@ -44,15 +46,17 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 {
 	if (DEBUG)
 		std::cout << "	creating command from : '" << str << "'" << std::endl;
-	const char *types[12] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART"};
 
-	Command *(*creators[12])(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > arguments);
+	const char		*types[13] = {"", "JOIN", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "WHO", "PASS", "NICK", "USER", "PART", "QUIT"};
+	const size_t	array_size = sizeof(types) / sizeof(char *);
 
-	for (int i = 0; i < 12; i++)
+	Command *(*creators[13])(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > arguments);
+
+	for (unsigned int i = 0; i < array_size; i++)
 		creators[i] = NULL;
 	creators[1] = &CommandFactory::createJoinCommand;
 	creators[2] = &CommandFactory::createPrivmsgCommand;
-	// creators[3] = &CommandFactory::createKickCommand;
+	creators[3] = &CommandFactory::createKickCommand;
 	creators[4] = &CommandFactory::createInviteCommand;
 	creators[5] = &CommandFactory::createTopicCommand;
 	creators[6] = &CommandFactory::createModeCommand;
@@ -61,8 +65,9 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 	creators[9] = &CommandFactory::createNickCommand;
 	creators[10] = &CommandFactory::createUserCommand;
 	creators[11] = &CommandFactory::createPartCommand;
+	creators[12] = &CommandFactory::createQuitCommand;
 
-	std::vector<std::string>	commandTypes(types, types + COMMAND_TYPES_AMOUNT);
+	std::vector<std::string>	commandTypes(types, types + array_size);
 	std::vector<std::string>	formattedMessage;
 	std::string					stringSlice = "";
 	std::string					prefix = "";
@@ -111,6 +116,10 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 		std::cerr << "		trailer : " << trailer << std::endl;
 	}
 	
+	// Authstate as = server->getClient(clientFd)->getAuthstate();
+	// if (command != "PASS" && command != "USER" && command != "NICK" && as.getFullyRegistered())
+	// 	return NULL;
+
 	Command::t_msgSpecs msgSpecs;
 
 	msgSpecs.prefix = prefix;
@@ -150,11 +159,10 @@ Command *CommandFactory::createInviteCommand(Server *server, const int clientFd,
 	return (new InviteCommand(server, clientFd, specs, params));
 }
 
-// Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
-// {
-// 	return (new KickCommand(server, clientFd, specs, params));
-// }
-//
+Command *CommandFactory::createKickCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
+{
+	return (new KickCommand(server, clientFd, specs, params));
+}
 
 Command *CommandFactory::createTopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> >params)
 {
@@ -189,4 +197,9 @@ Command *CommandFactory::createUserCommand(Server *server, const int clientFd, C
 Command *CommandFactory::createPartCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
 {
 	return (new PartCommand(server, clientFd, specs, params));
+}
+
+Command *CommandFactory::createQuitCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params)
+{
+	return (new QuitCommand(server, clientFd, specs, params));
 }
