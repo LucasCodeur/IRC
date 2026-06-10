@@ -162,7 +162,7 @@ std::string	Director::rplYourhost(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
-
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -189,6 +189,7 @@ std::string	Director::rplCreated(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 
 	return (reply);
 }
@@ -217,6 +218,7 @@ std::string	Director::rplMyInfo(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 
 	return (reply);
 }

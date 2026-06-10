@@ -1,6 +1,8 @@
 #include "Command.hpp"
 #include "Server.hpp"
 #include <stdexcept>
+#include <iostream>
+#include "debug.hpp"
 
 /* === CONSTRUCTOR === */
 
@@ -16,7 +18,10 @@ Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::
 	this->_client = server->getClient(clientFd);
 }
 
-Command::~Command(){}
+Command::~Command()
+{
+	std::cout << RED "Destroying Command" RESET << std::endl;
+}
 
 Command::Command(Command const &original)
 	:
@@ -24,7 +29,6 @@ Command::Command(Command const &original)
 	  _params(original._params),
 	  _server(original._server)
 {
-
 }
 
 /* === OPERATOR OVERRIDE === */
