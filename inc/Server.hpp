@@ -44,6 +44,7 @@ class Server
 		std::string const												getClientNickname(int clientFd) const;
 		Client															*getClient(const int fd) const;
 		Client															*getClient(const std::string nickname) const;
+		void															controlEpoll(int op, int fd, struct epoll_event* event);
 
 	// METHODS
 		std::pair<std::map<std::string, Channel *>::iterator, bool>		addChannel(std::string s, std::string password);
@@ -73,7 +74,6 @@ class Server
 		void															listenSocket(int sizeWaitingList);
 		void															setAddr(void);
 		void															setEpoll(int option);
-		void															controlEpoll(int op, int fd, struct epoll_event* event);
 		void															listenConnexionsEpoll(void);
 		void															setNonBlocking(int sock);
 		bool															convertPort(std::string port);

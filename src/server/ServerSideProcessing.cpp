@@ -43,6 +43,8 @@ void    Server::receiveData(int clientFd)
                 PRINT(clientFd, RED, "\n");
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
                 close(clientFd);
+                std::map<int, Client *> map = this->getClientmap();
+                map.erase(clientFd); // TODO: test this
                 return ;
             }
         }

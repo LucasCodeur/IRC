@@ -20,7 +20,7 @@ Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::
 
 Command::~Command()
 {
-	std::cout << RED "Destroying Command" RESET << std::endl;
+	// std::cout << RED "Destroying Command" RESET << std::endl;
 }
 
 Command::Command(Command const &original)
