@@ -259,6 +259,8 @@ Server::~Server()
 {
 	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
 		delete it->second;
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		delete it->second;
 	if (DEBUG == 1)
 		std::cout << DBUG RED "Server destroyed: " RESET << *this << std::endl;
 }

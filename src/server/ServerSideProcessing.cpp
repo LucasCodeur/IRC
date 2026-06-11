@@ -21,7 +21,7 @@ void    Server::receiveData(int clientFd)
     std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
     if (it == this->_clients.end())
     {
-        Client* temp = new Client; 
+        Client* temp = new Client;
         if (this->getPassword().empty() == true)
             temp->getAuthstate().setPasswordReceived(true);
         temp->setFd(clientFd);
