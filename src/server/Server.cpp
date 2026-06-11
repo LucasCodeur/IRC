@@ -90,6 +90,8 @@ void	Server::listenConnexionsEpoll(void)
 			}
 	   }
 	}
+	for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+			delete it->second;
 }
 
 /**

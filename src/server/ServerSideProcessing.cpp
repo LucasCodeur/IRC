@@ -58,6 +58,7 @@ void    Server::receiveData(int clientFd)
             strCommand = extractCommand(clientBuffer);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
+            delete command;
             // print_info_client(*(it->second));
         }
         catch(Command::UnknownCommandException& e)
@@ -66,6 +67,7 @@ void    Server::receiveData(int clientFd)
             std::string cmdKeyword = e.what();
             std::string reply = command->getDirector()->errUnknownCommand(client->getNickname(), cmdKeyword);
             this->sendData(clientFd, reply);
+            delete command;
             continue ;
         }
         catch (Command::NotEnoughParametersException& e)
@@ -73,11 +75,13 @@ void    Server::receiveData(int clientFd)
             std::cout << "Caught: " << e.what() << std::endl;
             std::string reply = command->getDirector()->errNeedMoreParams(client->getNickname(), e.what());
             this->sendData(clientFd, reply);
+            delete command;
             continue;
         }
         catch(std::exception& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
+            delete command;
             return ;
         }
         // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
