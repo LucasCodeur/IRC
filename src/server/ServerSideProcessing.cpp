@@ -43,10 +43,17 @@ void    Server::receiveData(int clientFd)
             {
                 PRINT("client disconnected: ", RED, "");
                 PRINT(clientFd, RED, "\n");
+
+                std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
+                print_info_client(*(it->second));
+
+                delete it->second;
+                this->_clients.erase(it);
+
                 this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
                 close(clientFd);
-                std::map<int, Client *> map = this->getClientmap();
-                map.erase(clientFd); // TODO: test this
+
+                // print_info_client(*(it->second));
                 return ;
             }
         }
