@@ -31,38 +31,33 @@ void    Server::receiveData(int clientFd)
     int         bytes_read;
     char        buffer[BUFFER_SIZE] = {"0"};
 
-    while (1)
+    Client *client = this->getClient(clientFd);
+
+    memset(buffer, 0, BUFFER_SIZE);
+    bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
+    if (bytes_read <= 0)
     {
-        Client *client = this->getClient(clientFd);
-
-        memset(buffer, 0, BUFFER_SIZE);
-        bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
-        if (bytes_read <= 0)
+        if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
         {
-            if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-            {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
+            PRINT("client disconnected: ", RED, "");
+            PRINT(clientFd, RED, "\n");
 
-                std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
-                print_info_client(*(it->second));
+            std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
+            print_info_client(*(it->second));
 
-                delete it->second;
-                this->_clients.erase(it);
+            delete it->second;
+            this->_clients.erase(it);
 
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-                close(clientFd);
+            this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+            close(clientFd);
 
-                // print_info_client(*(it->second));
-                return ;
-            }
-        }
-        buffer[bytes_read] = '\0';
-        if (handleRequest(buffer, *client, clientFd) == false)
-            continue ;
-        else
+            // print_info_client(*(it->second));
             return ;
+        }
     }
+    buffer[bytes_read] = '\0';
+    if (handleRequest(buffer, *client, clientFd) == true)
+        return ;
 }
 
 /**
