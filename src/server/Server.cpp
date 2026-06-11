@@ -296,11 +296,24 @@ std::map<std::string, Channel *> const &Server::getChannelMap() const
 	return (this->_channels);
 }
 
+bool validdateChannelName(std::string name)
+{
+	return (name.length() > 0 && name.length() < 200 && name.find_first_of(7, 0) == name.npos && name.find_first_of(' ',0) == name.npos && name.find_first_of(',', 0) && (name[0] == '&' || name[0] == '#'));
+}
+
 std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(std::string name, std::string password)
-{ 
+{
+	std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
+	if (!validdateChannelName(name))
+	{
+		std::cerr << "Error : channel name format incorrect" << std::endl;
+		return (pair);
+	}
+
+	if (name[0] != '&' && name[0] != '#')
+		name = "#" + name;
 	Channel *newChan = new Channel(name, password);
 
-	std::pair<std::map<std::string, Channel *>::iterator, bool> pair;
 	pair = this->_channels.insert(std::make_pair(name, newChan));
 	std::cout << DBUG GREEN "Added channel: " RESET << name << std::endl;
 	std::cout << DBUG GREEN "Current channels: " RESET;
