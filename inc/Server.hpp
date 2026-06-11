@@ -75,6 +75,7 @@ class Server
 		void															setAddr(void);
 		void															setEpoll(int option);
 		void															listenConnexionsEpoll(void);
+		bool															handleRequest(char* buffer, const Client& client, const int clientFd);
 		void															setNonBlocking(int sock);
 		bool															convertPort(std::string port);
 		void															check_password(std::string& password);
