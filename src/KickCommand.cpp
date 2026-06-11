@@ -32,6 +32,9 @@ void KickCommand::execute() const
 		currentChannel = this->getServer()->getChannelByName(this->_params.front()[i]);
 		currentUser = this->getServer()->getClient(this->_params.back()[i]);
 
+		if (currentUser == NULL)
+			return;
+
 		std::cerr << "kicking" << currentUser->getNickname() << " from " << currentChannel->getName() << std::endl;
 
 		if (this->_trailer.empty())
@@ -40,21 +43,21 @@ void KickCommand::execute() const
 		if (currentChannel == NULL)
 		{
 			reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), currentChannel->getName());
-			this->getServer()->sendData(this->getClientFd(), reply);
+			this->getServer()->writeInBuffer(this->getClient(), reply);
 			continue ;
 		}	
 
 		if (!currentChannel->isUserInChannel(this->getClientFd()))
 		{
 			reply = this->_director.errNotOnChannel(this->getClient()->getNickname(), currentChannel->getName());
-			this->getServer()->sendData(this->getClientFd(), reply);
+			this->getServer()->writeInBuffer(this->getClient(), reply);
 			continue ;
 		}
 		
 		if (!currentChannel->isOp(this->getClientFd()))
 		{
 			reply = this->_director.errChanOPrivsNeeded(this->getClient()->getNickname(), currentChannel->getName());
-			this->getServer()->sendData(this->getClientFd(), reply);
+			this->getServer()->writeInBuffer(this->getClient(), reply);
 			continue ;
 		}
 

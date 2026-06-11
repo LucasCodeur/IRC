@@ -26,17 +26,17 @@ JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 
 JoinCommand::~JoinCommand() {}
 
-void JoinCommand::confirmJoin(Client const &client, Channel const &channel) const
+void JoinCommand::confirmJoin(Client &client, Channel const &channel) const
 {
 	channel.sendMessageToAll(this->_director.rplJoin(client, channel).c_str());
 
 	if (channel.getTopic().empty())
-		this->_server->sendData(client.getFd(), this->_director.rplNoTopic(client, channel));
+		this->_server->writeInBuffer(&client, this->_director.rplNoTopic(client, channel));
 	else
-		this->_server->sendData(client.getFd(), this->_director.rplTopic(client, channel));
+		this->_server->writeInBuffer(&client, this->_director.rplTopic(client, channel));
 
-	this->_server->sendData(client.getFd(), this->_director.rplNameReply(client, channel, channel.getChannelNamesList()));
-	this->_server->sendData(client.getFd(), this->_director.rplEndOfNames(client, channel));
+	this->_server->writeInBuffer(&client, this->_director.rplNameReply(client, channel, channel.getChannelNamesList()));
+	this->_server->writeInBuffer(&client, this->_director.rplEndOfNames(client, channel));
 }
 
 
@@ -111,7 +111,7 @@ void JoinCommand::execute() const
 		else // if password incorrect
 		{
 			std::string reply = this->_director.errBadChannelKey(this->getClient()->getNickname(), *chan_it);
-			this->_server->sendData(this->getClientFd(), reply);
+			this->_server->writeInBuffer(this->getClient(), reply);
 		}
 	}
 }

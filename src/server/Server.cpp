@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/11 15:51:20 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/06/11 16:42:18 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "debug.hpp"
 #include "Exceptions.hpp"
 #include "Command.hpp"
@@ -62,7 +74,7 @@ void	Server::listenConnexionsEpoll(void)
 {
 	socklen_t addrlen = sizeof(this->_addr);
 	int nfds = 1;
-
+	
 	while (stopVar == false)
 	{
 		try
@@ -75,18 +87,50 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-			int fd;
+			int fd = this->_ev[n].data.fd;
+
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
-				fd = this->acceptConnexion(&addrlen);
+				std::cout << "listen socket triggered; creating new socket" << std::endl;
+				int new_fd = this->acceptConnexion(&addrlen);
 				this->setNonBlocking(fd);
-				this->_ev[n + 1].events = EPOLLIN | EPOLLET;
-				this->_ev[n + 1].data.fd = fd;
-				this->controlEpoll(EPOLL_CTL_ADD, fd, &this->_ev[n + 1]);
+				this->_ev[n + 1].events = EPOLLIN | EPOLLET | EPOLLOUT;
+				this->_ev[n + 1].data.fd = new_fd;
+				this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+				std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
+					if (it == this->_clients.end())
+					{
+						Client* temp = new Client;
+						if (this->getPassword().empty() == true)
+							temp->getAuthstate().setPasswordReceived(true);
+						temp->setFd(new_fd);
+						this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
+					}
 			}
 			else if (this->_ev[n].events & EPOLLIN)
 			{
+				std::cout << "receiving from client" << std::endl;
+				Client *client = this->getClient(this->_ev[n].data.fd);
 				this->receiveData(this->_ev[n].data.fd);
+				this->handleRequest(*client);
+			}
+			else if (this->_ev[n].events & EPOLLOUT)
+			{
+				Client *client = this->getClient(this->_ev[n].data.fd);
+				std::string	&clientInputBuffer = client->getClientInputBuffer();
+				if (!clientInputBuffer.empty())
+				{
+					std::cout << "sending to client : " << clientInputBuffer << std::endl;
+					try 
+					{
+						sendData(this->_ev[n].data.fd, clientInputBuffer);
+					}
+					catch (std::exception& e)
+					{
+						std::cout << "Caught: " << e.what() << std::endl;
+						return ;
+					}
+				}
 			}
 	   }
 	}
@@ -205,12 +249,17 @@ int	Server::epollWaitOperation(int max_events, int timeout)
  * @param fd file descriptor where data will be sent.
  * @return
  */
-void	Server::sendData(int fd, std::string data)
+void	Server::sendData(int fd, std::string &data)
 {
 	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
 		throw sendFailed();
+	data = "";
 }
 
+void	Server::writeInBuffer(Client *client, std::string data)
+{
+	client->addToBuffer(data);
+}
 /**
  * @brief function to set up the behavior of the socket.
  * @return

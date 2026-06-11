@@ -24,7 +24,7 @@ void PrivmsgCommand::execute() const
 		if (m.end() == m.find(target.front()))
 		{
 			std::string reply = this->_director.errNoSuchChannel(this->_client->getNickname(), target.front());
-			this->_server->sendData(this->getClientFd(), reply);
+			this->_server->writeInBuffer(this->getClient(), reply);
 			return ;
 		}
 
@@ -34,7 +34,7 @@ void PrivmsgCommand::execute() const
 		else
 		{
 			std::string reply = this->_director.errNotOnChannel(this->_client->getNickname(), target.front());
-			this->_server->sendData(this->getClientFd(), reply);
+			this->_server->writeInBuffer(this->getClient(), reply);
 		}	
 	}
 	else
@@ -43,10 +43,10 @@ void PrivmsgCommand::execute() const
 		if (targetClient == NULL)
 		{
 			std::string reply = this->_director.errNoSuchNick(this->_client->getNickname(), target.front());
-			this->_server->sendData(this->getClientFd(), reply);
+			this->_server->writeInBuffer(this->getClient(), reply);
 			return ;
 		}
 		std::string reply = this->_director.rplPrivmsg(*this->_client, *targetClient, msgContent);
-		this->_server->sendData(targetClient->getFd(), reply);
+		this->_server->writeInBuffer(targetClient, reply);
 	}
 }

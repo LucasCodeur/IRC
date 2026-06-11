@@ -10,7 +10,7 @@ WhoCommand::WhoCommand(Server *server, const int clientFd, t_msgSpecs specs, con
 	if (params.size() < WhoCommand::min_params)
 	{
 		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "WHO");
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 	}
 }
 
@@ -31,7 +31,7 @@ void WhoCommand::execute() const
 			std::vector<Client *> const &users = channel->getUsers();
 			for (size_t i = 0; i < users.size(); i++)
 			{
-				this->_server->sendData(this->getClientFd(), this->_director.rplWhoReply(*requester, channel->getName(), *users[i], channel->isOp(users[i]->getFd())));
+				this->_server->writeInBuffer(this->getClient(), this->_director.rplWhoReply(*requester, channel->getName(), *users[i], channel->isOp(users[i]->getFd())));
 			}
 		}
 	}
@@ -43,9 +43,9 @@ void WhoCommand::execute() const
 			if (!it->second)
 				continue;
 			if (target == "*" || it->second->getNickname() == target)
-				this->_server->sendData(this->getClientFd(),
+				this->_server->writeInBuffer(this->getClient(),
 					this->_director.rplWhoReply(*requester, "*", *it->second, false));
 		}
 	}
-	this->_server->sendData(this->getClientFd(), this->_director.rplEndOfWho(*requester, target));
+	this->_server->writeInBuffer(this->getClient(), this->_director.rplEndOfWho(*requester, target));
 }

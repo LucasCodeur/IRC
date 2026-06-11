@@ -113,6 +113,10 @@ Authstate&	Client::getAuthstate()
 	return (this->_authstate);
 }
 
+std::string &Client::getClientInputBuffer()
+{
+	return (this->_inputBuffer);
+}
 void Client::setFd(int fd)
 {
 	this->_fd = fd;
@@ -189,4 +193,9 @@ void	Authstate::setNickReceived(bool state)
 void	Authstate::setFullyRegistered(bool state)
 {
 	this->fullyRegistered = state;
+}
+
+void Client::addToBuffer(std::string data)
+{
+	this->_inputBuffer += data;
 }

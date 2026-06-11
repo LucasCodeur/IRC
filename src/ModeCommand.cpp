@@ -75,7 +75,7 @@ void ModeCommand::replyChannelMode() const
 	if (DEBUG)
 		std::cerr << "Channel mode : " << rplParam << std::endl;
 	std::string reply = director.rplChannelModeIs(this->getClient()->getNickname(), this->_targetChannel->getName(), rplParam, this->_targetChannel->getPassword());
-	this->_server->sendData(this->getClientFd(), reply);
+	this->_server->writeInBuffer(this->getClient(), reply);
 
 }
 
@@ -92,14 +92,14 @@ void	ModeCommand::changeUserMode() const
 	if (!this->_targetChannel->isOp(this->getClientFd()))
 	{
 		reply = this->_director.errChanOPrivsNeeded(clientNick, this->_targetChannel->getName());
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (targetClient == NULL || !(this->_targetChannel->isOnChan(target)))
 	{
 		reply = this->_director.errNoSuchNick(clientNick, this->_targetChannel->getName());
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 	if (this->_operationChar == "+")
@@ -137,21 +137,21 @@ void ModeCommand::execute() const
 	if (!this->_targetChannel->isOp(this->getClientFd()))
 	{
 		reply = _director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel->getName());
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (!this->_targetChannel->isOnChan(this->getClientFd()))
 	{
 		reply = _director.errNotOnChannel(this->getClient()->getNickname(), this->_targetChannel->getName());
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (possibleChanModes.find(_modeChar) == possibleChanModes.npos && _modeChar != "o")
 	{
 		reply = this->_director.errUnknownMode(this->getClient()->getNickname(), _modeChar);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return;
 	}
 
