@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 15:51:20 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/11 16:42:18 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/12 18:29:01 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	Server::listenConnexionsEpoll(void)
 {
 	socklen_t addrlen = sizeof(this->_addr);
 	int nfds = 1;
-	
+		
 	while (stopVar == false)
 	{
 		std::map<int, Client*>::const_iterator it = this->_clients.begin();
