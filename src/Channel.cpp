@@ -185,6 +185,9 @@ void Channel::setModeItem(unsigned int item, bool value)
  */
 bool Channel::addUser(Client *client)
 {
+	// Client chanBot = this->getClient(BOT_NAME);
+	//
+	// commandFactory::createCommand
 	if (std::find(this->_users.begin(), this->_users.end(), client) == this->_users.end())
 	{
 		this->_users.push_back(client);

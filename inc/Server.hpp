@@ -78,9 +78,10 @@ class Server
 		void															listenConnexionsEpoll(void);
 		bool															handleRequest(Client& client);
 		void															setNonBlocking(int sock);
-		bool															convertPort(std::string port);
 		void															check_password(std::string& password);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
+
+bool    convertPort(std::string port, int& portToSet);
 
 #endif

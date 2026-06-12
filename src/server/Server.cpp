@@ -6,7 +6,7 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 15:51:20 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/11 16:42:18 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/12 13:26:21 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ bool	Server::launcherServer(std::string port, std::string password)
 {
 	try 
 	{
-		this->convertPort(port);
+		convertPort(port, this->_port);
 		this->check_password(password);
 		this->_password = password;
 	}

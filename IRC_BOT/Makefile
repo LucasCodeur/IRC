@@ -8,66 +8,28 @@ CC_DEBUG = g++
 CFLAGS = -g3 -Wall -Wextra -Werror -MMD -std=c++98
 CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
 
-NAME = ircserv
-NAME_DEBUG = ircserv_debug
-NAME_BOT = irc_bot
+NAME = irc_bot
+NAME_DEBUG = irc_bot_debug 
 
 P_SRC = src/
-P_SRC_SERVER = $(P_SRC)server/
-P_SRC_BOT = $(P_SRC)bot/
+P_SRC_SERVER = ../$(P_SRC)server/
 
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
-P_OBJ_BOT = .obj_bot/
 
-P_INC = inc/
+P_INC = ../inc/
 
-SRC =			main.cpp	\
-				Client.cpp	\
-				Channel.cpp \
-				Exceptions.cpp \
-				Command.cpp \
-				CommandFactory.cpp \
-				JoinCommand.cpp \
-				PassCommand.cpp \
-				NickCommand.cpp \
-				UserCommand.cpp \
-				PartCommand.cpp \
-				ModeCommand.cpp \
-				KickCommand.cpp \
-				TopicCommand.cpp \
-				InviteCommand.cpp \
-				PrivmsgCommand.cpp \
-				QuitCommand.cpp \
-				WhoCommand.cpp \
-				debug.cpp \
+SRC = Bot.cpp
 
-SRC_SERVER =	Server.cpp	\
-				CheckServer.cpp \
-				ServerSideProcessing.cpp \
-
-SRC_REPLY_BUILDER = ReplyBuilder.cpp \
-
-SRC_BOT = Bot.cpp
+SRC_SERVER = CheckServer.cpp
 
 SRCS = \
-	$(addprefix $(P_SRC), $(SRC)) \
-	$(addprefix $(P_SRC), $(SRC_REPLY_BUILDER)) \
-	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
-
-SRCS_BOT = \
-	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 	$(addprefix $(P_SRC_BOT), $(SRC_BOT)) \
-
-INCS = $(addprefix $(P_INC), $(INC)) \
+	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
-OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o))
-OBJS_BOT = $(subst $(P_SRC_BOT), $(P_OBJ_BOT), $(SRCS_BOT:.cpp=.o)) \
 
 DEPS = $(OBJS:%.o=%.d)
-DEPS_DEBUG = $(OBJS_DEBUG:%.o=%.d)
-DEPS_BOT = $(OBJS_BOT:%.o=%.d)
 
 Color_Off=\033[0m
 Green=\033[0;32m
@@ -88,10 +50,10 @@ $(P_OBJ)%.o: $(P_SRC)%.cpp
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
 clean:
-	rm -rf $(P_OBJ) $(P_OBJ_DEBUG) $(P_OBJ_BOT)
+	rm -rf $(P_OBJ) $(P_OBJ_DEBUG)
 
 fclean: clean
-	rm -f $(NAME) $(NAME_DEBUG) $(NAME_BOT)
+	rm -f $(NAME) $(NAME_DEBUG)
 
 re:
 	$(MAKE) fclean
@@ -105,8 +67,6 @@ re:
 
 debug: $(NAME_DEBUG)
 
-bot: $(NAME_BOT)
-
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
@@ -118,17 +78,5 @@ $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
-$(NAME_BOT): $(OBJS_BOT)
-	$(CC) $(CFLAGS) -o $@ $(OBJS_BOT) && \
-	echo "$(Green)Creating executable $@$(Color_Off)" || \
-	echo "$(Red)Error creating $@$(Color_Off)"
-
-$(P_OBJ_BOT)%.o: $(P_SRC_BOT)%.cpp
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -I $(P_INC) -c $< -o $@ && \
-	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
-	echo "$(Red)Error compiling $<$(Color_Off)"
-
 -include $(DEPS)
 -include $(DEPS_DEBUG)
--include $(DEPS_BOT)
