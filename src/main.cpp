@@ -7,12 +7,12 @@
 
 void signalHandler(int signum);
 
-void launchCmd(unsigned int fd, const std::string& cmd, Server& server)
-{
-	Command* command = CommandFactory::createCommand(&server, fd, cmd);
-	command->execute();
-	delete command;
-}
+// void launchCmd(unsigned int fd, const std::string& cmd, Server& server)
+// {
+// 	Command* command = CommandFactory::createCommand(&server, fd, cmd);
+// 	command->execute();
+// 	delete command;
+// }
 
 int	main(int argc, char* argv[])
 {

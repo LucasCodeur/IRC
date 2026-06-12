@@ -19,74 +19,88 @@ static std::string    extractCommand(std::string& buffer);
 void    Server::receiveData(int clientFd)
 {
     std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-    if (it == this->_clients.end())
-    {
-        Client* temp = new Client;
-        if (this->getPassword().empty() == true)
-            temp->getAuthstate().setPasswordReceived(true);
-        temp->setFd(clientFd);
-        this->_clients.insert(std::pair<int, Client*>(clientFd, temp));
-    }
+    
     int         bytes_read;
     char        buffer[BUFFER_SIZE] = {"0"};
-    std::string strCommand;
-    Command*    command = NULL;
-    while (1)
+
+    memset(buffer, 0, BUFFER_SIZE);
+    bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
+    PRINT("here", RED, "\n");
+    if (bytes_read <= 0)
     {
-        Client *client = this->getClient(clientFd);
-        bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
-        if (bytes_read <= 0)
+        if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
         {
-            if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-            {
-                PRINT("client disconnected: ", RED, "");
-                PRINT(clientFd, RED, "\n");
-                this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-                close(clientFd);
-                return ;
-            }
+            PRINT("client disconnected: ", RED, "");
+            PRINT(clientFd, RED, "\n");
+
+            std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
+            delete it->second;
+            this->_clients.erase(it);
+
+            this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+            close(clientFd);
+
+            return ;
         }
-        buffer[bytes_read] = '\0';
+    }
+    buffer[bytes_read] = '\0';
+
+    it = this->_clients.find(clientFd);
+    std::string&                            clientBuffer = (*it).second->getBuf();
+
+    clientBuffer += buffer;
+    if (clientBuffer.size() == 0)
+        return ;
+}
+
+/**
+ * @brief allows handling of the client request.
+ * @param buffer that contains the information sent by the client. 
+ * @param client, object that contains all information about the client.
+ * @return false if we have to continue to get information about the client or true if we have to stop.
+ */
+bool    Server::handleRequest(Client& client)
+{
+    bool        stop = false;
+    Command*    command = NULL;
+    int         clientFd = client.getFd();
+
+    while (!stop)
+    {
         try
         {
-            std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-            std::string& clientBuffer = (*it).second->getBuf();
-            clientBuffer += buffer;
-            memset(buffer, 0, BUFFER_SIZE);
-            if (clientBuffer.size() == 0)
-                return ;
-            strCommand = extractCommand(clientBuffer);
+            std::string&                            clientOutBuffer = client.getBuf();
+            std::string                             strCommand;
+
+            strCommand = extractCommand(clientOutBuffer);
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
-			delete command;
-            // print_info_client(*(it->second));
+            if (strCommand.empty())
+                stop = true;
+            delete command;
         }
         catch(Command::UnknownCommandException& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
             std::string cmdKeyword = e.what();
-            std::string reply = command->getDirector()->errUnknownCommand(client->getNickname(), cmdKeyword);
-            this->sendData(clientFd, reply);
-			delete command;
-            continue ;
+            std::string reply = command->getDirector()->errUnknownCommand(client.getNickname(), cmdKeyword);
+            this->writeInBuffer(&client, reply);
+            delete command;
         }
         catch (Command::NotEnoughParametersException& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
-            std::string reply = command->getDirector()->errNeedMoreParams(client->getNickname(), e.what());
-            this->sendData(clientFd, reply);
-			delete command;
-			continue;
+            std::string reply = command->getDirector()->errNeedMoreParams(client.getNickname(), e.what());
+            this->writeInBuffer(&client, reply);
+            delete command;
         }
         catch(std::exception& e)
         {
             std::cout << "Caught: " << e.what() << std::endl;
-			delete command;
-            return ;
+            stop = true;
         }
-        // std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
     }
-
+    return (stop);
 }
 
 /**
@@ -102,6 +116,7 @@ static std::string    extractCommand(std::string& buffer)
     if (pos != 0)
     {
         res = buffer.substr(0, pos);
+        std::cerr << "Extracted command : '" << res << "'" <<std::endl;
         buffer.erase(0, pos + 1);
     }
     int size = res.size();

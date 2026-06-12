@@ -23,39 +23,39 @@ void InviteCommand::execute() const
 	if (distTargetChan == NULL)
 	{
 		reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (distTargetClient == NULL)
 	{
 		reply = this->_director.errNoSuchNick(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (distTargetChan->isOnChan(this->_invitedNick))
 	{
 		reply = this->_director.errUserOnChannel(this->getClient()->getNickname(), this->_invitedNick, this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (!distTargetChan->isOnChan(this->getClient()->getNickname()))
 	{
 		reply = this->_director.errNotOnChannel(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	if (!distTargetChan->isOp(this->getClient()->getFd()))
 	{
 		reply = this->_director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	distTargetChan->addInvite(distTargetClient->getFd());
 	reply = this->_director.rplInviting(this->getClient()->getNickname(), this->_invitedNick, this->_targetChannel);
-	this->_server->sendData(this->getClientFd(), reply);
+	this->_server->writeInBuffer(this->getClient(), reply);
 }

@@ -38,13 +38,13 @@ void TopicCommand::executeTopicChange(Channel *distTargetChannel) const
 	if (!distTargetChannel->isOp(this->getClientFd()) && distTargetChannel->isTopicRestricted())
 	{
 		reply = this->_director.errChanOPrivsNeeded(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	distTargetChannel->setTopic(this->_newTopic);
 	reply = this->_director.rplTopic(this->getClient()->getNickname(), this->_targetChannel, distTargetChannel->getTopic());
-	this->_server->sendData(this->getClientFd(), reply);
+	this->_server->writeInBuffer(this->getClient(), reply);
 }
 
 void TopicCommand::execute() const
@@ -57,7 +57,7 @@ void TopicCommand::execute() const
 	if (distTargetChannel == NULL || !distTargetChannel->isOnChan(this->getClientFd()))
 	{
 		reply = this->_director.errNotOnChannel(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
@@ -70,12 +70,12 @@ void TopicCommand::execute() const
 	if (distTargetChannel->getTopic().empty())
 	{
 		reply = this->_director.rplNoTopic(this->getClient()->getNickname(), this->_targetChannel);
-		this->_server->sendData(this->getClientFd(), reply);
+		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
 
 	reply = this->_director.rplTopic(this->getClient()->getNickname(), this->_targetChannel, distTargetChannel->getTopic());
-	this->_server->sendData(this->getClientFd(), reply);
+	this->_server->writeInBuffer(this->getClient(), reply);
 	return ;
 
 }

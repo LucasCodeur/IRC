@@ -17,7 +17,7 @@ private:
 	static const unsigned int max_params = 2;
 
 	//METHODS
-	void	confirmJoin(Client const &client, Channel const &channel)const;
+	void	confirmJoin(Client &client, Channel const &channel)const;
 
 };
 

@@ -1,5 +1,6 @@
 #include "QuitCommand.hpp"
 #include "debug.hpp"
+#include <sys/epoll.h>
 #include <unistd.h>
 
 QuitCommand::QuitCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
@@ -23,12 +24,6 @@ void	QuitCommand::execute() const
 
 	if (!this->_trailer.empty())
 		quitMessage = ": " + this->_trailer;
-
-	epoll_ctl(this->getClientFd(), EPOLL_CTL_DEL, this->getClientFd(), NULL);
-	close(this->getClientFd());
-
-	std::map<int, Client *> map = this->getServer()->getClientmap();
-	map.erase(this->getClientFd()); // TODO: test this
 
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{

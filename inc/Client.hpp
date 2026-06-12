@@ -33,7 +33,8 @@ class Client
 	std::string		_servername;
 	std::string		_nickname;
 	std::string		_password; // take off
-	std::string		_buf;
+	std::string		_buf; // output buffer
+	std::string		_inputBuffer;
 	int				_fd;
 
 	public:
@@ -52,8 +53,9 @@ class Client
 	std::string const &getPassword() const;
 	std::string const &getRealname() const;
 	std::string const &getServername() const;
-	Authstate	&getAuthstate();
-	std::string &getBuf();
+	Authstate		  &getAuthstate();
+	std::string		  &getBuf();
+	std::string		  &getClientInputBuffer();
 	int getFd() const;
 
 	// SETTERS
@@ -64,7 +66,9 @@ class Client
 	void setAuthState(const std::string state);
 	void setRealname(std::string const &realname);
 
+	void addToBuffer(std::string data);
+
 };
 std::ostream &operator<<(std::ostream &o, const Client &obj);
 
-#endif // !CLIENT_HPP
+#endif
