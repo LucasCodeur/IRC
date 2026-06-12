@@ -30,20 +30,7 @@ void    Server::receiveData(int clientFd)
     {
         if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
         {
-            PRINT("client disconnected: ", RED, "");
-            PRINT(clientFd, RED, "\n");
-
-            std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
-
-            if (it == this->_clients.end())
-                return ;
-            delete it->second;
-
-            this->_clients.erase(it);
-
-            this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
-            close(clientFd);
-
+            this->removeClient(clientFd);
             return ;
         }
     }
@@ -59,7 +46,7 @@ void    Server::receiveData(int clientFd)
 
 /**
  * @brief allows handling of the client request.
- * @param buffer that contains the information sent by the client. 
+ * @param buffer that contains the information sent by the client.
  * @param client, object that contains all information about the client.
  * @return false if we have to continue to get information about the client or true if we have to stop.
  */
@@ -71,16 +58,27 @@ bool    Server::handleRequest(Client& client)
 
     while (!stop)
     {
+        std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
+        if (it == this->_clients.end())
+        {
+            stop = true;
+            continue ;
+        }
+
         try
         {
             std::string&                            clientOutBuffer = client.getBuf();
             std::string                             strCommand;
 
             strCommand = extractCommand(clientOutBuffer);
+            if (strCommand.empty())
+            {
+                stop = true;
+                continue ;
+            }
             command = CommandFactory::createCommand(this, clientFd, strCommand);
             command->execute();
-            if (strCommand.empty())
-                stop = true;
+
             delete command;
         }
         catch(Command::UnknownCommandException& e)
@@ -117,7 +115,7 @@ static std::string    extractCommand(std::string& buffer)
     std::string     res;
     size_t          pos = buffer.find("\n");
 
-    if (pos != 0)
+    if (pos != std::string::npos)
     {
         res = buffer.substr(0, pos);
         std::cerr << "Extracted command : '" << res << "'" <<std::endl;

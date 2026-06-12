@@ -77,6 +77,14 @@ void	Server::listenConnexionsEpoll(void)
 	
 	while (stopVar == false)
 	{
+		std::map<int, Client*>::const_iterator it = this->_clients.begin();
+		std::cout << "LIST CLIENTS:" << std::endl;
+		while (it != this->_clients.end())
+		{
+			Client *client = it->second;
+			std::cout << "client " << client->getNickname() << " fd : " << client->getFd() << std::endl;
+			++it;
+		}
 		try
 		{
 			nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
@@ -117,6 +125,8 @@ void	Server::listenConnexionsEpoll(void)
 			if (this->_ev[n].events & EPOLLOUT)
 			{
 				Client *client = this->getClient(this->_ev[n].data.fd);
+				if (client == NULL)
+					continue;
 				std::string	&clientInputBuffer = client->getClientInputBuffer();
 				if (!clientInputBuffer.empty())
 				{
@@ -347,6 +357,22 @@ std::string const &Server::getPassword() const
 std::map<std::string, Channel *> const &Server::getChannelMap() const
 {
 	return (this->_channels);
+}
+
+void	Server::removeClient(int clientFd)
+{
+	PRINT("client disconnected: ", RED, "");
+	PRINT(clientFd, RED, "\n");
+	std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
+	if (it != this->_clients.end())
+	{
+		if (DEBUG)
+			std::cout << DBUG RED "Deleting client : " RESET << it->second->getNickname() << std::endl;
+		this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);
+		close(clientFd);
+		delete it->second;
+		this->_clients.erase(it);
+	}
 }
 
 bool validdateChannelName(std::string name)

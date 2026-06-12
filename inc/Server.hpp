@@ -53,6 +53,7 @@ class Server
 		void															handleCommand(Command const &cmd);
 		void															sendData(int fd, std::string &data);
 		void															writeInBuffer(Client *client, std::string data);
+		void															removeClient(int clientFd);
 	private :
 		int																_port;
 		int																_fd;
