@@ -19,7 +19,7 @@ static std::string    extractCommand(std::string& buffer);
 void    Server::receiveData(int clientFd)
 {
     std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-    
+
     int         bytes_read;
     char        buffer[BUFFER_SIZE] = {"0"};
 
@@ -34,7 +34,11 @@ void    Server::receiveData(int clientFd)
             PRINT(clientFd, RED, "\n");
 
             std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
+
+            if (it == this->_clients.end())
+                return ;
             delete it->second;
+
             this->_clients.erase(it);
 
             this->controlEpoll(EPOLL_CTL_DEL, clientFd, NULL);

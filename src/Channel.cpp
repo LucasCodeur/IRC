@@ -293,18 +293,18 @@ bool Channel::isOnChan(std::string nickname)
 
 void Channel::sendMessageToAll(const std::string &message) const
 {
-	for (size_t i = 0; i < this->_users.size(); ++i)
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
 	{
-		send(this->_users[i]->getFd(), message.c_str(), message.size(), 0);
+		(*it)->addToBuffer(message);
 	}
 }
 
 void Channel::sendMessageToAllOther(const std::string &message, int senderFd) const
 {
-	for (size_t i = 0; i < this->_users.size(); ++i)
+	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
 	{
-		if (this->_users[i]->getFd() != senderFd)
-			send(this->_users[i]->getFd(), message.c_str(), message.size(), 0);
+		if ((*it)->getFd() != senderFd)
+			(*it)->addToBuffer(message);
 	}
 }
 

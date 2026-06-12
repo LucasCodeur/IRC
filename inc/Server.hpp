@@ -3,9 +3,9 @@
 
 # define MAX_EVENTS 30
 # define MAX_WAITING_LIST 3
-# define TIMEOUT -1 
-# define DEFAULT 0 
-# define BUFFER_SIZE 4096 
+# define TIMEOUT 100
+# define DEFAULT 0
+# define BUFFER_SIZE 4096
 
 #include "Client.hpp"
 #include "Channel.hpp"

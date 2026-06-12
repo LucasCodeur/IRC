@@ -87,14 +87,12 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-			int fd = this->_ev[n].data.fd;
 
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
-				std::cout << "listen socket triggered; creating new socket" << std::endl;
 				int new_fd = this->acceptConnexion(&addrlen);
-				this->setNonBlocking(fd);
-				this->_ev[n + 1].events = EPOLLIN | EPOLLET | EPOLLOUT;
+				this->setNonBlocking(new_fd);
+				this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
 				this->_ev[n + 1].data.fd = new_fd;
 				this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
 				std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
@@ -106,22 +104,24 @@ void	Server::listenConnexionsEpoll(void)
 						temp->setFd(new_fd);
 						this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 					}
+				continue;
 			}
-			else if (this->_ev[n].events & EPOLLIN)
+
+			if (this->_ev[n].events & EPOLLIN)
 			{
-				std::cout << "receiving from client" << std::endl;
 				Client *client = this->getClient(this->_ev[n].data.fd);
 				this->receiveData(this->_ev[n].data.fd);
 				this->handleRequest(*client);
 			}
-			else if (this->_ev[n].events & EPOLLOUT)
+
+			if (this->_ev[n].events & EPOLLOUT)
 			{
 				Client *client = this->getClient(this->_ev[n].data.fd);
 				std::string	&clientInputBuffer = client->getClientInputBuffer();
 				if (!clientInputBuffer.empty())
 				{
 					std::cout << "sending to client : " << clientInputBuffer << std::endl;
-					try 
+					try
 					{
 						sendData(this->_ev[n].data.fd, clientInputBuffer);
 					}
@@ -132,7 +132,7 @@ void	Server::listenConnexionsEpoll(void)
 					}
 				}
 			}
-	   }
+		}
 	}
 }
 
@@ -251,6 +251,7 @@ int	Server::epollWaitOperation(int max_events, int timeout)
  */
 void	Server::sendData(int fd, std::string &data)
 {
+	std::cerr << DBUG YELLOW << "sending to client: " << data << RESET << std::endl;
 	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
 		throw sendFailed();
 	data = "";
@@ -258,8 +259,11 @@ void	Server::sendData(int fd, std::string &data)
 
 void	Server::writeInBuffer(Client *client, std::string data)
 {
+	std::cerr << "writing in buffer: " << data << std::endl;
+	std::cerr << "writing to client: " << client->getNickname() << " fd : " << client->getFd() << std::endl;
 	client->addToBuffer(data);
 }
+
 /**
  * @brief function to set up the behavior of the socket.
  * @return
