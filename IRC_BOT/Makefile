@@ -12,7 +12,7 @@ NAME = irc_bot
 NAME_DEBUG = irc_bot_debug 
 
 P_SRC = src/
-P_SRC_SERVER = ../$(P_SRC)server/
+P_SRC_SERVER = $(P_SRC)
 
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
@@ -24,10 +24,10 @@ SRC = Bot.cpp
 SRC_SERVER = CheckServer.cpp
 
 SRCS = \
-	$(addprefix $(P_SRC_BOT), $(SRC_BOT)) \
+	$(addprefix $(P_SRC), $(SRC)) \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
-OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
+OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o)) \
 
 DEPS = $(OBJS:%.o=%.d)
 

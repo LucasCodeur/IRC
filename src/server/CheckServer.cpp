@@ -1,8 +1,8 @@
 #include "Server.hpp"
-#include "Exceptions.hpp"
 
 #include <cctype>
 #include <sstream>
+#include <stdexcept>
 
 static bool check_port(std::string& port);
 
@@ -14,15 +14,15 @@ static bool check_port(std::string& port);
 bool    convertPort(std::string port, int& portToSet)
 {
     if (check_port(port) == false)
-        throw badCharactersInsidePort();
+        throw std::runtime_error("Bad characters inside port");
 
     std::stringstream ss(port);
     if (ss.fail() == true)
-        throw badCharactersInsidePort();
+        throw std::runtime_error("Bad characters inside port");
 
     ss >> portToSet;
     if (1023 >= portToSet || portToSet >= 49152)
-        throw badRangePort();
+        throw std::runtime_error("Bad range of port");
 
     return (true);
 }
@@ -54,6 +54,6 @@ void    Server::check_password(std::string& password)
     for (int i = 0; i < size; i++) 
     {
         if (std::isspace(password[i]))
-            throw passwordNotCorrect();
+            throw std::runtime_error("Bad password");
     }
 }

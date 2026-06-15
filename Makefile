@@ -63,7 +63,6 @@ INCS = $(addprefix $(P_INC), $(INC)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
 OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o))
-OBJS_BOT = $(subst $(P_SRC_BOT), $(P_OBJ_BOT), $(SRCS_BOT:.cpp=.o)) \
 
 DEPS = $(OBJS:%.o=%.d)
 DEPS_DEBUG = $(OBJS_DEBUG:%.o=%.d)
@@ -105,8 +104,6 @@ re:
 
 debug: $(NAME_DEBUG)
 
-bot: $(NAME_BOT)
-
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
@@ -115,17 +112,6 @@ $(NAME_DEBUG): $(OBJS_DEBUG)
 $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
-	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
-	echo "$(Red)Error compiling $<$(Color_Off)"
-
-$(NAME_BOT): $(OBJS_BOT)
-	$(CC) $(CFLAGS) -o $@ $(OBJS_BOT) && \
-	echo "$(Green)Creating executable $@$(Color_Off)" || \
-	echo "$(Red)Error creating $@$(Color_Off)"
-
-$(P_OBJ_BOT)%.o: $(P_SRC_BOT)%.cpp
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -I $(P_INC) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 

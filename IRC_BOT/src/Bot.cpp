@@ -43,7 +43,12 @@ int	main(int argc, char* argv[])
 
 	std::string message = "PASS ";
 	message += argv[2];
+	message += "\r\n";	
+	message += "NICK botIrc\r\n";
+	message += "USER botIrcServer * 0 :bot_server";
 	send(clientSocket, message.c_str(), strlen(message.c_str()), 0);
+	// while (1)
+	// 	std::cout << "print" << std::endl;
 
 	close(clientSocket);
 
