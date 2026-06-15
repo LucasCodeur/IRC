@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/15 11:59:23 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/06/15 12:58:01 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "debug.hpp"
 #include "Exceptions.hpp"
 #include "Command.hpp"
@@ -65,14 +77,6 @@ void	Server::listenConnexionsEpoll(void)
 		
 	while (stopVar == false)
 	{
-		std::map<int, Client*>::const_iterator it = this->_clients.begin();
-		std::cout << "LIST CLIENTS:" << std::endl;
-		while (it != this->_clients.end())
-		{
-			Client *client = it->second;
-			std::cout << "client " << client->getNickname() << " fd : " << client->getFd() << std::endl;
-			++it;
-		}
 		try
 		{
 			nfds = this->epollWaitOperation(MAX_EVENTS, TIMEOUT);
@@ -83,7 +87,6 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
 				int new_fd = this->acceptConnexion(&addrlen);
@@ -92,21 +95,24 @@ void	Server::listenConnexionsEpoll(void)
 				this->_ev[n + 1].data.fd = new_fd;
 				this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
 				std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
-					if (it == this->_clients.end())
-					{
-						Client* temp = new Client;
-						if (this->getPassword().empty() == true)
-							temp->getAuthstate().setPasswordReceived(true);
-						temp->setFd(new_fd);
-						this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
-					}
+				if (it == this->_clients.end())
+				{
+					Client* temp = new Client;
+					if (this->getPassword().empty() == true)
+						temp->getAuthstate().setPasswordReceived(true);
+					temp->setFd(new_fd);
+					this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
+				}
 				continue;
 			}
 
 			if (this->_ev[n].events & EPOLLIN)
 			{
 				Client *client = this->getClient(this->_ev[n].data.fd);
-				this->receiveData(this->_ev[n].data.fd);
+				if (!client)
+					continue ;
+				if (this->receiveData(this->_ev[n].data.fd) == false)
+					continue ;
 				this->handleRequest(*client);
 			}
 
@@ -118,7 +124,6 @@ void	Server::listenConnexionsEpoll(void)
 				std::string	&clientInputBuffer = client->getClientInputBuffer();
 				if (!clientInputBuffer.empty())
 				{
-					std::cout << "sending to client : " << clientInputBuffer << std::endl;
 					try
 					{
 						sendData(this->_ev[n].data.fd, clientInputBuffer);

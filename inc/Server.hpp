@@ -70,7 +70,7 @@ class Server
 		int																createSocket(int domain, int type_communication, int protocol);
 		int																acceptConnexion(socklen_t* addrlen);
 		int																epollWaitOperation(int max_events, int timeout);
-		void															receiveData(int socketfd);
+		bool															receiveData(int socketfd);
 		void															setSocketOption(int socket_fd, int level, int option_name);
 		void															bindSocket(void);
 		void															listenSocket(int sizeWaitingList);

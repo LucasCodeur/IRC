@@ -16,7 +16,7 @@ static std::string	extractCommand(std::string& buffer);
  * @param socketfd to receive data from this one.
  * @return
  */
-void	Server::receiveData(int clientFd)
+bool	Server::receiveData(int clientFd)
 {
 	std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
 
@@ -25,23 +25,22 @@ void	Server::receiveData(int clientFd)
 
 	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
-	PRINT("here", RED, "\n");
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
 		{
 			this->removeClient(clientFd);
-			return ;
+			return (false);
 		}
 	}
 	buffer[bytes_read] = '\0';
 
 	it = this->_clients.find(clientFd);
-	std::string&							clientBuffer = (*it).second->getBuf();
 
+	std::string&	clientBuffer = (*it).second->getBuf();
 	clientBuffer += buffer;
-	if (clientBuffer.size() == 0)
-		return ;
+
+	return (true);
 }
 
 /**
@@ -117,7 +116,6 @@ static std::string	extractCommand(std::string& buffer)
 	if (pos != std::string::npos)
 	{
 		res = buffer.substr(0, pos);
-		std::cerr << "Extracted command : '" << res << "'" <<std::endl;
 		buffer.erase(0, pos + 1);
 	}
 	int size = res.size();
