@@ -54,9 +54,11 @@ class Server
 		void															sendData(int fd, std::string &data);
 		void															writeInBuffer(Client *client, std::string data);
 		void															removeClient(int clientFd);
+		void															setBotFd(int botFd);
 	private :
 		int																_port;
 		int																_fd;
+		int																_botFd;
 		int																_server_sock;
 		std::string														_serverName;
 		std::string														_password;

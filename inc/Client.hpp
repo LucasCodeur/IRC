@@ -65,6 +65,7 @@ class Client
 	void setPassword(std::string const &password);
 	void setAuthState(const std::string state);
 	void setRealname(std::string const &realname);
+	void setHostname(std::string const &hostname);
 
 	void addToBuffer(std::string data);
 

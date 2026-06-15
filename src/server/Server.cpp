@@ -17,6 +17,7 @@
 
 #include <cctype>
 #include <netinet/in.h>
+#include <sstream>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -102,6 +103,18 @@ void	Server::listenConnexionsEpoll(void)
 						temp->getAuthstate().setPasswordReceived(true);
 					temp->setFd(new_fd);
 					this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
+					if (temp->getHostname() != "ircBot")
+					{
+						std::stringstream ss;
+						ss << temp->getFd();
+						std::string fd;
+						ss >> fd;
+						std::string message = "SEND ";
+						message += fd;
+						message += "\r\n";
+						send(this->_botFd, message.c_str(), strlen(message.c_str()), 0);
+
+					}
 				}
 				continue;
 			}
@@ -114,6 +127,7 @@ void	Server::listenConnexionsEpoll(void)
 				if (this->receiveData(this->_ev[n].data.fd) == false)
 					continue ;
 				this->handleRequest(*client);
+				print_info_client(*client);	
 			}
 
 			if (this->_ev[n].events & EPOLLOUT)
@@ -345,6 +359,13 @@ std::string const &Server::getServerName() const
 std::string const &Server::getPassword() const
 {
 	return (this->_password);
+}
+
+void	Server::setBotFd(int botFd)
+{
+	PRINT("ADD BOTFD", BLUE, "\n");
+	this->_botFd = botFd;
+	PRINT(this->_botFd, WHITE, "\n");
 }
 
 std::map<std::string, Channel *> const &Server::getChannelMap() const

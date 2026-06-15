@@ -142,6 +142,12 @@ void Client::setRealname(std::string const &realname)
 	this->_realname = realname;
 }
 
+
+void Client::setHostname(std::string const &hostname)
+{
+	this->_hostname = hostname;
+}
+
 Authstate::Authstate()
 {
 	this->nickReceived = false;

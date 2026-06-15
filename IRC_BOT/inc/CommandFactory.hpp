@@ -23,7 +23,6 @@ private:
 	static Command	*createUserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 	static Command	*createPartCommand(Server *server,const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 	static Command	*createQuitCommand(Server *server,const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
-	static Command	*createWelcomeCommand(Server *server,const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params);
 };
 
 #endif

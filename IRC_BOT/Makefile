@@ -19,7 +19,7 @@ P_OBJ_DEBUG = .obj_debug/
 
 P_INC = ../inc/
 
-SRC = Bot.cpp
+SRC = Bot.cpp \
 
 SRC_SERVER = CheckServer.cpp
 
