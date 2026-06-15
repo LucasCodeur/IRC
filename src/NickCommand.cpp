@@ -1,7 +1,5 @@
 #include "NickCommand.hpp"
 #include "Client.hpp"
-#include "debug.hpp"
-#include "Exceptions.hpp"
 #include <cctype>
 
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
@@ -11,8 +9,7 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	if (sizeParams < NickCommand::min_params)
 	{
 		reply = this->getDirector()->errNonicknamegiven();
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		this->getClient()->addToBuffer(reply);
 		throw Command::IncorrectParametersException("Not enough parameters");
 	}
 	else if (sizeParams > NickCommand::max_params)
@@ -39,15 +36,12 @@ void	NickCommand::execute() const
 			reply = this->_director.errNicknameinuse(nickname);
 		else
 			reply = this->_director.errNickcollision(nickname);
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
-		return ;
+		client->addToBuffer(reply);
 	}
 	else if (check_nickname(nickname) == false)
 	{
 		reply = this->_director.errErroneusnickname(nickname);
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		this->_client->addToBuffer(reply);
 		return ;
 	}
 	client->setNickname(nickname);

@@ -1,7 +1,6 @@
 #include "Command.hpp"
 #include "UserCommand.hpp"
 #include "ReplyBuilder.hpp"
-#include "Exceptions.hpp"
 #include <iostream>
 //WARN: take off
 #include <debug.hpp>
@@ -26,8 +25,7 @@ void	UserCommand::execute() const
 	{
 		std::string reply;
 		reply = this->_director.errAlreadyRegistred();
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		client->addToBuffer(reply);
 		return ;
 	}
 	if (this->getServer()->getPassword().empty() == true)
@@ -44,20 +42,16 @@ void	UserCommand::execute() const
 			std::string reply;
 
 			reply = this->_director.rplWelcome(clientNickname);
-			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-				throw sendFailed();
+			client->addToBuffer(reply);
 
 			reply = this->_director.rplYourhost(clientNickname);
-			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-				throw sendFailed();
+			client->addToBuffer(reply);
 
 			reply = this->_director.rplCreated(clientNickname);
-			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-				throw sendFailed();
+			client->addToBuffer(reply);
 
 			reply = this->_director.rplMyInfo(clientNickname);
-			if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-				throw sendFailed();
+			client->addToBuffer(reply);
 		}
 		catch (std::exception& e)
 		{

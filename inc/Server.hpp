@@ -3,9 +3,9 @@
 
 # define MAX_EVENTS 30
 # define MAX_WAITING_LIST 3
-# define TIMEOUT -1 
-# define DEFAULT 0 
-# define BUFFER_SIZE 4096 
+# define TIMEOUT 100
+# define DEFAULT 0
+# define BUFFER_SIZE 4096
 
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -53,6 +53,7 @@ class Server
 		void															handleCommand(Command const &cmd);
 		void															sendData(int fd, std::string &data);
 		void															writeInBuffer(Client *client, std::string data);
+		void															removeClient(int clientFd);
 	private :
 		int																_port;
 		int																_fd;

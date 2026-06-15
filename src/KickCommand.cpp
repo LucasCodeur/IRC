@@ -26,7 +26,6 @@ void KickCommand::execute() const
 	std::string	kickComment = this->_trailer;
 	std::string	reply;
 
-	std::cerr << "Executing KICK cmd" << std::endl;
 	for (unsigned int i = 0; i < this->_params.front().size(); ++i)
 	{
 		currentChannel = this->getServer()->getChannelByName(this->_params.front()[i]);
@@ -35,10 +34,11 @@ void KickCommand::execute() const
 		if (currentUser == NULL)
 			return;
 
-		std::cerr << "kicking" << currentUser->getNickname() << " from " << currentChannel->getName() << std::endl;
 
 		if (this->_trailer.empty())
-			kickComment = "for fun ig";
+			kickComment = "No reason specified";
+
+		std::cerr << "kicking" << currentUser->getNickname() << " from " << currentChannel->getName() << " :" << kickComment << std::endl;
 
 		if (currentChannel == NULL)
 		{
@@ -62,9 +62,10 @@ void KickCommand::execute() const
 		}
 
 		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentUser->getNickname() + " : " + kickComment);
+		currentChannel->sendMessageToAll("hey");
 		currentChannel->removeUser(currentUser);
 
-	  std::cerr << "kicked " << currentUser->getNickname() << " from " << currentChannel->getName() << std::endl;
+	  std::cout << "kicked " << currentUser->getNickname() << " from " << currentChannel->getName() << " : " << kickComment << std::endl;
 
 	}
 }

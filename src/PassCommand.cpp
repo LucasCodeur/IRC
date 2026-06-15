@@ -3,8 +3,6 @@
 #include "PassCommand.hpp"
 #include "Client.hpp"
 #include "Exceptions.hpp"
-//WARN: take off
-#include <debug.hpp>
 
 PassCommand::PassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -29,18 +27,17 @@ void	PassCommand::execute() const
 	{
 		std::string reply;
 		reply = this->_director.errAlreadyRegistred();
-		if (send(this->getClientFd(), reply.c_str(), reply.size(), 0) < 0)
-			throw sendFailed();
+		client->addToBuffer(reply);
 		return ;
 	}
+
 	std::string								message = "Password correct\n";
 	std::string								password = this->_params[0][0];
 
 	if (password != _server->getPassword())
 		throw passwordNotCorrect();
 
-	if (send(this->getClientFd(), message.c_str(), message.size(), 0) < 0)
-		throw sendFailed();
+	client->addToBuffer(message);
 	
 	authstate.setPasswordReceived(true);
 }

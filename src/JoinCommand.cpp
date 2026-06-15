@@ -81,7 +81,7 @@ void JoinCommand::execute() const
 			distChan_it = channelMap.find(*chan_it);
 			if (distChan_it == channelMap.end()) // FIXME: should probably throw there
 			{
-				std::cerr << "Error : channel could not be created" << std::endl;
+				std::cerr << "Error : channel '" << *chan_it << "' could not be created" << std::endl;
 				return ;
 			}
 			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
