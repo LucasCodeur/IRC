@@ -5,8 +5,8 @@ MAKEFLAGS += -j
 CC = c++
 CC_DEBUG = g++
 
-CFLAGS = -g3 -Wall -Wextra -Werror -MMD -std=c++98
-CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
+CFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
+CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g3 -D DEBUG=1
 
 NAME = ircbot
 NAME_DEBUG = ircbot_debug 
@@ -27,6 +27,8 @@ SRCS = \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o)) \
+
+OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o)) \
 
 DEPS = $(OBJS:%.o=%.d)
 

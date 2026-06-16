@@ -19,9 +19,10 @@ class Bot
 		std::string	extractCommand(std::string& buffer);
 		bool		handleRequest();
 		bool		receiveData();
-		void		display_buffer(std::string buffer);
+		void		display_buffer(std::string& buffer);
 		bool		convertPort(std::string port, int& portToSet);
 		void		sendConnectionToServer(std::string password);
+		void		setNonBlocking(int sock);
 };
 
 #endif

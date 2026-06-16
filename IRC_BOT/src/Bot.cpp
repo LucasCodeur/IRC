@@ -7,48 +7,84 @@
 #include <unistd.h>
 #include <errno.h>
 #include <ctime> 
-
-#include "Bot.hpp"
-
+#include <fcntl.h>
 #include <iostream>
 #include <string.h>
 #include <sstream>
 
+#include "Bot.hpp"
+
 #define BUFFER_SIZE 2048
 
-bool    convertPort(std::string port, int& portToSet);
-bool	receiveData(int serverSocket, std::string& serverBuffer);
-bool	handleRequest(int serverSocket, std::string& serverBuffer);
-void	sendData(int socket, std::string message);
-void	display_buffer(std::string buffer);
+int stopVar = false;
 
+void signalHandler(int signum)
+{
+	(void)signum;
+	std::cerr << "shutting down server..." << std::endl;
+	stopVar = true;
+}
+
+/**
+* @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
+* @return
+*/
+void Bot::setNonBlocking(int sock)
+{
+	int result;
+	int flags;
+
+	flags = ::fcntl(sock, F_GETFL, 0);
+	if (flags == -1)
+		throw (std::runtime_error("fcntl failed"));
+	flags |= O_NONBLOCK;
+	result = fcntl(sock , F_SETFL , flags);
+	if (result == -1)
+	{
+		throw (std::runtime_error("fcntl failed"));
+	}
+}
 
 void	Bot::launcher_bot(std::string strPort, std::string password)
 {
-	this->_socketServer = socket(AF_INET, SOCK_STREAM, 0);
-
-	int port = 0;
-	this->convertPort(strPort, port);
-
-	this->_serverAdress.sin_family = AF_INET;
-	this->_serverAdress.sin_port = htons(port);
-	this->_serverAdress.sin_addr.s_addr = INADDR_ANY;
-
-	this->connectToServer();
-	this->sendConnectionToServer(password);
-	while (1)
+	try
 	{
-		try 
+		this->_socketServer = socket(AF_INET, SOCK_STREAM, 0);
+
+		int port = 0;
+		this->convertPort(strPort, port);
+
+		this->_serverAdress.sin_family = AF_INET;
+		this->_serverAdress.sin_port = htons(port);
+		this->_serverAdress.sin_addr.s_addr = INADDR_ANY;
+
+		this->connectToServer();
+
+		this->setNonBlocking(this->_socketServer);
+		this->sendConnectionToServer(password);
+		while (stopVar == false)
 		{
+			// std::cout << "Inside launcher_bot : " << stopVar << std::endl;
+
 			if (this->receiveData() == true)
-				this->handleRequest();
+			{
+				if (this->handleRequest() == false)
+					break ;
+			}
+			else
+			{
+				// std::cout << "Launcherbot before return "  << std::endl;
+				break ;
+
+			}
 		}
-		catch (std::exception &e)
-		{
-			continue ;
-		}
+		close(this->_socketServer);
 	}
-	close(this->_socketServer);
+	catch (std::exception &e)
+	{
+		close(this->_socketServer);
+		return ;
+	}
 }
 
 void	Bot::sendConnectionToServer(std::string password)
@@ -66,16 +102,18 @@ static std::string getTimeString();
 
 bool	Bot::handleRequest()
 {
-	while (1)
+	while (stopVar == false)
 	{
+		// std::cout << "Inside handle request: " << stopVar << std::endl;
 		std::string		strCommand;
 
 		strCommand = this->extractCommand(this->_buf);
 		if (strCommand.empty())
-			return (false);
+			return (true);
 		size_t pos = strCommand.find("PRIVMSG");
 		if (pos != std::string::npos)
 		{
+			std::cout << "Inside handle request: " << strCommand << std::endl;
 			pos = strCommand.find(" ");
 			std::string nick = strCommand.substr(1, pos);
 			strCommand.erase(0, pos);
@@ -85,6 +123,9 @@ bool	Bot::handleRequest()
 				sendData("PRIVMSG " + nick + " :Salut " + nick);
 			else if (content == "!time")
 				sendData("PRIVMSG " + nick + " :Time is " + getTimeString());
+			else if (content == "!2048")
+				sendData("PRIVMSG " + nick + " :Time is " + getTimeString());
+			std::cout << "nick: " << nick << "content: " << content << std::endl;
 		}
 	}
 	return (true);
@@ -92,30 +133,38 @@ bool	Bot::handleRequest()
 
 static std::string getTimeString()
 {
-    time_t ts;
-    time(&ts);
-    std::tm* dt = std::localtime(&ts);
+	time_t ts;
+	time(&ts);
+	std::tm* dt = std::localtime(&ts);
 
-    char buffer[64];
-    std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", dt);
+	char buffer[64];
+	std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", dt);
 
-    return (buffer);
+	return (buffer);
 }
 
 bool	Bot::receiveData()
 {
+	// std::cout << "Inside receive data: " << stopVar << std::endl;
 	int	bytes_read;
-	char	buffer[BUFFER_SIZE] = {"0"};
+	char		buffer[BUFFER_SIZE] = {"0"};
 
+	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(this->_socketServer, buffer, sizeof(buffer), 0);
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
+		{
+			// std::cout << "Inside bytes_read <= 0" << std::endl;
 			return (false);
+		}
 	}
 	buffer[bytes_read] = '\0';
-	this->_buf += buffer;
-	display_buffer(this->_buf);
+	if (strlen(buffer) != 0 && buffer[0] != '\0')
+	{
+		this->_buf += buffer;
+		this->display_buffer(this->_buf);
+	}
 	return (true);
 }
 
@@ -135,8 +184,8 @@ std::string	Bot::extractCommand(std::string& buffer)
 		buffer.erase(0, pos + 1);
 	}
 	int size = res.size();
-	if (res[size] != '\n' && res[size - 1] != '\r')
-		throw std::runtime_error("Not carriage or newline at the end of the command");
+	// if (res[size] != '\n' && res[size - 1] != '\r')
+	// 	throw std::runtime_error("Not carriage or newline at the end of the command");
 	res = res.substr(0, size - 1);
 	return (res);
 }
@@ -147,14 +196,13 @@ void	Bot::sendData(std::string message)
 	send(this->_socketServer, message.c_str(), strlen(message.c_str()), 0);
 }
 
-void	Bot::display_buffer(std::string buffer)
+void	Bot::display_buffer(std::string& buffer)
 {
 	std::cout << "INSIDE RECEIVE DATA: serverBuffer: " << std::endl;
 	std::cout << buffer << std::endl;
 }
 
 static bool check_port(std::string& port);
-
 
 /**
  * @brief function to check if the port is correct and convert this one.
@@ -193,7 +241,7 @@ static bool check_port(std::string& port)
     return (true);
 }
 
-void		Bot::connectToServer()
+void	Bot::connectToServer()
 {
 	if (connect(this->_socketServer, (struct sockaddr*)&this->_serverAdress, sizeof(this->_serverAdress)) < 0)
 		throw(std::runtime_error("connect failed"));
