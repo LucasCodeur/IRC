@@ -8,8 +8,8 @@ CC_DEBUG = g++
 CFLAGS = -g3 -Wall -Wextra -Werror -MMD -std=c++98
 CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
 
-NAME = irc_bot
-NAME_DEBUG = irc_bot_debug 
+NAME = ircbot
+NAME_DEBUG = ircbot_debug 
 
 P_SRC = src/
 P_SRC_SERVER = $(P_SRC)
@@ -17,11 +17,10 @@ P_SRC_SERVER = $(P_SRC)
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
 
-P_INC = ../inc/
+P_INC = inc/
 
-SRC = Bot.cpp \
-
-SRC_SERVER = CheckServer.cpp
+SRC = main.cpp \
+	  Bot.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \

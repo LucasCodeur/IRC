@@ -2,136 +2,121 @@
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
+#include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
+#include <ctime> 
 
-#include "Server.hpp"
-#include "Exceptions.hpp"
-#include "Command.hpp"
+#include "Bot.hpp"
+
 #include <iostream>
-#include <csignal>
 #include <string.h>
 #include <sstream>
 
-int stopVar = false;
-
-void signalHandler(int signum);
+#define BUFFER_SIZE 2048
 
 bool    convertPort(std::string port, int& portToSet);
 bool	receiveData(int serverSocket, std::string& serverBuffer);
 bool	handleRequest(int serverSocket, std::string& serverBuffer);
+void	sendData(int socket, std::string message);
+void	display_buffer(std::string buffer);
 
-int	main(int argc, char* argv[])
+
+void	Bot::launcher_bot(std::string strPort, std::string password)
 {
-	(void)argv;
+	this->_socketServer = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (argc != 3)
-	{
-		std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
-		return 2;
-	}
-
-	signal(SIGINT, signalHandler);
-	int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-	sockaddr_in serverAddress;
 	int port = 0;
-	convertPort(argv[1], port);
+	this->convertPort(strPort, port);
 
-	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(port);
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	this->_serverAdress.sin_family = AF_INET;
+	this->_serverAdress.sin_port = htons(port);
+	this->_serverAdress.sin_addr.s_addr = INADDR_ANY;
 
-	connect(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
-	std::string message = "PASS ";
-	message += argv[2];
-	message += "\r\n";	
-	message += "NICK botIrc\r\n";
-	message += "USER botIrc botIrc 0 :bot_server\r\n";
-	send(serverSocket, message.c_str(), strlen(message.c_str()), 0);
-	std::string serverBuffer;
-	while (stopVar == false)
+	this->connectToServer();
+	this->sendConnectionToServer(password);
+	while (1)
 	{
 		try 
 		{
-			if (receiveData(serverSocket, serverBuffer) == true)
-				handleRequest(serverSocket, serverBuffer);
+			if (this->receiveData() == true)
+				this->handleRequest();
 		}
 		catch (std::exception &e)
 		{
 			continue ;
 		}
 	}
-
-	close(serverSocket);
-
-	return (0);
+	close(this->_socketServer);
 }
 
-static std::string	extractCommand(std::string& buffer);
-
-bool	handleRequest(int serverSocket, std::string& serverBuffer)
+void	Bot::sendConnectionToServer(std::string password)
 {
-	bool		stop = false;
+	std::string message = "PASS ";
+	message += password;
 
-	while (!stop)
+	sendData(message);
+	sendData("NICK botIrc");
+	sendData("USER botIrc botIrc 0 :bot_server");
+	sendData("JOIN #test");
+}
+
+static std::string getTimeString();
+
+bool	Bot::handleRequest()
+{
+	while (1)
 	{
 		std::string		strCommand;
 
-		strCommand = extractCommand(serverBuffer);
+		strCommand = this->extractCommand(this->_buf);
 		if (strCommand.empty())
-		{
-			stop = true;
-			continue ;
-		}
-		std::cout << "JUST BEFORE TO SEND WELCOME TO THE SERVER" << std::endl;
-		std::string		message = "WELCOME ";
-		size_t pos = strCommand.find(" ");
-		std::string command;	
+			return (false);
+		size_t pos = strCommand.find("PRIVMSG");
 		if (pos != std::string::npos)
 		{
-			command = strCommand.substr(0, pos);
+			pos = strCommand.find(" ");
+			std::string nick = strCommand.substr(1, pos);
 			strCommand.erase(0, pos);
-		}
-		if (command == "SEND")
-		{
-			message += strCommand;
-			message += "\r\n";
-			if (send(serverSocket, message.c_str(), strlen(message.c_str()), 0) < 0)
-			{
-				std::cout << "send failed" << std::endl;
-				return (false);
-			}
+			pos = strCommand.find(":");
+			std::string content = strCommand.substr(pos + 1, strCommand.size());
+			if (content == "!hello")
+				sendData("PRIVMSG " + nick + " :Salut " + nick);
+			else if (content == "!time")
+				sendData("PRIVMSG " + nick + " :Time is " + getTimeString());
 		}
 	}
 	return (true);
 }
 
-bool	receiveData(int serverSocket, std::string& serverBuffer)
+static std::string getTimeString()
 {
-	int		bytes_read;
+    time_t ts;
+    time(&ts);
+    std::tm* dt = std::localtime(&ts);
+
+    char buffer[64];
+    std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", dt);
+
+    return (buffer);
+}
+
+bool	Bot::receiveData()
+{
+	int	bytes_read;
 	char	buffer[BUFFER_SIZE] = {"0"};
 
-	bytes_read = recv(serverSocket, buffer, sizeof(buffer), 0);
+	bytes_read = recv(this->_socketServer, buffer, sizeof(buffer), 0);
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
 			return (false);
 	}
 	buffer[bytes_read] = '\0';
-	serverBuffer += buffer;
-	std::cout << "serverBuffer" << std::endl;
-	std::cout << serverBuffer << std::endl;
+	this->_buf += buffer;
+	display_buffer(this->_buf);
 	return (true);
-}
-
-void signalHandler(int signum)
-{
-	(void)signum;
-	std::cerr << "shutting down server..." << std::endl;
-	stopVar = true;
 }
 
 /**
@@ -139,7 +124,7 @@ void signalHandler(int signum)
  * @param buffer, string to extract the command.
  * @return a valid command.
  */
-static std::string	extractCommand(std::string& buffer)
+std::string	Bot::extractCommand(std::string& buffer)
 {
 	std::string		res;
 	size_t			pos = buffer.find("\n");
@@ -154,4 +139,67 @@ static std::string	extractCommand(std::string& buffer)
 		throw std::runtime_error("Not carriage or newline at the end of the command");
 	res = res.substr(0, size - 1);
 	return (res);
+}
+
+void	Bot::sendData(std::string message)
+{
+	message += "\r\n";
+	send(this->_socketServer, message.c_str(), strlen(message.c_str()), 0);
+}
+
+void	Bot::display_buffer(std::string buffer)
+{
+	std::cout << "INSIDE RECEIVE DATA: serverBuffer: " << std::endl;
+	std::cout << buffer << std::endl;
+}
+
+static bool check_port(std::string& port);
+
+
+/**
+ * @brief function to check if the port is correct and convert this one.
+ * @param port string to convert into number.
+ * @return true if the port is correct or false if not the case.
+ */
+bool    Bot::convertPort(std::string port, int& portToSet)
+{
+    if (check_port(port) == false)
+        throw std::runtime_error("Bad characters inside port");
+
+    std::stringstream ss(port);
+    if (ss.fail() == true)
+        throw std::runtime_error("Bad characters inside port");
+
+    ss >> portToSet;
+    if (1023 >= portToSet || portToSet >= 49152)
+        throw std::runtime_error("Bad range of port");
+
+    return (true);
+}
+
+/**
+ * @brief function to check if only digit inside port.
+ * @param port string to check.
+ * @return true if correct, false or not.
+ */
+static bool check_port(std::string& port)
+{
+    int size = port.size();
+    for (int i = 0; i < size; i++)
+    {
+        if (std::isdigit(port[i]) == false)
+            return (false);
+    }
+    return (true);
+}
+
+void		Bot::connectToServer()
+{
+	if (connect(this->_socketServer, (struct sockaddr*)&this->_serverAdress, sizeof(this->_serverAdress)) < 0)
+		throw(std::runtime_error("connect failed"));
+}
+
+void	Bot::setSocket(int socket)
+{
+	this->_socketServer = socket;
 }
