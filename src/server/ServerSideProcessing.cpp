@@ -68,6 +68,8 @@ bool	Server::handleRequest(Client& client)
 			std::string&	clientOutBuffer = client.getBuf();
 			std::string		strCommand;
 
+			if (clientOutBuffer.size() == 0)
+				return (true);
 			strCommand = extractCommand(clientOutBuffer);
 			if (strCommand.empty())
 			{
