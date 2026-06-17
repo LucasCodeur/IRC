@@ -1,25 +1,193 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   game_logic.c                                       :+:      :+:    :+:   */
+/*   game_logic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 17:18:51 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/16 19:54:51 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/17 13:58:41 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.hpp"
-#include "display.hpp"
+#include "Board.hpp"
 #include "utils.hpp"
+#include "Bot.hpp"
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string>
+#include <sys/socket.h>
+#include <string.h>
+#include <fcntl.h>
+
+#include <sstream>
+
+#define BUFFER_SIZE 2048
+
+static bool	move_side(t_board* board, bool move_right);
+static bool	move_verticality(t_board* board, bool move_bottom);
+bool		receiveData(int socket, std::string& buf);
+
+static char ft_getchar(int socket, std::string nick, std::string& buf);
+
+bool	Board::game_loop(t_board *board)
+{
+	int	c;
+	bool	running;
+
+	running = true;
+	while (running)
+	{
+		sendPrivateMessage(this->_socket, this->_nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
+		c =  ft_getchar(this->_socket, this->_nick, this->_buf);
+
+		std::cout << "just after first ft_getchar" << std::endl;
+		if (c == 'a')
+		{
+			std::cout << "inside if c == a" << std::endl;
+			move_side(board, false);
+		}
+		else if (c == 'd')
+			move_side(board, true);
+		else if (c == 'w')
+			move_verticality(board, false);
+		else if (c == 's')
+			move_verticality(board, true);
+		else if (c == 'q')
+			running = false;
+		std::cout << "before fill nb" << std::endl;
+		fill_nb_rd_place(board);
+
+		std::cout << "before while != 'n'" << std::endl;
+		// while (c != '\n' && c != EOF)
+		// 	c = ft_getchar(this->_socket, this->_nick, this->_buf);
+
+		std::cout << "before privat message n" << std::endl;
+		sendPrivateMessage(this->_socket, this->_nick, "\n");
+		std::cout << "before is victory" << std::endl;
+		if (is_victory(board) == true)
+		{
+			sendPrivateMessage(this->_socket, this->_nick, "Victory\n");
+			return (false);
+		}
+		std::cout << "before game over" << std::endl;
+		if (is_game_over(board) == true)
+		{
+			sendPrivateMessage(this->_socket, this->_nick, "Game over\n");
+			return (false);
+		}
+		std::cout << "before send grid" << std::endl;
+		send_grid(board);
+	}
+	return (false);
+}
+
+static char ft_getchar(int socket, std::string nick, std::string& buf)
+{
+	char c = '\0';
+	// while (1)
+	// {
+		if (receiveData(socket, buf) == false)
+			sendPrivateMessage(socket, nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
+	// 	else
+	// 		break ;
+	// }
+	if (buf.empty() == false)	
+	{
+		std::string nick;
+		std::string content;
+		if (splitPrivmsg(buf, nick, content) == false)
+			return ('\0');
+		c = content[0];
+		std::cout << "c : " << c << std::endl;
+		buf.erase(0, buf.size());
+	}
+	return (c);
+}
+
+void setBlocking(int sock)
+{
+	int result;
+	int flags;
+
+	flags = ::fcntl(sock, F_GETFL, 0);
+	if (flags == -1)
+		throw (std::runtime_error("fcntl failed"));
+	flags &= ~O_NONBLOCK;
+	result = fcntl(sock , F_SETFL , flags);
+	if (result == -1)
+	{
+		throw (std::runtime_error("fcntl failed"));
+	}
+}
+
+bool	receiveData(int socket, std::string& buf)
+{
+	// std::cout << "Inside receive data: " << stopVar << std::endl;
+	//
+	setBlocking(socket);
+	int	bytes_read;
+	char	buffer[BUFFER_SIZE] = {"0"};
+
+	memset(buffer, 0, BUFFER_SIZE);
+	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
+	if (bytes_read <= 0)
+	{
+		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
+		{
+			// std::cout << "Inside bytes_read <= 0" << std::endl;
+			return (false);
+		}
+	}
+	std::cout << "buffer :" << buffer << std::endl;
+	buffer[bytes_read] = '\0';
+	if (strlen(buffer) != 0 && buffer[0] != '\0')
+	{
+		buf += buffer;
+	}
+	return (true);
+}
+
+void	Board::send_grid(t_board* board) 
+{
+	std::string grid;	
+	for (size_t i = 0; i < board->size; i++)
+	{
+		if (board->size == 4)
+			grid ="+---+---+---+---+";
+		else
+			grid = "+---+---+---+---+---+";
+		sendPrivateMessage(this->_socket, this->_nick, grid);
+		grid = "|";
+		for (size_t j = 0; j < board->size; j++)
+		{
+			if (board->grid[i][j] == 0)
+				grid +="   |";
+			else
+			{
+				std::stringstream convert;
+				convert << board->grid[i][j];
+				std::string		nb = convert.str();
+				grid += " ";
+				grid += nb;
+				grid += " |";
+			}
+		}
+		// grid += "\n";
+		sendPrivateMessage(this->_socket, this->_nick, grid);
+	}
+	if (board->size == 4)
+		grid ="+---+---+---+---+";
+	else
+		grid = "+---+---+---+---+---+";
+	sendPrivateMessage(this->_socket, this->_nick, grid);
+}
 
 static bool	tighten_side_grid(t_board* board, bool move_right);
-static bool add_line(t_board *board, int l, bool move_right);
+static bool	add_line(t_board *board, int l, bool move_right);
 
 bool	move_side(t_board* board, bool move_right)
 {
@@ -74,7 +242,7 @@ static bool	tighten_side_grid(t_board* board, bool move_right)
 }
 
 static bool	tighten_verticality_grid(t_board* board, bool move_bottom);
-static bool add_column(t_board *board, int c, bool move_bottom);
+static bool	add_column(t_board *board, int c, bool move_bottom);
 
 bool	move_verticality(t_board* board, bool move_bottom)
 {
@@ -206,47 +374,4 @@ static bool add_column(t_board *board, int c, bool move_bottom)
 		}
 	}
 	return (res);
-}
-
-bool	game_loop(t_board *board)
-{
-	int		c;
-	bool	running;
-
-	running = true;
-	while (running)
-	{
-		print_simple_grid(board);
-		printf("after print grid\n");
-		printf("Commande (a=left, d=right, w=up, s=down, q=quit) : ");
-		c = getchar();
-
-		if (c == 'a')
-			move_side(board, false);
-		else if (c == 'd')
-			move_side(board, true);
-		else if (c == 'w')
-			move_verticality(board, false);
-		else if (c == 's')
-			move_verticality(board, true);
-		else if (c == 'q')
-			running = false;
-		fill_nb_rd_place(board);
-
-		while (c != '\n' && c != EOF)
-			c = getchar();
-
-		printf("\n");
-		if (is_victory(board) == true)
-		{
-			printf("Victory\n");
-			return (false);
-		}
-		if (is_game_over(board) == true)
-		{
-			printf("Game over\n");
-			return (false);
-		}
-	}
-	return (false);
 }

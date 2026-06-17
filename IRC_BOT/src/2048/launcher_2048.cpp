@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   launcher_2048.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 19:38:23 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/17 09:28:23 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/17 12:23:49 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.hpp"
+#include "Board.hpp"
+
 #include "utils.hpp"
+#include "Bot.hpp"
 
 #include <stdio.h>
 
 #include <sstream>
 
-int	launch_2048(std::string sizeBoard)
+
+int	Bot::launch_2048(std::string sizeBoard, std::string nick)
 {
 	if (sizeBoard.size() == 1)
 	{
@@ -27,16 +30,19 @@ int	launch_2048(std::string sizeBoard)
 		ss >> size;
 		if (size != 4 && size != 5)
 		{
-			printf("Wrong board size\n");
+			sendPrivateMessage(this->_socketServer, nick, "Wrong board size : 4 or 5");
 			return (1);
 		}
-		t_board	board;
 
-		init_board(&board,  size);
-		fill_start_numbers(&board);
-		game_loop(&board);
+		Board	board;
+		board.setSocket(this->_socketServer);
+		board.setNick(nick);
+
+		init_board(&board._board,  size);
+		fill_start_numbers(&board._board);
+		board.game_loop(&board._board);
 	}
 	else
-		printf("Wrong board size\n");
+		sendPrivateMessage(this->_socketServer, nick, "Wrong board size : 4 or 5");
 	return (0);
 }

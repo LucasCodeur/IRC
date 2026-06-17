@@ -25,8 +25,7 @@ SRC = main.cpp \
 	  Bot.cpp \
 
 SRC_2048 = launcher_2048.cpp \
-		   board.cpp \
-		   display.cpp \
+		   Board.cpp \
 		   game_logic.cpp \
 		   check_game_over.cpp \
 		   fill_grid_numbers.cpp \

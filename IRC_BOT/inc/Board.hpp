@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   board.h                                            :+:      :+:    :+:   */
+/*   Board.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 19:56:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/16 19:56:12 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/17 12:03:12 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef BOARD_H
 # define BOARD_H
 
-#define KEY_ESCAPE 27
 # include <stddef.h>
 # include <stdbool.h>
+
+# include <string>
 
 typedef struct s_board
 {
@@ -29,11 +30,29 @@ enum e_const
 	WIN_VALUE = 2048
 };
 
+
+class	Board
+{
+	public:
+		t_board			_board;
+		t_board&		getBoard();
+		std::string&	getBuf();
+		int				getSocket() const;
+		void			setSocket(int socket);
+		void			setNick(std::string nick);
+		bool			game_loop(t_board *board);
+	private:
+		std::string _nick;
+		std::string	_buf;
+		int			_socket;
+
+		void	send_grid(t_board* board);
+
+};
+
 void	init_board(t_board* board, size_t size);
- 
 bool	fill_start_numbers(t_board* board);
 bool	fill_nb_rd_place(t_board* board);
-bool	game_loop(t_board *board);
 
 //GAME LOGIC UTILS
 void	reset_pos(int* pos);
