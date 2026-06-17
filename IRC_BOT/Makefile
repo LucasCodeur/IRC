@@ -19,12 +19,24 @@ P_OBJ_DEBUG = .obj_debug/
 
 P_INC = inc/
 
+P_SRC_2048 = src/2048/
+
 SRC = main.cpp \
 	  Bot.cpp \
+
+SRC_2048 = launcher_2048.cpp \
+		   board.cpp \
+		   display.cpp \
+		   game_logic.cpp \
+		   check_game_over.cpp \
+		   fill_grid_numbers.cpp \
+		   game_logic_utils.cpp \
+		   utils.cpp
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
+	$(addprefix $(P_SRC_2048), $(SRC_2048)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o)) \
 

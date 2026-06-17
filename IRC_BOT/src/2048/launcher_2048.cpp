@@ -15,11 +15,16 @@
 
 #include <stdio.h>
 
-int	main(int argc, char **argv)
+#include <sstream>
+
+int	launch_2048(std::string sizeBoard)
 {
-	if (argc == 2 && ft_strlen(argv[1]) == 1)
+	if (sizeBoard.size() == 1)
 	{
-		int size = argv[1][0] - '0';
+		std::stringstream ss(sizeBoard);
+		int size;
+
+		ss >> size;
 		if (size != 4 && size != 5)
 		{
 			printf("Wrong board size\n");
@@ -31,5 +36,7 @@ int	main(int argc, char **argv)
 		fill_start_numbers(&board);
 		game_loop(&board);
 	}
+	else
+		printf("Wrong board size\n");
 	return (0);
 }
