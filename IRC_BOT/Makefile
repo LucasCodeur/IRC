@@ -2,11 +2,11 @@ MAKEFLAGS += -j
 
 .PHONY : all clean fclean re debug
 
-CC = c++
-CC_DEBUG = g++
+CXX = c++
+CXX_DEBUG = g++
 
-CFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
-CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g3 -D DEBUG=1
+CXXFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
+CXXFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g3 -D DEBUG=1
 
 NAME = ircbot
 NAME_DEBUG = ircbot_debug 
@@ -52,13 +52,13 @@ Cyan=\033[0;36m
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) -o $@ $(OBJS) && \
+	@$(CXX) $(CXXFLAGS) -o $@ $(OBJS) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
 	echo "$(Red)Error creating $@$(Color_Off)"
 
 $(P_OBJ)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I $(P_INC) -c $< -o $@ && \
+	@$(CXX) $(CXXFLAGS) -I $(P_INC) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $<$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
@@ -81,13 +81,13 @@ re:
 debug: $(NAME_DEBUG)
 
 $(NAME_DEBUG): $(OBJS_DEBUG)
-	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
+	@$(CXX_DEBUG) $(CXXFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
 	echo "$(Red)Error creating $@$(Color_Off)"
 
 $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC_DEBUG) $(CFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
+	@$(CXX_DEBUG) $(CXXFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
