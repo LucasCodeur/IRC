@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.h"
+#include "board.hpp"
+
 #include <stdint.h>
 
 bool	check_vertical_game_over(t_board* board);

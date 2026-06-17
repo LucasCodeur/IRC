@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.h"
+#include "board.hpp"
 
 bool	reverse_column(t_board *board, int c)
 {

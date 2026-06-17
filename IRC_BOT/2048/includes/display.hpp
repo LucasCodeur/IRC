@@ -1,35 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   display.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/16 19:38:23 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/16 19:52:06 by lud-adam         ###   ########.fr       */
+/*   Created: 2026/06/16 19:56:22 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/06/16 19:56:45 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.h"
-#include "utils.h"
+#ifndef DISPLAY_H
+# define DISPLAY_H
+# include "board.hpp"
 
-#include <stdio.h>
+void	init_all_color_pair();
+void	display_board(t_board *board);
+void	print_simple_grid(t_board* board);
 
-int	main(int argc, char **argv)
-{
-	if (argc == 2 && ft_strlen(argv[1]) == 1)
-	{
-		int size = argv[1][0] - '0';
-		if (size != 4 && size != 5)
-		{
-			printf("Wrong board size\n");
-			return (1);
-		}
-		t_board	board;
-
-		init_board(&board,  size);
-		fill_start_numbers(&board);
-		game_loop(&board);
-	}
-	return (0);
-}
+#endif

@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils.hpp"
+
 #include <stddef.h>
 
 void	*ft_memset(void *pointer, int value, size_t count)

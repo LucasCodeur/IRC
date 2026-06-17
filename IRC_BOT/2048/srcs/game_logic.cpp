@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "board.h"
-#include "display.h"
-#include "utils.h"
+#include "board.hpp"
+#include "display.hpp"
+#include "utils.hpp"
 
 #include <stdbool.h>
 #include <stdlib.h>

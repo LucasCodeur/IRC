@@ -14,33 +14,33 @@ NAME			:= 2048
 BUILD_DIR		:= .build
 SRC_DIR			:= srcs
 INCLUDE_DIR		:= includes
-CC				:= cc
-CFLAGS			:= -Wall -Wextra -Werror
+CXX				:= c++
+CXXFLAGS		:= -Wall -Wextra -Werror
 CPPFLAGS		:= -MMD -MP -I $(INCLUDE_DIR)
 
-SRCS			:= 		\
-	main.c				\
-	board.c				\
-	game_logic.c		\
-	fill_grid_numbers.c \
-	display.c			\
-	check_game_over.c	\
-	game_logic_utils.c	\
-	utils.c
+SRCS			:=			\
+	main.cpp				\
+	board.cpp				\
+	game_logic.cpp			\
+	fill_grid_numbers.cpp	\
+	display.cpp				\
+	check_game_over.cpp		\
+	game_logic_utils.cpp	\
+	utils.cpp				\
 
 SRCS			:= $(SRCS:%=$(SRC_DIR)/%)
-OBJS			:= $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+OBJS			:= $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 DEPS			:= $(OBJS:.o=.d)
 RM				:= rm -rf
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) -o $(NAME)
+	$(CXX) $(OBJS) -o $(NAME)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 force:
 
@@ -56,7 +56,7 @@ run: all
 	./$(NAME)
 
 debug:
-	$(MAKE) re CFLAGS="-Wall -Wextra -g3 -D DEBUG=1"
+	$(MAKE) re CXXFLAGS="-Wall -Wextra -g3 -D DEBUG=1"
 
 -include $(DEPS)
 
