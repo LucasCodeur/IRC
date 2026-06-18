@@ -20,6 +20,8 @@
 
 typedef struct s_board
 {
+	bool	running;
+	bool	alreadySet;
 	size_t	grid[5][5];
 	size_t	size;
 	size_t	empty_case;
@@ -27,21 +29,23 @@ typedef struct s_board
 
 enum e_const
 {
-	WIN_VALUE = 2048
+	WIN_VALUE = 32
 };
 
 
 class	Board
 {
 	public:
-		t_board			_board;
+		// Board(t_board& board);
 		t_board&		getBoard();
 		std::string&	getBuf();
 		int				getSocket() const;
 		void			setSocket(int socket);
+		void			setBoard(t_board board);
 		void			setNick(std::string nick);
-		bool			game_loop(t_board *board);
+		bool			game_loop(t_board *board, char c);
 	private:
+		// t_board&	_board;
 		std::string _nick;
 		std::string	_buf;
 		int			_socket;

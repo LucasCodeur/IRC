@@ -19,17 +19,34 @@
 void	init_board(t_board *board, size_t size)
 {
 	assert((size >= 4 && size <= 5) && "Invalid board size");
-	board->size = size;
-	for (size_t i = 0; i < size; i++)
-		for (size_t j = 0; j < size; j++)
-			board->grid[i][j] = 0;
-	board->empty_case = size * size;
+
+	if (board->alreadySet == false)
+	{
+		board->size = size;
+		for (size_t i = 0; i < size; i++)
+			for (size_t j = 0; j < size; j++)
+				board->grid[i][j] = 0;
+		board->empty_case = size * size;
+		board->alreadySet = true;
+		fill_start_numbers(board);
+		return ;
+	}
 }
 
-t_board&	Board::getBoard()
-{
-	return (this->_board);
-}
+// Board::Board(t_board& board) : _board(board)
+// {
+//
+// }
+
+// t_board&	Board::getBoard()
+// {
+// 	return (this->_board);
+// }
+
+// void	Board::setBoard(t_board board)
+// {
+// 	this->_board = board;
+// }
 
 std::string&	Board::getBuf()
 {
@@ -44,7 +61,6 @@ int		Board::getSocket() const
 void	Board::setSocket(int socket)
 {
 	this->_socket = socket;
-	std::cout << "socket: " << this->_socket << std::endl; 
 }
 
 void	Board::setNick(std::string nick)

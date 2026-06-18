@@ -33,54 +33,45 @@ bool		receiveData(int socket, std::string& buf);
 
 static char ft_getchar(int socket, std::string nick, std::string& buf);
 
-bool	Board::game_loop(t_board *board)
+bool	Board::game_loop(t_board *board, char c)
 {
-	int	c;
-	bool	running;
+	board->running = true;
+	send_grid(board);
+	sendPrivateMessage(this->_socket, this->_nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
 
-	running = true;
-	while (running)
+	if (c == 'a')
 	{
-		sendPrivateMessage(this->_socket, this->_nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
-		c =  ft_getchar(this->_socket, this->_nick, this->_buf);
+		std::cout << "inside a" << std::endl;
+		move_side(board, false);
+	}
+	else if (c == 'd')
+		move_side(board, true);
+	else if (c == 'w')
+	{
+		std::cout << "inside w" << std::endl;
+		move_verticality(board, false);
+	}
+	else if (c == 's')
+		move_verticality(board, true);
+	else if (c == 'q')
+		board->running = false;
+	fill_nb_rd_place(board);
 
-		std::cout << "just after first ft_getchar" << std::endl;
-		if (c == 'a')
-		{
-			std::cout << "inside if c == a" << std::endl;
-			move_side(board, false);
-		}
-		else if (c == 'd')
-			move_side(board, true);
-		else if (c == 'w')
-			move_verticality(board, false);
-		else if (c == 's')
-			move_verticality(board, true);
-		else if (c == 'q')
-			running = false;
-		std::cout << "before fill nb" << std::endl;
-		fill_nb_rd_place(board);
+	// while (c != '\n' && c != EOF)
+	// 	c = ft_getchar(this->_socket, this->_nick, this->_buf);
 
-		std::cout << "before while != 'n'" << std::endl;
-		// while (c != '\n' && c != EOF)
-		// 	c = ft_getchar(this->_socket, this->_nick, this->_buf);
-
-		std::cout << "before privat message n" << std::endl;
-		sendPrivateMessage(this->_socket, this->_nick, "\n");
-		std::cout << "before is victory" << std::endl;
-		if (is_victory(board) == true)
-		{
-			sendPrivateMessage(this->_socket, this->_nick, "Victory\n");
-			return (false);
-		}
-		std::cout << "before game over" << std::endl;
-		if (is_game_over(board) == true)
-		{
-			sendPrivateMessage(this->_socket, this->_nick, "Game over\n");
-			return (false);
-		}
-		std::cout << "before send grid" << std::endl;
-		send_grid(board);
+	// sendPrivateMessage(this->_socket, this->_nick, "\n");
+	if (is_victory(board) == true)
+	{
+		sendPrivateMessage(this->_socket, this->_nick, "Victory");
+		board->running = false;
+		return (false);
+	}
+	if (is_game_over(board) == true)
+	{
+		sendPrivateMessage(this->_socket, this->_nick, "Game over");
+		board->running = false;
+		return (false);
 	}
 	return (false);
 }

@@ -19,8 +19,7 @@
 
 #include <sstream>
 
-
-int	Bot::launch_2048(std::string sizeBoard, std::string nick)
+int	Bot::launch_2048(std::string sizeBoard, std::string nick, char c)
 {
 	if (sizeBoard.size() == 1)
 	{
@@ -35,12 +34,13 @@ int	Bot::launch_2048(std::string sizeBoard, std::string nick)
 		}
 
 		Board	board;
+
+		t_board& grid = this->_nicks[nick];
+
+		init_board(&grid, size);
 		board.setSocket(this->_socketServer);
 		board.setNick(nick);
-
-		init_board(&board._board,  size);
-		fill_start_numbers(&board._board);
-		board.game_loop(&board._board);
+		board.game_loop(&grid, c);
 	}
 	else
 		sendPrivateMessage(this->_socketServer, nick, "Wrong board size : 4 or 5");

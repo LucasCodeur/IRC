@@ -69,6 +69,11 @@ void signalHandler(int signum)
 	stopVar = true;
 }
 
+Bot::~Bot()
+{
+	_nicks.clear();
+}
+
 /**
 * @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
 * @return
@@ -130,14 +135,15 @@ bool	Bot::handleRequest()
 		std::string nick; 
 		if (splitPrivmsg(strCommand, nick, content) == true)
 		{
-			if (content == "!hello")
+			t_board& grid = this->_nicks[nick];
+			if (content == "!2048" || (grid.running == true && content.size() == 1))
+			{
+				this->launch_2048("4", nick, content[0]);
+			}
+			else if (content == "!hello")
 				sendPrivateMessage(this->_socketServer, nick, "Salut " + nick);
 			else if (content == "!time")
 				sendPrivateMessage(this->_socketServer, nick, "Time is " + getTimeString());
-			else if (content == "!2048")
-			{
-				this->launch_2048("4", nick);
-			}
 			// std::cout << "nick: " << nick << "content: " << content << std::endl;
 		}
 	}
@@ -164,25 +170,21 @@ static std::string getTimeString()
 
 bool	Bot::receiveData()
 {
-	// std::cout << "Inside receive data: " << stopVar << std::endl;
 	int	bytes_read;
-	char		buffer[BUFFER_SIZE] = {"0"};
+	char		buffer[BUFFER_SIZE + 1] = {"0"};
 
 	memset(buffer, 0, BUFFER_SIZE);
-	bytes_read = recv(this->_socketServer, buffer, sizeof(buffer), 0);
+	bytes_read = recv(this->_socketServer, buffer, BUFFER_SIZE, 0);
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-		{
-			// std::cout << "Inside bytes_read <= 0" << std::endl;
 			return (false);
-		}
 	}
 	buffer[bytes_read] = '\0';
 	if (strlen(buffer) != 0 && buffer[0] != '\0')
 	{
 		this->_buf += buffer;
-		this->display_buffer(this->_buf);
+		// this->display_buffer(this->_buf);
 	}
 	return (true);
 }
