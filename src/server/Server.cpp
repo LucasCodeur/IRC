@@ -101,8 +101,7 @@ void	Server::listenConnexionsEpoll(void)
 				if (!client)
 					continue ;
 				if (this->receiveData(this->_ev[n].data.fd) == false)
-					continue ;
-				this->handleRequest(*client);
+					this->handleRequest(*client);
 				// print_info_client(*client);	
 			}
 

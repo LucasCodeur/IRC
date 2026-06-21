@@ -14,13 +14,11 @@ static std::string	extractCommand(std::string& buffer);
 /**
  * @brief wrapper function of recv(), allowing it to receive data by the indicated file descriptor.
  * @param socketfd to receive data from this one.
- * @return
+ * @return true if no problem or false if a there is a problem.
  */
 bool	Server::receiveData(int clientFd)
 {
-	std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
-
-	int		 bytes_read;
+	int			bytes_read;
 	char		buffer[BUFFER_SIZE] = {"0"};
 
 	memset(buffer, 0, BUFFER_SIZE);
@@ -35,7 +33,7 @@ bool	Server::receiveData(int clientFd)
 	}
 	buffer[bytes_read] = '\0';
 
-	it = this->_clients.find(clientFd);
+	std::map<int, Client*>::const_iterator it  = this->_clients.find(clientFd);
 
 	std::string&	clientBuffer = (*it).second->getBuf();
 	clientBuffer += buffer;
