@@ -39,19 +39,13 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 		this->sendConnectionToServer(password, channel);
 		while (stopVar == false)
 		{
-			// std::cout << "Inside launcher_bot : " << stopVar << std::endl;
-
 			if (this->receiveData() == true)
 			{
 				if (this->handleRequest() == false)
 					break ;
 			}
 			else
-			{
-				// std::cout << "Launcherbot before return "  << std::endl;
 				break ;
-
-			}
 		}
 		close(this->_socketServer);
 	}
@@ -125,7 +119,6 @@ bool	Bot::handleRequest()
 {
 	while (stopVar == false)
 	{
-		// std::cout << "Inside handle request: " << stopVar << std::endl;
 		std::string		strCommand;
 
 		strCommand = this->extractCommand(this->_buf);
@@ -137,14 +130,11 @@ bool	Bot::handleRequest()
 		{
 			t_board& grid = this->_nicks[nick];
 			if (content == "!2048" || (grid.running == true && content.size() == 1))
-			{
 				this->launch_2048("4", nick, content[0]);
-			}
 			else if (content == "!hello")
 				sendPrivateMessage(this->_socketServer, nick, "Salut " + nick);
 			else if (content == "!time")
 				sendPrivateMessage(this->_socketServer, nick, "Time is " + getTimeString());
-			// std::cout << "nick: " << nick << "content: " << content << std::endl;
 		}
 	}
 	return (true);
@@ -170,8 +160,8 @@ static std::string getTimeString()
 
 bool	Bot::receiveData()
 {
-	int	bytes_read;
-	char		buffer[BUFFER_SIZE + 1] = {"0"};
+	int		bytes_read;
+	char	buffer[BUFFER_SIZE + 1] = {"0"};
 
 	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(this->_socketServer, buffer, BUFFER_SIZE, 0);
@@ -182,10 +172,7 @@ bool	Bot::receiveData()
 	}
 	buffer[bytes_read] = '\0';
 	if (strlen(buffer) != 0 && buffer[0] != '\0')
-	{
 		this->_buf += buffer;
-		// this->display_buffer(this->_buf);
-	}
 	return (true);
 }
 

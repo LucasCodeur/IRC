@@ -36,67 +36,39 @@ static char ft_getchar(int socket, std::string nick, std::string& buf);
 bool	Board::game_loop(t_board *board, char c)
 {
 	board->running = true;
-	send_grid(board);
 	sendPrivateMessage(this->_socket, this->_nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
 
 	if (c == 'a')
-	{
-		std::cout << "inside a" << std::endl;
 		move_side(board, false);
-	}
 	else if (c == 'd')
 		move_side(board, true);
 	else if (c == 'w')
-	{
-		std::cout << "inside w" << std::endl;
 		move_verticality(board, false);
-	}
 	else if (c == 's')
 		move_verticality(board, true);
 	else if (c == 'q')
+	{
 		board->running = false;
-	fill_nb_rd_place(board);
-
-	// while (c != '\n' && c != EOF)
-	// 	c = ft_getchar(this->_socket, this->_nick, this->_buf);
-
-	// sendPrivateMessage(this->_socket, this->_nick, "\n");
+		return (false);
+	}
+	if (c == 'a' || c == 'd' || c == 'w' || c == 's')
+		fill_nb_rd_place(board);
 	if (is_victory(board) == true)
 	{
 		sendPrivateMessage(this->_socket, this->_nick, "Victory");
 		board->running = false;
+		send_grid(board);
 		return (false);
 	}
 	if (is_game_over(board) == true)
 	{
 		sendPrivateMessage(this->_socket, this->_nick, "Game over");
 		board->running = false;
+		send_grid(board);
 		return (false);
 	}
-	return (false);
-}
-
-static char ft_getchar(int socket, std::string nick, std::string& buf)
-{
-	char c = '\0';
-	// while (1)
-	// {
-		if (receiveData(socket, buf) == false)
-			sendPrivateMessage(socket, nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
-	// 	else
-	// 		break ;
-	// }
-	if (buf.empty() == false)	
-	{
-		std::string nick;
-		std::string content;
-		if (splitPrivmsg(buf, nick, content) == false)
-			return ('\0');
-		c = content[0];
-		std::cout << "c : " << c << std::endl;
-		buf.erase(0, buf.size());
-	}
-	return (c);
+	send_grid(board);
+	return (true);
 }
 
 void setBlocking(int sock)
@@ -117,8 +89,6 @@ void setBlocking(int sock)
 
 bool	receiveData(int socket, std::string& buf)
 {
-	// std::cout << "Inside receive data: " << stopVar << std::endl;
-	//
 	setBlocking(socket);
 	int	bytes_read;
 	char	buffer[BUFFER_SIZE] = {"0"};
@@ -128,12 +98,8 @@ bool	receiveData(int socket, std::string& buf)
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-		{
-			// std::cout << "Inside bytes_read <= 0" << std::endl;
 			return (false);
-		}
 	}
-	std::cout << "buffer :" << buffer << std::endl;
 	buffer[bytes_read] = '\0';
 	if (strlen(buffer) != 0 && buffer[0] != '\0')
 	{
@@ -167,7 +133,6 @@ void	Board::send_grid(t_board* board)
 				grid += " |";
 			}
 		}
-		// grid += "\n";
 		sendPrivateMessage(this->_socket, this->_nick, grid);
 	}
 	if (board->size == 4)

@@ -40,7 +40,8 @@ int	Bot::launch_2048(std::string sizeBoard, std::string nick, char c)
 		init_board(&grid, size);
 		board.setSocket(this->_socketServer);
 		board.setNick(nick);
-		board.game_loop(&grid, c);
+		if (board.game_loop(&grid, c) == false)
+			grid.alreadySet = false;
 	}
 	else
 		sendPrivateMessage(this->_socketServer, nick, "Wrong board size : 4 or 5");
