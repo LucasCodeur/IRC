@@ -45,7 +45,6 @@ class Server
 		Client															*getClient(const int fd) const;
 		Client															*getClient(const std::string nickname) const;
 		void															controlEpoll(int op, int fd, struct epoll_event* event);
-
 		std::pair<std::map<std::string, Channel *>::iterator, bool>		addChannel(std::string s, std::string password);
 		void															removeChannel(const std::string &name);
 		Channel															*getChannelByName(std::string const &name) const;
@@ -72,7 +71,6 @@ class Server
 		int																createSocket(int domain, int type_communication, int protocol);
 		int																acceptConnexion(socklen_t* addrlen);
 		int																epollWaitOperation(int max_events, int timeout);
-		bool															receiveData(int socketfd);
 		void															setSocketOption(int socket_fd, int level, int option_name);
 		void															bindSocket(void);
 		void															listenSocket(int sizeWaitingList);
@@ -84,7 +82,5 @@ class Server
 		void															check_password(std::string& password);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
-
-bool    convertPort(std::string port, int& portToSet);
 
 #endif

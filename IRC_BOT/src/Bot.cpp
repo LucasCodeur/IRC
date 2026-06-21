@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "Bot.hpp"
+#include "utils.hpp"
 
 #define BUFFER_SIZE 2048
 
@@ -27,7 +28,7 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 		this->_socketServer = socket(AF_INET, SOCK_STREAM, 0);
 
 		int port = 0;
-		this->convertPort(strPort, port);
+		utils_server::convertPort(strPort, port);
 
 		this->_serverAdress.sin_family = AF_INET;
 		this->_serverAdress.sin_port = htons(port);
@@ -158,24 +159,6 @@ static std::string getTimeString()
 	return (buffer);
 }
 
-bool	Bot::receiveData()
-{
-	int		bytes_read;
-	char	buffer[BUFFER_SIZE + 1] = {"0"};
-
-	memset(buffer, 0, BUFFER_SIZE);
-	bytes_read = recv(this->_socketServer, buffer, BUFFER_SIZE, 0);
-	if (bytes_read <= 0)
-	{
-		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-			return (false);
-	}
-	buffer[bytes_read] = '\0';
-	if (strlen(buffer) != 0 && buffer[0] != '\0')
-		this->_buf += buffer;
-	return (true);
-}
-
 /**
  * @brief function to extract a valid command from the buffer.
  * @param buffer, string to extract the command.
@@ -192,8 +175,8 @@ std::string	Bot::extractCommand(std::string& buffer)
 		buffer.erase(0, pos + 2);
 	}
 	int size = res.size();
-	// if (res[size] != '\n' && res[size - 1] != '\r')
-	// 	throw std::runtime_error("Not carriage or newline at the end of the command");
+	if (res[size] != '\n' && res[size - 1] != '\r')
+		throw std::runtime_error("Not carriage or newline at the end of the command");
 	res = res.substr(0, size - 1);
 	return (res);
 }
@@ -208,45 +191,6 @@ void	Bot::display_buffer(std::string& buffer)
 {
 	std::cout << "INSIDE RECEIVE DATA: serverBuffer: " << std::endl;
 	std::cout << buffer << std::endl;
-}
-
-static bool check_port(std::string& port);
-
-/**
- * @brief function to check if the port is correct and convert this one.
- * @param port string to convert into number.
- * @return true if the port is correct or false if not the case.
- */
-bool    Bot::convertPort(std::string port, int& portToSet)
-{
-    if (check_port(port) == false)
-        throw std::runtime_error("Bad characters inside port");
-
-    std::stringstream ss(port);
-    if (ss.fail() == true)
-        throw std::runtime_error("Bad characters inside port");
-
-    ss >> portToSet;
-    if (1023 >= portToSet || portToSet >= 49152)
-        throw std::runtime_error("Bad range of port");
-
-    return (true);
-}
-
-/**
- * @brief function to check if only digit inside port.
- * @param port string to check.
- * @return true if correct, false or not.
- */
-static bool check_port(std::string& port)
-{
-    int size = port.size();
-    for (int i = 0; i < size; i++)
-    {
-        if (std::isdigit(port[i]) == false)
-            return (false);
-    }
-    return (true);
 }
 
 void	Bot::connectToServer()

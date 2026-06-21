@@ -18,11 +18,13 @@ P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
 
 P_INC = inc/
+P_INC_SERVER = ../inc/
 
 P_SRC_2048 = src/2048/
 
 SRC = main.cpp \
 	  Bot.cpp \
+	  utils.cpp \
 
 SRC_2048 = launcher_2048.cpp \
 		   Board.cpp \

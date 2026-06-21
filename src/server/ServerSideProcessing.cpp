@@ -12,36 +12,6 @@
 static std::string	extractCommand(std::string& buffer);
 
 /**
- * @brief wrapper function of recv(), allowing it to receive data by the indicated file descriptor.
- * @param socketfd to receive data from this one.
- * @return true if no problem or false if a there is a problem.
- */
-bool	Server::receiveData(int clientFd)
-{
-	int			bytes_read;
-	char		buffer[BUFFER_SIZE] = {"0"};
-
-	memset(buffer, 0, BUFFER_SIZE);
-	bytes_read = recv(clientFd, buffer, sizeof(buffer), 0);
-	if (bytes_read <= 0)
-	{
-		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-		{
-			this->removeClient(clientFd);
-			return (false);
-		}
-	}
-	buffer[bytes_read] = '\0';
-
-	std::map<int, Client*>::const_iterator it  = this->_clients.find(clientFd);
-
-	std::string&	clientBuffer = (*it).second->getBuf();
-	clientBuffer += buffer;
-
-	return (true);
-}
-
-/**
  * @brief allows handling of the client request.
  * @param buffer that contains the information sent by the client.
  * @param client, object that contains all information about the client.

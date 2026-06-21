@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <string>
+#include <utils.hpp>
 
 int stopVar = false;
 
@@ -34,8 +35,8 @@ bool	Server::launcherServer(std::string port, std::string password)
 {
 	try 
 	{
-		convertPort(port, this->_port);
-		this->check_password(password);
+		utils_server::convertPort(port, this->_port);
+		utils_server::check_password(password);
 		this->_password = password;
 	}
 	catch (std::exception &e)
@@ -100,7 +101,7 @@ void	Server::listenConnexionsEpoll(void)
 				Client *client = this->getClient(this->_ev[n].data.fd);
 				if (!client)
 					continue ;
-				if (this->receiveData(this->_ev[n].data.fd) == true)
+				if (utils_server::receiveData(this->_ev[n].data.fd, client->getBuf()) == true)
 					this->handleRequest(*client);
 				// print_info_client(*client);	
 			}

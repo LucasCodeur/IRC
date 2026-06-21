@@ -14,6 +14,7 @@ NAME_BOT = irc_bot
 
 P_SRC = src/
 P_SRC_SERVER = $(P_SRC)server/
+P_SRC_COMMAND = $(P_SRC)command/
 P_SRC_BOT = $(P_SRC)bot/
 
 P_OBJ = .obj/
@@ -21,11 +22,25 @@ P_OBJ_DEBUG = .obj_debug/
 P_OBJ_BOT = .obj_bot/
 
 P_INC = inc/
+P_INC_SERVER = $(P_INC)server/
+P_INC_COMMAND = $(P_INC)command/
+
+INCS = \
+	   $(addprefix -I, $(P_INC)) \
+	   $(addprefix -I, $(P_INC_SERVER)) \
+	   $(addprefix -I, $(P_INC_COMMAND)) \
 
 SRC =			main.cpp	\
 				Client.cpp	\
 				Channel.cpp \
 				Exceptions.cpp \
+				debug.cpp \
+
+SRC_SERVER =	Server.cpp	\
+				CheckServer.cpp \
+				ServerSideProcessing.cpp \
+
+SRC_COMMAND = \
 				Command.cpp \
 				CommandFactory.cpp \
 				JoinCommand.cpp \
@@ -40,26 +55,22 @@ SRC =			main.cpp	\
 				PrivmsgCommand.cpp \
 				QuitCommand.cpp \
 				WhoCommand.cpp \
-				debug.cpp \
 
-SRC_SERVER =	Server.cpp	\
-				CheckServer.cpp \
-				ServerSideProcessing.cpp \
 
 SRC_REPLY_BUILDER = ReplyBuilder.cpp \
 
-SRC_BOT = Bot.cpp
+SRC_UTILS = utils.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
+	$(addprefix $(P_SRC), $(SRC_UTILS)) \
 	$(addprefix $(P_SRC), $(SRC_REPLY_BUILDER)) \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
+	$(addprefix $(P_SRC_COMMAND), $(SRC_COMMAND)) \
 
 SRCS_BOT = \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 	$(addprefix $(P_SRC_BOT), $(SRC_BOT)) \
-
-INCS = $(addprefix $(P_INC), $(INC)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
 OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o))
@@ -82,7 +93,7 @@ $(NAME): $(OBJS)
 
 $(P_OBJ)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I $(P_INC) -c $< -o $@ && \
+	@$(CC) $(CFLAGS) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $<$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
@@ -111,7 +122,7 @@ $(NAME_DEBUG): $(OBJS_DEBUG)
 
 $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC_DEBUG) $(CFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
+	@$(CC_DEBUG) $(CFLAGS_DEBUG) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 

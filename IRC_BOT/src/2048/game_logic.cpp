@@ -17,7 +17,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <string>
 #include <sys/socket.h>
 #include <string.h>
@@ -29,9 +28,6 @@
 
 static bool	move_side(t_board* board, bool move_right);
 static bool	move_verticality(t_board* board, bool move_bottom);
-bool		receiveData(int socket, std::string& buf);
-
-static char ft_getchar(int socket, std::string nick, std::string& buf);
 
 bool	Board::game_loop(t_board *board, char c)
 {
@@ -68,43 +64,6 @@ bool	Board::game_loop(t_board *board, char c)
 		return (false);
 	}
 	send_grid(board);
-	return (true);
-}
-
-void setBlocking(int sock)
-{
-	int result;
-	int flags;
-
-	flags = ::fcntl(sock, F_GETFL, 0);
-	if (flags == -1)
-		throw (std::runtime_error("fcntl failed"));
-	flags &= ~O_NONBLOCK;
-	result = fcntl(sock , F_SETFL , flags);
-	if (result == -1)
-	{
-		throw (std::runtime_error("fcntl failed"));
-	}
-}
-
-bool	receiveData(int socket, std::string& buf)
-{
-	setBlocking(socket);
-	int	bytes_read;
-	char	buffer[BUFFER_SIZE] = {"0"};
-
-	memset(buffer, 0, BUFFER_SIZE);
-	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
-	if (bytes_read <= 0)
-	{
-		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-			return (false);
-	}
-	buffer[bytes_read] = '\0';
-	if (strlen(buffer) != 0 && buffer[0] != '\0')
-	{
-		buf += buffer;
-	}
 	return (true);
 }
 

@@ -24,7 +24,6 @@ class Bot
 		bool		handleRequest();
 		bool		receiveData();
 		void		display_buffer(std::string& buffer);
-		bool		convertPort(std::string port, int& portToSet);
 		void		sendConnectionToServer(std::string password, std::string channel);
 		void		setNonBlocking(int sock);
 		int			launch_2048(std::string sizeBoard, std::string nick, char c);
