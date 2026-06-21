@@ -6,15 +6,18 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/21 18:22:03 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/21 20:28:49 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <errno.h>
 #include <ostream>
+#include <stdexcept>
 #include <sys/socket.h>
-#include <string.h>
 #include <sstream>
+
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 
 # define BUFFER_SIZE 2048
 
@@ -96,6 +99,46 @@ void	check_password(std::string& password)
         if (std::isspace(password[i]))
             throw std::runtime_error("Bad password");
     }
+}
+
+/**
+ * @brief function to extract a valid command from the buffer.
+ * @param buffer, string to extract the command.
+ * @return a valid command.
+ */
+std::string extractCommand(std::string& buffer, bool security)
+{
+	std::string		res;
+	size_t			pos = buffer.find("\r");
+
+	if (pos != std::string::npos)
+	{
+		res = buffer.substr(0, pos + 1);
+		buffer.erase(0, pos + 2);
+	}
+	int size = res.size();
+	if (security == true && res[size] != '\n' && res[size - 1] != '\r')
+		throw std::runtime_error("Not carriage or newline at the end of the command");
+	res = res.substr(0, size - 1);
+	return (res);
+}
+
+/**
+* @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
+* @return
+*/
+void	setNonBlocking(int sock)
+{
+	int result;
+	int flags;
+
+	flags = ::fcntl(sock, F_GETFL, 0);
+	if (flags == -1)
+		throw std::runtime_error("fcntl failed");
+	flags |= O_NONBLOCK;
+	result = fcntl(sock , F_SETFL , flags);
+	if (result == -1)
+		throw std::runtime_error("fcntl failed");
 }
 
 }

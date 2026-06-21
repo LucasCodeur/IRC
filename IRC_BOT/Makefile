@@ -18,7 +18,11 @@ P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
 
 P_INC = inc/
-P_INC_SERVER = ../inc/
+P_INC_UTILS = ../inc/utils/
+
+INCS = \
+	   $(addprefix -I, $(P_INC)) \
+	   $(addprefix -I, $(P_INC_UTILS)) \
 
 P_SRC_2048 = src/2048/
 
@@ -32,7 +36,6 @@ SRC_2048 = launcher_2048.cpp \
 		   check_game_over.cpp \
 		   fill_grid_numbers.cpp \
 		   game_logic_utils.cpp \
-		   utils.cpp
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
@@ -59,7 +62,7 @@ $(NAME): $(OBJS)
 
 $(P_OBJ)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) -I $(P_INC) -c $< -o $@ && \
+	@$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $<$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
@@ -88,7 +91,7 @@ $(NAME_DEBUG): $(OBJS_DEBUG)
 
 $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CXX_DEBUG) $(CXXFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
+	@$(CXX_DEBUG) $(CXXFLAGS_DEBUG) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 

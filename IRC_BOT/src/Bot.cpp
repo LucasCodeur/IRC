@@ -2,24 +2,20 @@
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
-#include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <errno.h>
 #include <ctime> 
 #include <fcntl.h>
 #include <iostream>
 #include <string.h>
-#include <sstream>
 
 #include "Bot.hpp"
+
 #include "utils.hpp"
 
 #define BUFFER_SIZE 2048
 
 int stopVar = false;
-
-void signalHandler(int signum);
 
 void	Bot::launcher_bot(std::string strPort, std::string password, std::string channel)
 {
@@ -36,11 +32,11 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 
 		this->connectToServer();
 
-		this->setNonBlocking(this->_socketServer);
+		utils_server::setNonBlocking(this->_socketServer);
 		this->sendConnectionToServer(password, channel);
 		while (stopVar == false)
 		{
-			if (this->receiveData() == true)
+			if (utils_server::receiveData(this->_socketServer, this->_buf) == true)
 			{
 				if (this->handleRequest() == false)
 					break ;
@@ -67,26 +63,6 @@ void signalHandler(int signum)
 Bot::~Bot()
 {
 	_nicks.clear();
-}
-
-/**
-* @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
-* @return
-*/
-void Bot::setNonBlocking(int sock)
-{
-	int result;
-	int flags;
-
-	flags = ::fcntl(sock, F_GETFL, 0);
-	if (flags == -1)
-		throw (std::runtime_error("fcntl failed"));
-	flags |= O_NONBLOCK;
-	result = fcntl(sock , F_SETFL , flags);
-	if (result == -1)
-	{
-		throw (std::runtime_error("fcntl failed"));
-	}
 }
 
 void	Bot::sendConnectionToServer(std::string password, std::string channel)
@@ -122,7 +98,7 @@ bool	Bot::handleRequest()
 	{
 		std::string		strCommand;
 
-		strCommand = this->extractCommand(this->_buf);
+		strCommand = utils_server::extractCommand(this->_buf, false);
 		if (strCommand.empty())
 			return (true);
 		std::string content; 
@@ -157,28 +133,6 @@ static std::string getTimeString()
 	std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", dt);
 
 	return (buffer);
-}
-
-/**
- * @brief function to extract a valid command from the buffer.
- * @param buffer, string to extract the command.
- * @return a valid command.
- */
-std::string	Bot::extractCommand(std::string& buffer)
-{
-	std::string		res;
-	size_t			pos = buffer.find("\r");
-
-	if (pos != std::string::npos)
-	{
-		res = buffer.substr(0, pos + 1);
-		buffer.erase(0, pos + 2);
-	}
-	int size = res.size();
-	if (res[size] != '\n' && res[size - 1] != '\r')
-		throw std::runtime_error("Not carriage or newline at the end of the command");
-	res = res.substr(0, size - 1);
-	return (res);
 }
 
 void	sendData(int socket, std::string message)

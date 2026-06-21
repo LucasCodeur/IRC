@@ -20,13 +20,6 @@
 
 int stopVar = false;
 
-void signalHandler(int signum)
-{
-	(void)signum;
-	std::cerr << "shutting down server..." << std::endl;
-	stopVar = true;
-}
-
 /**
  * @brief set up the server and launch it.
  * @return true if no errors occur.
@@ -80,10 +73,11 @@ void	Server::listenConnexionsEpoll(void)
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
 				int new_fd = this->acceptConnexion(&addrlen);
-				this->setNonBlocking(new_fd);
+				utils_server::setNonBlocking(new_fd);
 				this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
 				this->_ev[n + 1].data.fd = new_fd;
 				this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+
 				std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
 				if (it == this->_clients.end())
 				{
@@ -103,7 +97,6 @@ void	Server::listenConnexionsEpoll(void)
 					continue ;
 				if (utils_server::receiveData(this->_ev[n].data.fd, client->getBuf()) == true)
 					this->handleRequest(*client);
-				// print_info_client(*client);	
 			}
 
 			if (this->_ev[n].events & EPOLLOUT)
@@ -244,7 +237,6 @@ int	Server::epollWaitOperation(int max_events, int timeout)
  */
 void	Server::sendData(int fd, std::string &data)
 {
-	std::cerr << DBUG YELLOW << "sending to client: " << data << RESET << std::endl;
 	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
 		throw sendFailed();
 	data = "";
@@ -252,8 +244,6 @@ void	Server::sendData(int fd, std::string &data)
 
 void	Server::writeInBuffer(Client *client, std::string data)
 {
-	std::cerr << "writing in buffer: " << data << std::endl;
-	std::cerr << "writing to client: " << client->getNickname() << " fd : " << client->getFd() << std::endl;
 	client->addToBuffer(data);
 }
 
@@ -266,26 +256,6 @@ void	Server::setAddr(void)
 	this->_addr.sin_family = AF_INET;
 	this->_addr.sin_addr.s_addr = INADDR_ANY;
 	this->_addr.sin_port = htons(this->_port);
-}
-
-/**
-* @brief wrapper function to fcntl(), allowing to set up the socket in a non blocking-mode.
-* @return
-*/
-void Server::setNonBlocking(int sock)
-{
-	int result;
-	int flags;
-
-	flags = ::fcntl(sock, F_GETFL, 0);
-	if (flags == -1)
-		throw setnonblockingFailed();
-	flags |= O_NONBLOCK;
-	result = fcntl(sock , F_SETFL , flags);
-	if (result == -1)
-	{
-		throw setnonblockingFailed();
-	}
 }
 
 Server::Server()
@@ -339,9 +309,7 @@ std::string const &Server::getPassword() const
 
 void	Server::setBotFd(int botFd)
 {
-	PRINT("ADD BOTFD", BLUE, "\n");
 	this->_botFd = botFd;
-	PRINT(this->_botFd, WHITE, "\n");
 }
 
 std::map<std::string, Channel *> const &Server::getChannelMap() const
@@ -447,3 +415,9 @@ Client *Server::getClient(const std::string nick) const
         return (NULL);
 }
 
+void signalHandler(int signum)
+{
+	(void)signum;
+	std::cerr << "shutting down server..." << std::endl;
+	stopVar = true;
+}

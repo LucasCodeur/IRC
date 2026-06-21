@@ -78,7 +78,6 @@ class Server
 		void															setEpoll(int option);
 		void															listenConnexionsEpoll(void);
 		bool															handleRequest(Client& client);
-		void															setNonBlocking(int sock);
 		void															check_password(std::string& password);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);

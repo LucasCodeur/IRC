@@ -10,10 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Board.hpp"
 
 #include <assert.h>
 #include <stddef.h>
+
+#include "Board.hpp"
+
 #include <iostream>
 
 void	init_board(t_board *board, size_t size)
@@ -32,21 +34,6 @@ void	init_board(t_board *board, size_t size)
 		return ;
 	}
 }
-
-// Board::Board(t_board& board) : _board(board)
-// {
-//
-// }
-
-// t_board&	Board::getBoard()
-// {
-// 	return (this->_board);
-// }
-
-// void	Board::setBoard(t_board board)
-// {
-// 	this->_board = board;
-// }
 
 std::string&	Board::getBuf()
 {

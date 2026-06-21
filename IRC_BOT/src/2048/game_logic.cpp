@@ -128,7 +128,7 @@ static bool	tighten_side_grid(t_board* board, bool move_right)
 	size_t		x = 0;
 	size_t		y = 0;
 
-	ft_memset(pos, -1, sizeof(int) * board->size);
+	memset(pos, -1, sizeof(int) * board->size);
 	while (y < board->size)
 	{
 		if (move_right == true)
@@ -184,7 +184,7 @@ static bool	tighten_verticality_grid(t_board* board, bool move_bottom)
 	size_t		x = 0;
 	size_t		y = 0;
 
-	ft_memset(pos, -1, sizeof(int) * board->size);
+	memset(pos, -1, sizeof(int) * board->size);
 	while (x < board->size)
 	{
 		if (move_bottom == true)

@@ -22,10 +22,8 @@ class Bot
 		void		connectToServer();
 		std::string	extractCommand(std::string& buffer);
 		bool		handleRequest();
-		bool		receiveData();
 		void		display_buffer(std::string& buffer);
 		void		sendConnectionToServer(std::string password, std::string channel);
-		void		setNonBlocking(int sock);
 		int			launch_2048(std::string sizeBoard, std::string nick, char c);
 };
 

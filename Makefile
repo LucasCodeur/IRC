@@ -10,25 +10,24 @@ CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
 
 NAME = ircserv
 NAME_DEBUG = ircserv_debug
-NAME_BOT = irc_bot
 
 P_SRC = src/
 P_SRC_SERVER = $(P_SRC)server/
 P_SRC_COMMAND = $(P_SRC)command/
-P_SRC_BOT = $(P_SRC)bot/
 
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
-P_OBJ_BOT = .obj_bot/
 
 P_INC = inc/
 P_INC_SERVER = $(P_INC)server/
 P_INC_COMMAND = $(P_INC)command/
+P_INC_UTILS = $(P_INC)utils/
 
 INCS = \
 	   $(addprefix -I, $(P_INC)) \
 	   $(addprefix -I, $(P_INC_SERVER)) \
 	   $(addprefix -I, $(P_INC_COMMAND)) \
+	   $(addprefix -I, $(P_INC_UTILS)) \
 
 SRC =			main.cpp	\
 				Client.cpp	\
@@ -37,7 +36,6 @@ SRC =			main.cpp	\
 				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\
-				CheckServer.cpp \
 				ServerSideProcessing.cpp \
 
 SRC_COMMAND = \
@@ -56,7 +54,6 @@ SRC_COMMAND = \
 				QuitCommand.cpp \
 				WhoCommand.cpp \
 
-
 SRC_REPLY_BUILDER = ReplyBuilder.cpp \
 
 SRC_UTILS = utils.cpp \
@@ -68,16 +65,11 @@ SRCS = \
 	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
 	$(addprefix $(P_SRC_COMMAND), $(SRC_COMMAND)) \
 
-SRCS_BOT = \
-	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
-	$(addprefix $(P_SRC_BOT), $(SRC_BOT)) \
-
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
 OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o))
 
 DEPS = $(OBJS:%.o=%.d)
 DEPS_DEBUG = $(OBJS_DEBUG:%.o=%.d)
-DEPS_BOT = $(OBJS_BOT:%.o=%.d)
 
 Color_Off=\033[0m
 Green=\033[0;32m
@@ -114,6 +106,9 @@ re:
 #############################################################################################
 
 debug: $(NAME_DEBUG)
+
+bot: 
+	$(MAKE) ./IRC_BOT/
 
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
