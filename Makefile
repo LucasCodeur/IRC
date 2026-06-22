@@ -107,7 +107,7 @@ re:
 debug: $(NAME_DEBUG)
 
 bot: 
-	$(MAKE) ./IRC_BOT/
+	$(MAKE) -C ./IRC_BOT/
 
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
