@@ -1,9 +1,6 @@
 #include "Command.hpp"
 #include "Server.hpp"
 #include <stdexcept>
-#include <iostream>
-#include "debug.hpp"
-
 /* === CONSTRUCTOR === */
 
 Command::Command(Server *server, int clientFd, Command::t_msgSpecs specs , std::vector<std::vector<std::string> > const &params)

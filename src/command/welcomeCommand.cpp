@@ -3,7 +3,6 @@
 
 #include "WelcomeCommand.hpp"
 #include "Client.hpp"
-#include "Exceptions.hpp"
 
 WelcomeCommand::WelcomeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {

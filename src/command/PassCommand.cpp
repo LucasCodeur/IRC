@@ -12,7 +12,7 @@ PassCommand::PassCommand(Server *server, const int clientFd, Command::t_msgSpecs
 		throw Command::IncorrectParametersException("Too much parameters");
 }
 
-PassCommand::~PassCommand() {};
+PassCommand::~PassCommand() {}
 
 void	PassCommand::execute() const
 {

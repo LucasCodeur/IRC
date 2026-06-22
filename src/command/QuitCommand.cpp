@@ -2,6 +2,7 @@
 #include "debug.hpp"
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <iostream>
 
 QuitCommand::QuitCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {

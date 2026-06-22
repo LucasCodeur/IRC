@@ -13,7 +13,7 @@ UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs
 		throw Command::IncorrectParametersException("Too much parameters");
 }
 
-UserCommand::~UserCommand() {};
+UserCommand::~UserCommand() {}
 
 void	UserCommand::execute() const
 {

@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/22 13:54:06 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/22 18:00:25 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ostream>
 #include <stdexcept>
 #include <sstream>
 

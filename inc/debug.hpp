@@ -1,12 +1,12 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#include <iostream>
 #include <vector>
 #include <map>
+#include <iostream>
 
-#include "Client.hpp"
 
+class Client;
 #ifndef DEBUG
 #define DEBUG 0
 #endif

@@ -4,7 +4,6 @@
 
 #include <cctype>
 #include <netinet/in.h>
-#include <sstream>
 #include <stdexcept>
 #include <stdlib.h>
 #include <sys/socket.h>

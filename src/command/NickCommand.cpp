@@ -16,7 +16,7 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 		throw Command::IncorrectParametersException("Too much parameters");
 }
 
-NickCommand::~NickCommand() {};
+NickCommand::~NickCommand() {}
 
 static bool	check_nickname(std::string& nickname);
 static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname);

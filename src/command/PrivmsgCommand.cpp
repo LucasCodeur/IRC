@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 #include "Channel.hpp"
 #include "Client.hpp"

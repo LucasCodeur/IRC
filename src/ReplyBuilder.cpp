@@ -2,7 +2,6 @@
 #include "Channel.hpp"
 #include "NumericReplies.h"
 #include "debug.hpp"
-
 #include <ctime>
 #include <string>
 /**

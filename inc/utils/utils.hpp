@@ -1,8 +1,7 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-# include <ostream>
-
+#include <string>
 #include <netinet/in.h>
 
 namespace utils_server
