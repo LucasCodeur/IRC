@@ -64,8 +64,6 @@ std::ostream &operator<<(std::ostream &o, const Client &obj)
 	return (o << "Client: " << obj.getNickname()
 			  << " (Username: " << obj.getUsername()
 			  << ", FD: " << obj.getFd()
-			  // << ", Authstate: " << Client::AuthstateToString(currentState)
-			  // << "(" << currentState << ")"
 			  << ")");
 }
 

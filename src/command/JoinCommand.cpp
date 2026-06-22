@@ -79,10 +79,14 @@ void JoinCommand::execute() const
 				pair = this->_server->addChannel(*chan_it, "");
 
 			distChan_it = channelMap.find(*chan_it);
-			if (distChan_it == channelMap.end()) // FIXME: should probably throw there
+			if (distChan_it == channelMap.end())
 			{
 				std::cerr << "Error : channel '" << *chan_it << "' could not be created" << std::endl;
-				return ;
+				this->_server->writeInBuffer(this->getClient(),
+					this->_director.errNoSuchChannel(this->getClient()->getNickname(), *chan_it));
+				if (key_it != keys.end())
+					key_it++;
+				continue ;
 			}
 			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
 			distChan_it->second->setOperator(this->getClientFd());
@@ -94,7 +98,11 @@ void JoinCommand::execute() const
 
 		providedPassword = "";
 		if (distChan_it->second->isUserInChannel(this->getClientFd())) // if already in channel, ignore
+		{
+			if (key_it != keys.end())
+				key_it++;
 			continue;
+		}
 		if (key_it != keys.end())
 			providedPassword = *key_it++;
 

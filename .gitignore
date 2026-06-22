@@ -12,6 +12,7 @@
 **/*.gch
 **/*.gdb_history
 **/ircserv*
+ircbot
 **/compile_commands.json 
 
 **/*.clang

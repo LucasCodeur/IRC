@@ -339,10 +339,26 @@ std::map<std::string, Channel *> const &Server::getChannelMap() const
 	return (this->_channels);
 }
 
-void	Server::removeClient(int clientFd)
+void    Server::removeClient(int clientFd)
 {
-	PRINT("client disconnected: ", RED, "");
-	PRINT(clientFd, RED, "\n");
+	// PRINT("client disconnected: ", RED, "");
+	// PRINT(clientFd, RED, "\n");
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); )
+	{
+		Channel *channel = it->second;
+		if (channel->isUserInChannel(clientFd))
+		{
+			channel->removeUser(clientFd);
+			if (channel->getUsers().empty())
+			{
+				std::cout << RED << "deleting empty channel " << it->first << std::endl;
+				delete channel;
+				this->_channels.erase(it++);
+				continue;
+			}
+		}
+		++it;
+	}
 	std::map<int, Client*>::iterator it = this->_clients.find(clientFd);
 	if (it != this->_clients.end())
 	{
@@ -369,8 +385,6 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
 		return (pair);
 	}
 
-	if (name[0] != '&' && name[0] != '#')
-		name = "#" + name;
 	Channel *newChan = new Channel(name, password);
 
 	pair = this->_channels.insert(std::make_pair(name, newChan));
