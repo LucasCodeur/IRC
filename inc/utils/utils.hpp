@@ -10,6 +10,7 @@ namespace utils_server
 	bool		convertPort(std::string port, int& portToSet);
 	std::string extractCommand(std::string& buffer, bool security);
 	void		setNonBlocking(int sock);
+	void		sendData(int fd, std::string &data);
 }
 
 #endif

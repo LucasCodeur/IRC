@@ -1,5 +1,4 @@
 #include "ReplyBuilder.hpp"
-#include "NumericReplies.h"
 #include "Channel.hpp"
 #include "NumericReplies.h"
 #include "debug.hpp"
@@ -61,7 +60,7 @@ ReplyBuilder&	ReplyBuilder::addTrailing(std::string trailing)
  */
 ReplyBuilder&	ReplyBuilder::addCrln()
 {
-	this->_reply.setCrln("\r\n");
+	this->_reply.setCrln(CRLN);
 	return (*this);
 }
 

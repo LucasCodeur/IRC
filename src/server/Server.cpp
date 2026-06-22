@@ -109,7 +109,7 @@ void	Server::listenConnexionsEpoll(void)
 				{
 					try
 					{
-						sendData(this->_ev[n].data.fd, clientInputBuffer);
+						utils_server::sendData(this->_ev[n].data.fd, clientInputBuffer);
 					}
 					catch (std::exception& e)
 					{
@@ -227,19 +227,6 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 	if (nfds < 0)
 		throw epollWaitFailed();
 	return (nfds);
-}
-
-/**
- * @brief wrapper function of send(), allowing it to send data by the indicated socket.
- * @param data, data to send.
- * @param fd file descriptor where data will be sent.
- * @return
- */
-void	Server::sendData(int fd, std::string &data)
-{
-	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
-		throw sendFailed();
-	data = "";
 }
 
 void	Server::writeInBuffer(Client *client, std::string data)

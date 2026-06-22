@@ -9,6 +9,7 @@
 # define CHANNEL_MODES  "+i, +t, +k, +o, +l"
 # define PREFIX_MARKER ":"
 # define SPACE " "
+# define CRLN "\r\n"
 
 class reply 
 {

@@ -28,7 +28,6 @@ class Bot
 };
 
 void		sendPrivateMessage(int socket, std::string nick, std::string content);
-void		sendData(int socket, std::string message);
 bool		splitPrivmsg(std::string strCommand, std::string& nick, std::string& content);
 
 #endif

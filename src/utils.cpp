@@ -141,4 +141,17 @@ void	setNonBlocking(int sock)
 		throw std::runtime_error("fcntl failed");
 }
 
+/**
+ * @brief wrapper function of send(), allowing it to send data by the indicated socket.
+ * @param data, data to send.
+ * @param fd file descriptor where data will be sent.
+ * @return
+ */
+void	sendData(int fd, std::string &data)
+{
+	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
+		throw std::runtime_error("Send failed");
+	data = "";
+}
+
 }

@@ -1,21 +1,22 @@
-#include <cstddef>
-#include <cstring>
-#include <iostream>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <ctime> 
 #include <fcntl.h>
-#include <iostream>
 #include <string.h>
 
-#include "Bot.hpp"
+#include <iostream>
+#include <ctime> 
+#include <cstddef>
+#include <cstring>
+#include <iostream>
 
+#include "Bot.hpp"
 #include "utils.hpp"
 
-#define BUFFER_SIZE 2048
-
 int stopVar = false;
+
+# define BUFFER_SIZE 4096
+# define CRLN "\r\n"
 
 void	Bot::launcher_bot(std::string strPort, std::string password, std::string channel)
 {
@@ -69,12 +70,16 @@ void	Bot::sendConnectionToServer(std::string password, std::string channel)
 {
 	std::string message = "PASS ";
 	message += password;
+	message += CRLN;
 
-	sendData(this->_socketServer, message);
-	sendData(this->_socketServer, "NICK botIrc");
-	sendData(this->_socketServer, "USER botIrc botIrc 0 :bot_server");
+	utils_server::sendData(this->_socketServer, message);
+	message = "NICK botIrc\r\n";
+	utils_server::sendData(this->_socketServer, message);
+	message = "USER botIrc botIrc 0 :bot_server\r\n";
+	utils_server::sendData(this->_socketServer, message);
 	message = "JOIN " + channel; 
-	sendData(this->_socketServer, message);
+	message += CRLN;
+	utils_server::sendData(this->_socketServer, message);
 }
 
 static std::string getTimeString();
@@ -120,7 +125,7 @@ bool	Bot::handleRequest()
 void	sendPrivateMessage(int socket, std::string nick, std::string content)
 {
 	std::string message = "PRIVMSG " + nick + " :" + content;
-	sendData(socket, message);
+	utils_server::sendData(socket, message);
 }
 
 static std::string getTimeString()
@@ -133,12 +138,6 @@ static std::string getTimeString()
 	std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", dt);
 
 	return (buffer);
-}
-
-void	sendData(int socket, std::string message)
-{
-	message += "\r\n";
-	send(socket, message.c_str(), strlen(message.c_str()), 0);
 }
 
 void	Bot::display_buffer(std::string& buffer)

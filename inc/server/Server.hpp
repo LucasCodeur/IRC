@@ -50,7 +50,6 @@ class Server
 		Channel															*getChannelByName(std::string const &name) const;
 		void															handleJoin(Command const &cmd);
 		void															handleCommand(Command const &cmd);
-		void															sendData(int fd, std::string &data);
 		void															writeInBuffer(Client *client, std::string data);
 		void															removeClient(int clientFd);
 		void															setBotFd(int botFd);
