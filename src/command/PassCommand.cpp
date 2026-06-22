@@ -1,8 +1,8 @@
+#include <stdexcept>
 #include <sys/socket.h>
 
 #include "PassCommand.hpp"
 #include "Client.hpp"
-#include "Exceptions.hpp"
 
 PassCommand::PassCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -35,7 +35,7 @@ void	PassCommand::execute() const
 	std::string								password = this->_params[0][0];
 
 	if (password != _server->getPassword())
-		throw passwordNotCorrect();
+		throw std::runtime_error("Password not correct");
 
 	client->addToBuffer(message);
 	

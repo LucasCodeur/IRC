@@ -1,11 +1,11 @@
 #include "debug.hpp"
-#include "Exceptions.hpp"
 #include "Command.hpp"
 #include "Server.hpp"
 
 #include <cctype>
 #include <netinet/in.h>
 #include <sstream>
+#include <stdexcept>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -133,7 +133,7 @@ int	Server::createSocket(int domain, int type_communication, int protocol)
 {
 	int sockfd = socket(domain, type_communication, protocol);
 	if (sockfd < 0)
-		throw socketFailed();
+		throw std::runtime_error("Socket failed");
 	return (sockfd);
 }
 
@@ -147,7 +147,7 @@ int	Server::createSocket(int domain, int type_communication, int protocol)
 void	 Server::setSocketOption(int socket_fd, int level, int option_name)
 {
 	if (setsockopt(socket_fd, level, option_name, &this->_opt, sizeof(this->_opt)) < 0)
-		throw setSocketOptionFailed();
+		throw std::runtime_error("Set socket option failed");
 }
 
 /**
@@ -157,7 +157,7 @@ void	 Server::setSocketOption(int socket_fd, int level, int option_name)
 void	Server::bindSocket(void)
 {
 	if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
-		throw bindFailed();
+		throw std::runtime_error("Bind socket failed");
 }
 
 /**
@@ -170,7 +170,7 @@ void	Server::bindSocket(void)
 void	Server::listenSocket(int sizeWaitingList)
 {
 		if (listen(this->_server_sock, sizeWaitingList) < 0)
-		throw listenSocketFailed();
+		throw std::runtime_error("Listen Socket failed");
 }
 
 /**
@@ -182,7 +182,7 @@ void	Server::setEpoll(int option)
 {
 	this->_epollfd = epoll_create1(option);
 	if (this->_epollfd == -1)
-		throw epollCreateFailed();
+		throw std::runtime_error("Epoll Create failed");
 	this->_ev[0].events = EPOLLIN;
 	this->_ev[0].data.fd = this->_server_sock;
 }
@@ -198,7 +198,7 @@ void	Server::setEpoll(int option)
 void	Server::controlEpoll(int op, int fd, struct epoll_event* event)
 {
 	if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
-		throw controlEpollFailed();
+		throw std::runtime_error("Control Epoll failed");
 }
 
 /**
@@ -210,7 +210,7 @@ int	Server::acceptConnexion(socklen_t* addrlen)
 {
 	int fd = accept(this->_server_sock, (struct sockaddr *)&this->_addr, addrlen);
 	if (fd < 0)
-		throw acceptFailed(); 
+		throw std::runtime_error("Accept server failed");
 	return (fd);
 }
 
@@ -225,7 +225,7 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 {
 	int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
 	if (nfds < 0)
-		throw epollWaitFailed();
+		throw std::runtime_error("Epoll Wait Operation failed");
 	return (nfds);
 }
 
