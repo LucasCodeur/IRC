@@ -62,7 +62,7 @@ class Server
 		std::string														_password;
 		std::map<int, Client*>											_clients;
 		std::map<std::string, Channel*>									_channels;
-		struct sockaddr_in												_addr; // contains the IP adress and port number to bind the socket.
+		struct sockaddr_in												_addr;
 		struct epoll_event												_ev[MAX_EVENTS];
 		int																_epollfd;
 		int																_opt;
@@ -77,7 +77,9 @@ class Server
 		void															setEpoll(int option);
 		void															listenConnexionsEpoll(void);
 		bool															handleRequest(Client& client);
-		void															check_password(std::string& password);
+		bool															addNewClient(int n);
+		bool															ft_epollin(Client* client, int n);
+		bool															ft_epollout(Client* client, int n);
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
 

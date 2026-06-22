@@ -31,13 +31,10 @@ void	PassCommand::execute() const
 		return ;
 	}
 
-	std::string								message = "Password correct\n";
 	std::string								password = this->_params[0][0];
 
 	if (password != _server->getPassword())
 		throw std::runtime_error("Password not correct");
-
-	client->addToBuffer(message);
 	
 	authstate.setPasswordReceived(true);
 }

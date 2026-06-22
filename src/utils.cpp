@@ -6,18 +6,19 @@
 /*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/21 20:28:49 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/22 13:54:06 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ostream>
 #include <stdexcept>
-#include <sys/socket.h>
 #include <sstream>
 
+#include <sys/socket.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <netinet/in.h>
 
 # define BUFFER_SIZE 2048
 
@@ -29,7 +30,6 @@ namespace utils_server
  * @param buf .
  * @return true if no problem or false if a there is a problem.
  */
-
 bool	receiveData(int socket, std::string& buf)
 {
 	int	bytes_read;
@@ -152,6 +152,17 @@ void	sendData(int fd, std::string &data)
 	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
 		throw std::runtime_error("Send failed");
 	data = "";
+}
+
+/**
+ * @brief function to set up the behavior of the socket.
+ * @return
+ */
+void	setAddr(struct sockaddr_in& addr, int port)
+{
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(port);
 }
 
 }

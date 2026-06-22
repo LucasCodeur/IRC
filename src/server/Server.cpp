@@ -31,20 +31,20 @@ bool	Server::launcherServer(std::string port, std::string password)
 		utils_server::convertPort(port, this->_port);
 		utils_server::check_password(password);
 		this->_password = password;
+		this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
+		this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
+		utils_server::setAddr(this->_addr, this->_port);
+		this->bindSocket();
+		this->listenSocket(MAX_WAITING_LIST);
+		this->setEpoll(DEFAULT);
+		this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
+		this->listenConnexionsEpoll();
 	}
 	catch (std::exception &e)
 	{
 		PRINT(e.what(), RED, "\n");
 		return (false);
 	}
-	this->_server_sock = this->createSocket(AF_INET, SOCK_STREAM, DEFAULT);
-	this->setSocketOption(this->_server_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT);
-	this->setAddr();
-	this->bindSocket();
-	this->listenSocket(MAX_WAITING_LIST);
-	this->setEpoll(DEFAULT);
-	this->controlEpoll(EPOLL_CTL_ADD, this->_server_sock, &this->_ev[0]);
-	this->listenConnexionsEpoll();
 
 	return (true);
 }
@@ -55,7 +55,6 @@ bool	Server::launcherServer(std::string port, std::string password)
  */
 void	Server::listenConnexionsEpoll(void)
 {
-	socklen_t addrlen = sizeof(this->_addr);
 	int nfds = 1;
 		
 	while (stopVar == false)
@@ -72,54 +71,101 @@ void	Server::listenConnexionsEpoll(void)
 		{
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
-				int new_fd = this->acceptConnexion(&addrlen);
-				utils_server::setNonBlocking(new_fd);
-				this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
-				this->_ev[n + 1].data.fd = new_fd;
-				this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
-
-				std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
-				if (it == this->_clients.end())
-				{
-					Client* temp = new Client;
-					if (this->getPassword().empty() == true)
-						temp->getAuthstate().setPasswordReceived(true);
-					temp->setFd(new_fd);
-					this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
-				}
+				if (this->addNewClient(n) == false)
+					return ;
 				continue;
 			}
-
+			Client *client = this->getClient(this->_ev[n].data.fd);
+			if (client == NULL)
+				continue ;
 			if (this->_ev[n].events & EPOLLIN)
 			{
-				Client *client = this->getClient(this->_ev[n].data.fd);
-				if (!client)
-					continue ;
-				if (utils_server::receiveData(this->_ev[n].data.fd, client->getBuf()) == true)
-					this->handleRequest(*client);
+				if (ft_epollin(client, n) == false)
+					return ;
 			}
-
 			if (this->_ev[n].events & EPOLLOUT)
 			{
-				Client *client = this->getClient(this->_ev[n].data.fd);
-				if (client == NULL)
-					continue;
-				std::string	&clientInputBuffer = client->getClientInputBuffer();
-				if (!clientInputBuffer.empty())
-				{
-					try
-					{
-						utils_server::sendData(this->_ev[n].data.fd, clientInputBuffer);
-					}
-					catch (std::exception& e)
-					{
-						std::cout << "Caught: " << e.what() << std::endl;
-						return ;
-					}
-				}
+				if (ft_epollout(client, n) == false)
+					return ;
 			}
 		}
 	}
+}
+
+/**
+ * @brief add new client inside server.
+ * @param n index of the number of fds to handle.
+ * @return true if success or false if not.
+ */
+bool	Server::addNewClient(int n)
+{
+	socklen_t addrlen = sizeof(this->_addr);
+	try
+	{
+		int new_fd = this->acceptConnexion(&addrlen);
+		utils_server::setNonBlocking(new_fd);
+		this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
+		this->_ev[n + 1].data.fd = new_fd;
+		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+
+		std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
+		if (it == this->_clients.end())
+		{
+			Client* temp = new Client;
+			if (this->getPassword().empty() == true)
+				temp->getAuthstate().setPasswordReceived(true);
+			temp->setFd(new_fd);
+			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
+		}
+	}
+	catch(std::exception& e)
+	{
+
+		std::cout << "Caught: " << e.what() << std::endl;
+		return (false);
+
+	}
+	return (true);
+}
+
+/**
+ * @brief Function to receive/handle data from clients and store it inside a buffer.
+ * @param client that sent data.
+ * @param n index of the number of fds to handle.
+ * @return false if we have to stop the server, true if not.
+ */
+bool	Server::ft_epollin(Client* client, int n)
+{
+	if (utils_server::receiveData(this->_ev[n].data.fd, client->getBuf()) == true)
+	{
+		if (this->handleRequest(*client) == true)
+			return (false);
+	}
+	return (true);
+}
+
+/**
+ * @brief function to send data to the client.
+ * @param client that sent data.
+ * @param n index of the number of fds to handle.
+ * @return false if we have to stop the server, true if not.
+ */
+bool	Server::ft_epollout(Client* client, int n)
+{
+	std::string	&clientInputBuffer = client->getClientInputBuffer();
+	if (!clientInputBuffer.empty())
+	{
+		try
+		{
+			utils_server::sendData(this->_ev[n].data.fd, clientInputBuffer);
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "Caught: " << e.what() << std::endl;
+			return (false);
+		}
+	}
+	return (true);
 }
 
 /**
@@ -232,17 +278,6 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 void	Server::writeInBuffer(Client *client, std::string data)
 {
 	client->addToBuffer(data);
-}
-
-/**
- * @brief function to set up the behavior of the socket.
- * @return
- */
-void	Server::setAddr(void)
-{
-	this->_addr.sin_family = AF_INET;
-	this->_addr.sin_addr.s_addr = INADDR_ANY;
-	this->_addr.sin_port = htons(this->_port);
 }
 
 Server::Server()

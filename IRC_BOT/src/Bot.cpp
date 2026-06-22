@@ -27,9 +27,7 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 		int port = 0;
 		utils_server::convertPort(strPort, port);
 
-		this->_serverAdress.sin_family = AF_INET;
-		this->_serverAdress.sin_port = htons(port);
-		this->_serverAdress.sin_addr.s_addr = INADDR_ANY;
+		utils_server::setAddr(this->_serverAddress, port);
 
 		this->connectToServer();
 
@@ -54,48 +52,8 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 	}
 }
 
-void signalHandler(int signum)
-{
-	(void)signum;
-	std::cerr << "shutting down server..." << std::endl;
-	stopVar = true;
-}
-
-Bot::~Bot()
-{
-	_nicks.clear();
-}
-
-void	Bot::sendConnectionToServer(std::string password, std::string channel)
-{
-	std::string message = "PASS ";
-	message += password;
-	message += CRLN;
-
-	utils_server::sendData(this->_socketServer, message);
-	message = "NICK botIrc\r\n";
-	utils_server::sendData(this->_socketServer, message);
-	message = "USER botIrc botIrc 0 :bot_server\r\n";
-	utils_server::sendData(this->_socketServer, message);
-	message = "JOIN " + channel; 
-	message += CRLN;
-	utils_server::sendData(this->_socketServer, message);
-}
-
+static bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string& content);
 static std::string getTimeString();
-
-bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string& content)
-{
-	size_t pos = strCommand.find("PRIVMSG");
-	if (pos == std::string::npos)
-		return (false);
-	pos = strCommand.find(" ");
-	nick = strCommand.substr(1, pos);
-	strCommand.erase(0, pos);
-	pos = strCommand.find(":");
-	content = strCommand.substr(pos + 1, strCommand.size());
-	return (true);
-}
 
 bool	Bot::handleRequest()
 {
@@ -122,9 +80,41 @@ bool	Bot::handleRequest()
 	return (true);
 }
 
+void	Bot::sendConnectionToServer(std::string password, std::string channel)
+{
+	std::string message = "PASS ";
+	message += password;
+	message += CRLN;
+
+	utils_server::sendData(this->_socketServer, message);
+	message = "NICK botIrc\r\n";
+	utils_server::sendData(this->_socketServer, message);
+	message = "USER botIrc botIrc 0 :bot_server\r\n";
+	utils_server::sendData(this->_socketServer, message);
+	message = "JOIN " + channel; 
+	message += CRLN;
+	utils_server::sendData(this->_socketServer, message);
+}
+
+static std::string getTimeString();
+
+static bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string& content)
+{
+	size_t pos = strCommand.find("PRIVMSG");
+	if (pos == std::string::npos)
+		return (false);
+	pos = strCommand.find(" ");
+	nick = strCommand.substr(1, pos);
+	strCommand.erase(0, pos);
+	pos = strCommand.find(":");
+	content = strCommand.substr(pos + 1, strCommand.size());
+	return (true);
+}
+
 void	sendPrivateMessage(int socket, std::string nick, std::string content)
 {
 	std::string message = "PRIVMSG " + nick + " :" + content;
+	message += CRLN;
 	utils_server::sendData(socket, message);
 }
 
@@ -140,19 +130,25 @@ static std::string getTimeString()
 	return (buffer);
 }
 
-void	Bot::display_buffer(std::string& buffer)
-{
-	std::cout << "INSIDE RECEIVE DATA: serverBuffer: " << std::endl;
-	std::cout << buffer << std::endl;
-}
-
 void	Bot::connectToServer()
 {
-	if (connect(this->_socketServer, (struct sockaddr*)&this->_serverAdress, sizeof(this->_serverAdress)) < 0)
+	if (connect(this->_socketServer, (struct sockaddr*)&this->_serverAddress, sizeof(this->_serverAddress)) < 0)
 		throw(std::runtime_error("connect failed"));
 }
 
 void	Bot::setSocket(int socket)
 {
 	this->_socketServer = socket;
+}
+
+Bot::~Bot()
+{
+	_nicks.clear();
+}
+
+void signalHandler(int signum)
+{
+	(void)signum;
+	std::cerr << "shutting down server..." << std::endl;
+	stopVar = true;
 }

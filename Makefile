@@ -32,7 +32,6 @@ INCS = \
 SRC =			main.cpp	\
 				Client.cpp	\
 				Channel.cpp \
-				Exceptions.cpp \
 				debug.cpp \
 
 SRC_SERVER =	Server.cpp	\

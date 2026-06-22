@@ -1,15 +1,14 @@
 #include "Server.hpp"
 #include "Command.hpp"
-#include "debug.hpp"
 #include "CommandFactory.hpp"
+#include "utils.hpp"
 
 #include <exception>
 #include <stdexcept>
+
 #include <stdio.h>
 #include <errno.h>
 #include <bits/stdc++.h>
-
-static std::string	extractCommand(std::string& buffer);
 
 /**
  * @brief allows handling of the client request.
@@ -37,13 +36,10 @@ bool	Server::handleRequest(Client& client)
 			std::string		strCommand;
 
 			if (clientOutBuffer.size() == 0)
-				return (true);
-			strCommand = extractCommand(clientOutBuffer);
+				return (false);
+			strCommand = utils_server::extractCommand(clientOutBuffer, true);
 			if (strCommand.empty())
-			{
-				stop = true;
-				continue ;
-			}
+				return (false);
 			command = CommandFactory::createCommand(this, clientFd, strCommand);
 			command->execute();
 
@@ -71,26 +67,4 @@ bool	Server::handleRequest(Client& client)
 		}
 	}
 	return (stop);
-}
-
-/**
- * @brief function to extract a valid command from the buffer.
- * @param buffer, string to extract the command.
- * @return a valid command.
- */
-static std::string	extractCommand(std::string& buffer)
-{
-	std::string		res;
-	size_t			pos = buffer.find("\n");
-
-	if (pos != std::string::npos)
-	{
-		res = buffer.substr(0, pos);
-		buffer.erase(0, pos + 1);
-	}
-	int size = res.size();
-	if (res[size] != '\n' && res[size - 1] != '\r')
-		throw std::runtime_error("Not carriage or newline at the end of the command");
-	res = res.substr(0, size - 1);
-	return (res);
 }
