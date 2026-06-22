@@ -14,7 +14,7 @@ int	main(int argc, char* argv[])
 	if (argc != 4)
 	{
 		std::cerr << "Usage: " << argv[0] << " <port> <password> <channel>" << std::endl;
-		return (1);
+		return (2);
 	}
 
 	Bot	bot;

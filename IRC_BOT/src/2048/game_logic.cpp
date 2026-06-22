@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   game_logic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 17:18:51 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/17 13:58:41 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/06/22 18:40:01 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,19 @@ void	Board::send_grid(t_board* board)
 				std::stringstream convert;
 				convert << board->grid[i][j];
 				std::string		nb = convert.str();
-				grid += " ";
+				switch (nb.size())
+				{
+					case 1:
+						nb = " " + nb + " ";
+						break;
+					case 2:
+						nb = " " + nb;
+						break;
+					default:
+						break;
+				}				
 				grid += nb;
-				grid += " |";
+				grid += "|";
 			}
 		}
 		sendPrivateMessage(this->_socket, this->_nick, grid);
