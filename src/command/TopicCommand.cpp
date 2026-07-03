@@ -15,13 +15,13 @@
 TopicCommand::TopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < min_params)
-		throw IncorrectParametersException("Not enough parameters");
+		throw NotEnoughParametersException("Not enough parameters");
 	if (params.size() > max_params)
-		throw IncorrectParametersException("Too much parameters in TOPIC");
+		throw NotEnoughParametersException("Too much parameters in TOPIC");
 	if (params.front().size() > 1)
-		throw IncorrectParametersException("Only 1 channel is supported in TOPIC command");
+		throw NotEnoughParametersException("Only 1 channel is supported in TOPIC command");
 	if (params.size() == 2 && params.back().size() > 1)
-		throw IncorrectParametersException("Only 1 new topic is supported in TOPIC command");
+		throw NotEnoughParametersException("Only 1 new topic is supported in TOPIC command");
 
 	this->_targetChannel = params.front().front();
 	this->_newTopic = "";

@@ -3,9 +3,9 @@
 InviteCommand::InviteCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < InviteCommand::min_params)
-		throw Command::IncorrectParametersException("Not enough parameters");
+		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > InviteCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
+		throw Command::NotEnoughParametersException("Too much parameters");
 	
 	this->_targetChannel = this->_params.front()[0];
 	this->_invitedNick = this->_params.front()[1];

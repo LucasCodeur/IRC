@@ -5,9 +5,9 @@
 KickCommand::KickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < KickCommand::min_params)
-		throw Command::IncorrectParametersException("Not enough parameters");
+		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > KickCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
+		throw Command::NotEnoughParametersException("Too much parameters");
 	
 	std::vector<std::string> channels = params.front();
 	std::vector<std::string> users = params.back();

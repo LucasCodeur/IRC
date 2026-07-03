@@ -10,9 +10,9 @@
 JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < JoinCommand::min_params)
-		throw Command::IncorrectParametersException("Not enough parameters");
+		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > JoinCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
+		throw Command::NotEnoughParametersException("Too much parameters");
 	
 	std::vector<std::string> channels = params.front();
 	std::vector<std::string> keys;
@@ -21,7 +21,7 @@ JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	else //NOTE: no keys provided; creating dummy keys vector so execute() has something to parse
 		this->_params.push_back(std::vector<std::string>());
 	if (channels.size() < keys.size())
-		throw Command::IncorrectParametersException("More keys than channels");
+		throw Command::NotEnoughParametersException("More keys than channels");
 }
 
 JoinCommand::~JoinCommand() {}

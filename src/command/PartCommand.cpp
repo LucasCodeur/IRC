@@ -12,10 +12,11 @@ PartCommand::PartCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	{
 		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "PART");
 		this->_server->writeInBuffer(this->getClient(), reply);
+		throw NotEnoughParametersException("PART");
 	}
 	else if (PartCommand::max_params != 0 && params.size() > PartCommand::max_params)
 	{
-		throw IncorrectParametersException("Too much parameters in PART");
+		throw IncorrectParametersException("PART");
 	}
 }
 

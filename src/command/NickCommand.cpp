@@ -10,10 +10,10 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	{
 		reply = this->getDirector()->errNonicknamegiven();
 		this->getClient()->addToBuffer(reply);
-		throw Command::IncorrectParametersException("Not enough parameters");
+		throw Command::NotEnoughParametersException("Not enough parameters");
 	}
 	else if (sizeParams > NickCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
+		throw Command::NotEnoughParametersException("Too much parameters");
 }
 
 NickCommand::~NickCommand() {}

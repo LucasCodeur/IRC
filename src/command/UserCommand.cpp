@@ -8,9 +8,9 @@
 UserCommand::UserCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (params.size() < UserCommand::min_params || this->_trailer.empty())
-		throw Command::IncorrectParametersException("Not enough parameters");
+		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > UserCommand::max_params)
-		throw Command::IncorrectParametersException("Too much parameters");
+		throw Command::NotEnoughParametersException("Too much parameters");
 }
 
 UserCommand::~UserCommand() {}
