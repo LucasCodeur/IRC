@@ -122,7 +122,6 @@ bool	Server::addNewClient(int n)
 
 		std::cout << "Caught: " << e.what() << std::endl;
 		return (false);
-
 	}
 	return (true);
 }
@@ -137,8 +136,13 @@ bool	Server::ft_epollin(Client* client, int n)
 {
 	if (utils_server::receiveData(this->_ev[n].data.fd, client->getBuf()) == true)
 	{
+		if (client->getBuf().find("\r\n") == std::string::npos)
+			return (true);
 		if (this->handleRequest(*client) == true)
+		{
+			std::cout << "ft_epollin stopping the server" << std::endl;
 			return (false);
+		}
 	}
 	return (true);
 }
@@ -161,7 +165,10 @@ bool	Server::ft_epollout(Client* client, int n)
 		catch (std::exception& e)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
-			return (false);
+			{
+				std::cout << "ft_epollout stopping the server" << std::endl;
+				return (false);
+			}
 		}
 	}
 	return (true);

@@ -17,7 +17,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <iostream>
 #include <netinet/in.h>
+#include <unistd.h>
 
 # define BUFFER_SIZE 2048
 
@@ -41,7 +43,10 @@ bool	receiveData(int socket, std::string& buf)
 		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
 			return (false);
 	}
-	buffer[bytes_read] = '\0';
+	// if (buffer[bytes_read - 2] == '\r')
+	// 	std::cout << "rrrrrrrrrrrrrrrrrrr\n" << std::endl;
+	// if (buffer[bytes_read - 1] == '\n')
+	// 	std::cout << "nnnnnnnnnnnnnnnnnn\n" << std::endl;
 	buf += buffer;
 	return (true);
 }
@@ -115,9 +120,12 @@ std::string extractCommand(std::string& buffer, bool security)
 		res = buffer.substr(0, pos + 1);
 		buffer.erase(0, pos + 2);
 	}
+	(void)security;
 	int size = res.size();
-	if (security == true && res[size] != '\n' && res[size - 1] != '\r')
-		throw std::runtime_error("Not carriage or newline at the end of the command");
+	// if (security == true && res[size] != '\n' && res[size - 1] != '\r')
+	// {
+	// 	throw std::runtime_error("No carriage or newline at the end of the command");
+	// }
 	res = res.substr(0, size - 1);
 	return (res);
 }
