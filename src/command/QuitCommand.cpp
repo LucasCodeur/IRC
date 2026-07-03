@@ -26,7 +26,6 @@ void	QuitCommand::execute() const
 	if (!this->_trailer.empty())
 		quitMessage = ": " + this->_trailer;
 
-	this->getServer()->removeClient(this->getClientFd());
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
 		Channel *curChannel = (it->second);
@@ -35,4 +34,5 @@ void	QuitCommand::execute() const
 			curChannel->sendMessageToAllOther(quitMessage, this->getClientFd());
 		}
 	}
+	this->getServer()->removeClient(this->getClientFd());
 }

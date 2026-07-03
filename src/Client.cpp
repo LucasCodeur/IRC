@@ -2,6 +2,7 @@
 #include "debug.hpp"
 #include <iostream>
 #include <string>
+#include <unistd.h>
 
 Client::Client()
 	: _authstate(),
@@ -20,6 +21,7 @@ Client::Client()
 
 Client::~Client()
 {
+	close(this->_fd);
 	if (DEBUG == 1)
 		std::cout << DBUG RED "Client destroyed: " RESET << *this <<std::endl;
 }

@@ -22,10 +22,7 @@ bool	Server::handleRequest(Client& client)
 	{
 		std::map<int, Client*>::const_iterator it = this->_clients.find(clientFd);
 		if (it == this->_clients.end())
-		{
-			stop = true;
-			continue ;
-		}
+			return (stop);
 		try
 		{
 			std::string&	clientOutBuffer = client.getBuf();
@@ -58,7 +55,7 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch(std::exception& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << "[FATAL] Caught: " << e.what() << std::endl;
 			stop = true;
 		}
 	}

@@ -82,6 +82,9 @@ void	Server::listenConnexionsEpoll(void)
 				if (ft_epollin(client, n) == false)
 					return ;
 			}
+			std::map<int, Client*>::const_iterator it = this->_clients.find(this->_ev[n].data.fd);
+			if (it == this->_clients.end())
+				continue ;
 			if (this->_ev[n].events & EPOLLOUT)
 			{
 				if (ft_epollout(client, n) == false)
@@ -138,6 +141,7 @@ bool	Server::ft_epollin(Client* client, int n)
 	{
 		if (client->getBuf().find("\r\n") == std::string::npos)
 			return (true);
+		std::cout << "Received data from client " << client->getFd() << ": " << client->getBuf() << std::endl;
 		if (this->handleRequest(*client) == true)
 		{
 			std::cout << "ft_epollin stopping the server" << std::endl;
@@ -305,6 +309,8 @@ Server::~Server()
 		delete it->second;
 	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		delete it->second;
+	close(this->_epollfd);
+	close(this->_server_sock);
 	if (DEBUG == 1)
 		std::cout << DBUG RED "Server destroyed: " RESET << *this << std::endl;
 }
