@@ -149,6 +149,6 @@ Bot::~Bot()
 void signalHandler(int signum)
 {
 	(void)signum;
-	std::cerr << "shutting down server..." << std::endl;
+	std::cerr << "shutting down bot..." << std::endl;
 	stopVar = true;
 }
