@@ -53,10 +53,15 @@ bool	Server::handleRequest(Client& client)
 			this->writeInBuffer(&client, reply);
 			delete command;
 		}
-		catch(std::exception& e)
+		catch(Server::FatalError& e)
 		{
 			std::cout << "[FATAL] Caught: " << e.what() << std::endl;
 			stop = true;
+		}
+		catch(std::exception& e)
+		{
+			std::cout << "Caught: " << e.what() << std::endl;
+			delete command;
 		}
 	}
 	return (stop);

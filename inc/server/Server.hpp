@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+#include <stdexcept>
 # define MAX_EVENTS 30
 # define MAX_WAITING_LIST 3
 # define TIMEOUT 100
@@ -15,8 +16,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <map>
-
-#include <map>
 #include <ostream>
 #include <string>
 #include "Channel.hpp"
@@ -27,6 +26,15 @@
 
 class Server
 {
+	class FatalError : public std::runtime_error
+	{
+		public:
+			FatalError() throw();
+			FatalError(std::string msg) throw();
+			~FatalError() throw();
+	};
+
+
 	public :
 		Server(void);
 		Server(Server const &original);
