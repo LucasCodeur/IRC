@@ -36,6 +36,14 @@ class Command
 			~EmptyCommandException() throw();
 	};
 
+	class NotRegisteredException : public std::runtime_error
+	{
+		public:
+			NotRegisteredException();
+			NotRegisteredException(std::string msg);
+			~NotRegisteredException() throw();
+	};
+
 	class IncorrectParametersException : public std::runtime_error
 	{
 		public:

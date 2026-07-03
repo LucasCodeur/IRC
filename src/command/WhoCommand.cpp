@@ -7,6 +7,10 @@
 
 WhoCommand::WhoCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
 	if (params.size() < WhoCommand::min_params)
 	{
 		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "WHO");

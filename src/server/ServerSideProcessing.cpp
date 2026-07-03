@@ -53,6 +53,13 @@ bool	Server::handleRequest(Client& client)
 			this->writeInBuffer(&client, reply);
 			delete command;
 		}
+		catch (Command::NotRegisteredException& e)
+		{
+			std::cout << "Caught: " << e.what() << std::endl;
+			std::string reply = command->getDirector()->errNotRegistered(client.getNickname());
+			this->writeInBuffer(&client , reply);
+			delete command;
+		}
 		catch(Server::FatalError& e)
 		{
 			std::cout << "[FATAL] Caught: " << e.what() << std::endl;

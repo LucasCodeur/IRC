@@ -278,6 +278,27 @@ std::string Director::errNeedMoreParams(std::string clientNick, std::string comm
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
+
+std::string Director::errNotRegistered(const std::string &clientNick) const
+{
+	ReplyBuilder	builder;
+	
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_NOTREGISTERED)
+				.addParams(clientNick)
+				.addTrailing("You have not registered")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 /**
 * @brief creates the numeric reply of welcome when a client successfully connects to a irc server.
 * @param client, the name of the person successfully connect.

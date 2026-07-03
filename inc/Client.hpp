@@ -57,7 +57,7 @@ class Client
 	std::string		  &getBuf();
 	std::string		  &getClientInputBuffer();
 	int getFd() const;
-
+	bool				isfullyRegistered();
 	// SETTERS
 	void setFd(int fd);
 	void setUsername(std::string const &username);

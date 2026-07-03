@@ -205,3 +205,8 @@ void Client::addToBuffer(std::string data)
 {
 	this->_inputBuffer += data;
 }
+
+bool Client::isfullyRegistered(void)
+{
+	return (this->_authstate.getFullyRegistered());
+}

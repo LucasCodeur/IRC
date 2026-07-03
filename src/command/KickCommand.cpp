@@ -4,6 +4,10 @@
 
 KickCommand::KickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
 	if (params.size() < KickCommand::min_params)
 		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > KickCommand::max_params)

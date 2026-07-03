@@ -100,3 +100,6 @@ Command::NotEnoughParametersException::NotEnoughParametersException() : std::run
 Command::NotEnoughParametersException::NotEnoughParametersException(std::string msg) : std::runtime_error(msg) {}
 Command::NotEnoughParametersException::~NotEnoughParametersException() throw() {}
 
+Command::NotRegisteredException::NotRegisteredException() : std::runtime_error("You are not registered") {}
+Command::NotRegisteredException::NotRegisteredException(std::string msg) : std::runtime_error(msg) {}
+Command::NotRegisteredException::~NotRegisteredException() throw() {}

@@ -5,6 +5,10 @@
 
 ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
 	std::string	modeEdition = "";
 	std::string	reply;
 

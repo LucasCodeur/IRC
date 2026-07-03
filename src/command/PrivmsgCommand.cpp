@@ -6,6 +6,10 @@
 
 PrivmsgCommand::PrivmsgCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
 	if (params.size() < PrivmsgCommand::min_params || this->_trailer.empty())
 		throw Command::NotEnoughParametersException("Not enough parameters");
 }

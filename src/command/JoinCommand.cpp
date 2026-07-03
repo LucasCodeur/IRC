@@ -1,3 +1,4 @@
+#include <exception>
 #include <ostream>
 #include <utility>
 #include <iostream>
@@ -9,6 +10,11 @@
 
 JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
+
 	if (params.size() < JoinCommand::min_params)
 		throw Command::NotEnoughParametersException("Not enough parameters");
 	else if (params.size() > JoinCommand::max_params)

@@ -103,5 +103,6 @@ class Director
 		std::string		errNickcollision(const std::string& nickname) const;
 		std::string		errErroneusnickname(const std::string& nickname) const;
 		std::string		errNicknameinuse(const std::string& nickname) const;
+		std::string		errNotRegistered(const std::string &clientNick) const;
 };
 #endif

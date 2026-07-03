@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TopicCommand.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbarru <kbarru@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:55:35 by kbarru            #+#    #+#             */
-/*   Updated: 2026/05/29 14:22:50 by kbarru           ###   ########lyon.fr   */
+/*   Updated: 2026/07/03 16:47:48 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 TopicCommand::TopicCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
+	if (!server->getClient(clientFd)->isfullyRegistered())
+	{
+		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
+	}
 	if (params.size() < min_params)
 		throw NotEnoughParametersException("Not enough parameters");
 	if (params.size() > max_params)
