@@ -224,7 +224,7 @@ void	Server::bindSocket(void)
 void	Server::listenSocket(int sizeWaitingList)
 {
 		if (listen(this->_server_sock, sizeWaitingList) < 0)
-		throw Server::FatalError("Listen Socket failed");
+			throw Server::FatalError("Listen Socket failed");
 }
 
 /**
@@ -361,7 +361,7 @@ void    Server::removeClient(int clientFd)
 			channel->removeUser(clientFd);
 			if (channel->getUsers().empty())
 			{
-				std::cout << RED << "deleting empty channel " << it->first << std::endl;
+				std::cout << RED << "deleting empty channel " << it->first << RESET << std::endl;
 				delete channel;
 				this->_channels.erase(it++);
 				continue;

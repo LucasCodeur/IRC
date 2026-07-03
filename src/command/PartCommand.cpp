@@ -48,7 +48,7 @@ void PartCommand::execute() const
 				this->_server->writeInBuffer(this->getClient(), reply);
 				if (it->second->getUsers().empty())
 				{
-					std::cout << RED << "deleting empty channel " << it->first << std::endl;
+					std::cout << RED << "deleting empty channel " << it->first << RESET << std::endl;
 					this->_server->removeChannel(it->first);
 				}
 			}
