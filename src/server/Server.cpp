@@ -146,6 +146,8 @@ bool	Server::ft_epollin(Client* client, int n)
 			return (false);
 		}
 	}
+	else
+		this->removeClient(client->getFd());
 	return (true);
 }
 
@@ -167,10 +169,7 @@ bool	Server::ft_epollout(Client* client, int n)
 		catch (std::exception& e)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
-			{
-				std::cout << "ft_epollout stopping the server" << std::endl;
-				return (false);
-			}
+			return (false);
 		}
 	}
 	return (true);

@@ -38,15 +38,10 @@ bool	receiveData(int socket, std::string& buf)
 
 	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
-	if (bytes_read <= 0)
+	if (bytes_read <= 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 	{
-		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-			return (false);
+		return (false);
 	}
-	// if (buffer[bytes_read - 2] == '\r')
-	// 	std::cout << "rrrrrrrrrrrrrrrrrrr\n" << std::endl;
-	// if (buffer[bytes_read - 1] == '\n')
-	// 	std::cout << "nnnnnnnnnnnnnnnnnn\n" << std::endl;
 	buf += buffer;
 	return (true);
 }
