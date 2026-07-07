@@ -11,8 +11,8 @@ InviteCommand::InviteCommand(Server *server, const int clientFd, t_msgSpecs spec
 	else if (params.size() > InviteCommand::max_params)
 		throw Command::NotEnoughParametersException("Too much parameters");
 	
-	this->_targetChannel = this->_params.front()[0];
-	this->_invitedNick = this->_params.front()[1];
+	this->_invitedNick = this->_params.front()[0];
+	this->_targetChannel = this->_params.back()[0];
 }
 
 InviteCommand::~InviteCommand() {}
