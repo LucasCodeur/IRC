@@ -92,7 +92,6 @@ void	ModeCommand::changeUserMode() const
 	if (DEBUG)
 		std::cerr << "trying to add/remove " << clientNick << " op status on channel " << this->_targetChannel << std::endl;
 	Client	*targetClient = this->_server->getClient(clientNick);
-	int	target = this->_server->getClient(clientNick)->getFd();
 	if (!this->_targetChannel->isOp(this->getClientFd()))
 	{
 		reply = this->_director.errChanOPrivsNeeded(clientNick, this->_targetChannel->getName());
@@ -100,12 +99,14 @@ void	ModeCommand::changeUserMode() const
 		return ;
 	}
 
-	if (targetClient == NULL || !(this->_targetChannel->isOnChan(target)))
+	if (targetClient == NULL || !(this->_targetChannel->isOnChan(targetClient->getFd())))
 	{
 		reply = this->_director.errNoSuchNick(clientNick, this->_targetChannel->getName());
 		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
+
+	int	target = targetClient->getFd();
 	if (this->_operationChar == "+")
 	{
 		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
