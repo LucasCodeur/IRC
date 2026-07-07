@@ -128,7 +128,11 @@ Command *CommandFactory::createCommand(Server *server, const int clientFd, const
 
 	for (std::vector<std::string>::iterator it = formattedMessage.begin() + 1; it != formattedMessage.end(); ++it)
 	{
-		arguments.push_back(split(*it, ','));
+		std::vector<std::string> group = split(*it, ',');
+		if (!group.empty())
+		{
+			arguments.push_back(group);
+		}
 	}
 
 	for (type = 0; type < commandTypes.size(); ++type)
