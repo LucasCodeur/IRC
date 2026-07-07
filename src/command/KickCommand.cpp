@@ -38,18 +38,17 @@ void KickCommand::execute() const
 		if (currentUser == NULL)
 			return;
 
+		if (currentChannel == NULL)
+		{
+			reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), this->_params.front()[i]);
+			this->getServer()->writeInBuffer(this->getClient(), reply);
+			continue ;
+		}
 
 		if (this->_trailer.empty())
 			kickComment = "No reason specified";
 
 		std::cerr << "kicking" << currentUser->getNickname() << " from " << currentChannel->getName() << " :" << kickComment << std::endl;
-
-		if (currentChannel == NULL)
-		{
-			reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), currentChannel->getName());
-			this->getServer()->writeInBuffer(this->getClient(), reply);
-			continue ;
-		}	
 
 		if (!currentChannel->isUserInChannel(this->getClientFd()))
 		{
@@ -66,7 +65,6 @@ void KickCommand::execute() const
 		}
 
 		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentUser->getNickname() + " : " + kickComment);
-		currentChannel->sendMessageToAll("hey");
 		currentChannel->removeUser(currentUser);
 
 	  std::cout << "kicked " << currentUser->getNickname() << " from " << currentChannel->getName() << " : " << kickComment << std::endl;
