@@ -64,11 +64,6 @@ Server *Command::getServer() const
 	return (this->_server);
 }
 
-Director *Command::getDirector()
-{
-	return (&this->_director);
-}
-
 /* === SETTERS === */
 
 void Command::setClientFd(int fd)

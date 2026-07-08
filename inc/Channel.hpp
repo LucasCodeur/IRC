@@ -18,6 +18,7 @@ class Channel
 	std::vector<int>	_operators;
 	std::vector<int>	_invited;
 	std::bitset<4>		_mode; // itkl = 0100
+	size_t				_userLimit;
 
 	public:
 	enum inviteMode {l = 0, k, t, i};
@@ -44,6 +45,7 @@ class Channel
 	int						hasPassword() const;
 	int						isTopicRestricted() const;
 	int						hasUserLimit() const;
+	size_t					getUserLimit() const;
 	int						isChanOp(std::string userName) const;
 	bool					isUserInChannel(int clientFd) const;
 	Client					*getClient(const int fd) const;
@@ -54,6 +56,7 @@ class Channel
 	void setPassword(std::string const &password);
 	void setMode(int mode);
 	void setModeItem(unsigned int item, bool value);
+	void setUserLimit(size_t limit);
 
 	// METHODS
 	bool addUser(Client *client);
@@ -68,6 +71,8 @@ class Channel
 	void sendMessageToAll(const std::string &message) const;
 	void sendMessageToAllOther(const std::string &message, int senderFd) const;
 	void addInvite(int fd);
+	bool isInvited(int fd) const;
+	void removeInvite(int fd);
 	std::vector<std::string> listNames();
 	std::string getChannelNamesList() const;
 

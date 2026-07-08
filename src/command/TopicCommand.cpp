@@ -56,7 +56,8 @@ void TopicCommand::execute() const
 	std::string reply;
 
 	std::map<std::string, Channel *> channels = _server->getChannelMap();
-	Channel *distTargetChannel = channels.find(this->_targetChannel)->second;
+	std::map<std::string, Channel *>::iterator it = channels.find(this->_targetChannel);
+	Channel *distTargetChannel = (it != channels.end()) ? it->second : NULL;
 
 	if (distTargetChannel == NULL || !distTargetChannel->isOnChan(this->getClientFd()))
 	{

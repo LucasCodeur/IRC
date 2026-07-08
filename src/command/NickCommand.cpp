@@ -8,7 +8,7 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	std::string reply;
 	if (sizeParams < NickCommand::min_params)
 	{
-		reply = this->getDirector()->errNonicknamegiven();
+		reply = this->_director.errNonicknamegiven();
 		this->getClient()->addToBuffer(reply);
 		throw Command::NotEnoughParametersException("Not enough parameters");
 	}
