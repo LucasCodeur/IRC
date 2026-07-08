@@ -37,28 +37,35 @@ bool	Server::handleRequest(Client& client)
 			command->execute();
 
 			delete command;
+			command = NULL;
 		}
 		catch(Command::UnknownCommandException& e)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
+			Director director;
 			std::string cmdKeyword = e.what();
-			std::string reply = command->getDirector()->errUnknownCommand(client.getNickname(), cmdKeyword);
+			std::string reply = director.errUnknownCommand(client.getNickname(), cmdKeyword);
 			this->writeInBuffer(&client, reply);
 			delete command;
+			command = NULL;
 		}
 		catch (Command::NotEnoughParametersException& e)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
-			std::string reply = command->getDirector()->errNeedMoreParams(client.getNickname(), e.what());
+			Director director;
+			std::string reply = director.errNeedMoreParams(client.getNickname(), e.what());
 			this->writeInBuffer(&client, reply);
 			delete command;
+			command = NULL;
 		}
 		catch (Command::NotRegisteredException& e)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
-			std::string reply = command->getDirector()->errNotRegistered(client.getNickname());
+			Director director;
+			std::string reply = director.errNotRegistered(client.getNickname());
 			this->writeInBuffer(&client , reply);
 			delete command;
+			command = NULL;
 		}
 		catch(Server::FatalError& e)
 		{
@@ -69,6 +76,7 @@ bool	Server::handleRequest(Client& client)
 		{
 			std::cout << "Caught: " << e.what() << std::endl;
 			delete command;
+			command = NULL;
 		}
 	}
 	return (stop);

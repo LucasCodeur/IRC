@@ -71,7 +71,6 @@ class Command
 	// GETTERS
 	int getClientFd() const;
 	Server *getServer() const;
-	Director	*getDirector() ;
 	std::vector<std::vector<std::string> > const &getParams() const;
 	Client *getClient() const;
 
