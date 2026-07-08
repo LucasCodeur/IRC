@@ -66,7 +66,6 @@ void KickCommand::execute() const
 		}
 
 		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentUser->getNickname() + " : " + kickComment);
-		currentChannel->sendMessageToAll("hey");
 		currentChannel->removeUser(currentUser);
 
 	  std::cout << "kicked " << currentUser->getNickname() << " from " << currentChannel->getName() << " : " << kickComment << std::endl;
