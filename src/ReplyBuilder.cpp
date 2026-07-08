@@ -512,6 +512,48 @@ std::string		Director::errBadChannelKey(std::string clientNick, std::string chan
 	return (reply);
 }
 
+std::string		Director::errInviteOnlyChan(std::string clientNick, std::string channelName) const
+{
+	ReplyBuilder	builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_INVITEONLYCHAN)
+				.addParams(clientNick)
+				.addParams(channelName)
+				.addTrailing("Cannot join channel (+i)")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
+std::string		Director::errChannelIsFull(std::string clientNick, std::string channelName) const
+{
+	ReplyBuilder	builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(SERVERNAME)
+				.addNumeric(ERR_CHANNELISFULL)
+				.addParams(clientNick)
+				.addParams(channelName)
+				.addTrailing("Cannot join channel (+l)")
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 std::string		Director::errUnknownCommand(std::string clientNick, std::string cmdKeyword) const
 {
 	ReplyBuilder	builder;
