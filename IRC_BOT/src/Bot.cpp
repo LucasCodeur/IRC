@@ -18,6 +18,13 @@ int stopVar = false;
 # define BUFFER_SIZE 4096
 # define CRLN "\r\n"
 
+/**
+* @brief method allowing to launch the bot
+* @param strPort port of the server.
+* @param password of the server.
+* @param channel where the bot has to connect.
+* @return
+*/
 void	Bot::launcher_bot(std::string strPort, std::string password, std::string channel)
 {
 	try
@@ -55,6 +62,10 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 static bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string& content);
 static std::string getTimeString();
 
+/**
+ * @brief allows handling of the client request.
+ * @return false if we have to stop or true if we have to continue.
+ */
 bool	Bot::handleRequest()
 {
 	while (stopVar == false)
@@ -80,6 +91,12 @@ bool	Bot::handleRequest()
 	return (true);
 }
 
+/**
+* @brief Allows the bot to send a request to the server in order to connect to it.
+* @param password send a password to the server in order to connect to it.
+* @param channel where the bot must to go.
+* @return
+*/
 void	Bot::sendConnectionToServer(std::string password, std::string channel)
 {
 	std::string message = "PASS ";
@@ -98,6 +115,13 @@ void	Bot::sendConnectionToServer(std::string password, std::string channel)
 
 static std::string getTimeString();
 
+/**
+* @brief Function to split the privmsg received and handle it.
+* @param strCommand, message receive by a client.
+* @param nick who sent the message.
+* @param content only the content of the message.
+* @return false if nothing receive or true if yes.
+*/
 static bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string& content)
 {
 	size_t pos = strCommand.find("PRIVMSG");
@@ -111,6 +135,12 @@ static bool	splitPrivmsg(std::string strCommand, std::string& nick, std::string&
 	return (true);
 }
 
+/**
+* @brief function to send a priv message.
+* @param socket, the recipient of the message.
+* @param nick, who we will send the message.
+* @param content, the content of the message.
+*/
 void	sendPrivateMessage(int socket, std::string nick, std::string content)
 {
 	std::string message = "PRIVMSG " + nick + " :" + content;
@@ -118,6 +148,10 @@ void	sendPrivateMessage(int socket, std::string nick, std::string content)
 	utils_server::sendData(socket, message);
 }
 
+/**
+* @brief allows getting the time.
+* @return a string with the date.
+*/
 static std::string getTimeString()
 {
 	time_t ts;
@@ -130,22 +164,41 @@ static std::string getTimeString()
 	return (buffer);
 }
 
+/**
+* @brief allows connecting with the server.
+* @return
+*/
 void	Bot::connectToServer()
 {
 	if (connect(this->_socketServer, (struct sockaddr*)&this->_serverAddress, sizeof(this->_serverAddress)) < 0)
 		throw(std::runtime_error("connect failed"));
 }
 
+/**
+* @brief setter socket bot.
+* @param socket has to be set.
+* @return
+*/
 void	Bot::setSocket(int socket)
 {
 	this->_socketServer = socket;
 }
 
+/**
+* @brief destructor of the server, clears the nicks.
+* @return
+*/
 Bot::~Bot()
 {
 	_nicks.clear();
 }
 
+/**
+* @brief handles signals in the program.
+* @param signum not use.
+* @return
+*
+*/
 void signalHandler(int signum)
 {
 	(void)signum;
