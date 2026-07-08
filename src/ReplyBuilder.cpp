@@ -387,6 +387,25 @@ std::string		Director::rplTopic(std::string clientNick, std::string channelName,
 	return (reply);
 }
 
+std::string	Director::rplQuit(Client const &client, std::string const &reason) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix(client.getNickname())
+				.addParams("QUIT")
+				.addTrailing(reason)
+				.addCrln()
+				.buildReply();
+
+	if (reply.size() > 512)
+		throw std::runtime_error("Reply longer than 512 characters");
+
+	PRINT(reply, YELLOW, "\n");
+	return (reply);
+}
+
 std::string	Director::rplPrivmsg(Client const &client, Channel const &channel, std::string const &msgContent) const
 {
 	ReplyBuilder builder;
