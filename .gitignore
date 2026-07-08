@@ -12,9 +12,11 @@
 **/*.gch
 **/*.gdb_history
 **/ircserv*
+ircbot
 **/compile_commands.json 
 
 **/*.clang
+**/*.clangd
 **/*.code
 **/*.vscode
 **/*.cache
@@ -23,6 +25,8 @@
 **/output
 
 **/test
+.client*
+client*
 **/res
 **/resultat
 **/log

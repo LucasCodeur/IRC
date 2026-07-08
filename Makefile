@@ -1,35 +1,68 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/04/13 11:36:21 by lud-adam          #+#    #+#              #
-#    Updated: 2026/05/05 17:00:23 by enchevri         ###   ########lyon.fr    #
-#                                                                              #
-# **************************************************************************** #
-
 MAKEFLAGS += -j
 
 .PHONY : all clean fclean re debug
+
 CC = c++
 CC_DEBUG = g++
-CFLAGS = -Wall -Wextra -Werror -MMD -std=c++98
-CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g3 -D DEBUG=1
+
+CFLAGS = -g3 -Wall -Wextra -Werror -MMD -std=c++98
+CFLAGS_DEBUG = -Wall -Wextra -MMD -std=c++98 -g -D DEBUG=1
+
 NAME = ircserv
 NAME_DEBUG = ircserv_debug
+
 P_SRC = src/
+P_SRC_SERVER = $(P_SRC)server/
+P_SRC_COMMAND = $(P_SRC)command/
+
 P_OBJ = .obj/
 P_OBJ_DEBUG = .obj_debug/
-P_INC = inc/
 
-SRC = main.cpp \
+P_INC = inc/
+P_INC_SERVER = $(P_INC)server/
+P_INC_COMMAND = $(P_INC)command/
+P_INC_UTILS = $(P_INC)utils/
+
+INCS = \
+	   $(addprefix -I, $(P_INC)) \
+	   $(addprefix -I, $(P_INC_SERVER)) \
+	   $(addprefix -I, $(P_INC_COMMAND)) \
+	   $(addprefix -I, $(P_INC_UTILS)) \
+
+SRC =			main.cpp	\
+				Client.cpp	\
+				Channel.cpp \
+				debug.cpp \
+
+SRC_SERVER =	Server.cpp	\
+				ServerSideProcessing.cpp \
+
+SRC_COMMAND = \
+				Command.cpp \
+				CommandFactory.cpp \
+				JoinCommand.cpp \
+				PassCommand.cpp \
+				NickCommand.cpp \
+				UserCommand.cpp \
+				PartCommand.cpp \
+				ModeCommand.cpp \
+				KickCommand.cpp \
+				TopicCommand.cpp \
+				InviteCommand.cpp \
+				PrivmsgCommand.cpp \
+				QuitCommand.cpp \
+				WhoCommand.cpp \
+
+SRC_REPLY_BUILDER = ReplyBuilder.cpp \
+
+SRC_UTILS = utils.cpp \
 
 SRCS = \
 	$(addprefix $(P_SRC), $(SRC)) \
-
-INCS = $(addprefix $(P_INC), $(INC)) \
+	$(addprefix $(P_SRC), $(SRC_UTILS)) \
+	$(addprefix $(P_SRC), $(SRC_REPLY_BUILDER)) \
+	$(addprefix $(P_SRC_SERVER), $(SRC_SERVER)) \
+	$(addprefix $(P_SRC_COMMAND), $(SRC_COMMAND)) \
 
 OBJS = $(subst $(P_SRC), $(P_OBJ), $(SRCS:.cpp=.o))
 OBJS_DEBUG = $(subst $(P_SRC), $(P_OBJ_DEBUG), $(SRCS:.cpp=.o))
@@ -51,15 +84,15 @@ $(NAME): $(OBJS)
 
 $(P_OBJ)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I $(P_INC) -c $< -o $@ && \
+	@$(CC) $(CFLAGS) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $<$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
 clean:
-	rm -rf $(P_OBJ) $(P_OBJ_DEBUG)
+	rm -rf $(P_OBJ) $(P_OBJ_DEBUG) $(P_OBJ_BOT)
 
 fclean: clean
-	rm -f $(NAME) $(NAME_DEBUG)
+	rm -f $(NAME) $(NAME_DEBUG) $(NAME_BOT)
 
 re:
 	$(MAKE) fclean
@@ -73,6 +106,9 @@ re:
 
 debug: $(NAME_DEBUG)
 
+bot: 
+	$(MAKE) -C ./IRC_BOT/
+
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
@@ -80,9 +116,10 @@ $(NAME_DEBUG): $(OBJS_DEBUG)
 
 $(P_OBJ_DEBUG)%.o: $(P_SRC)%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC_DEBUG) $(CFLAGS_DEBUG) -I $(P_INC) -c $< -o $@ && \
+	@$(CC_DEBUG) $(CFLAGS_DEBUG) $(INCS) -c $< -o $@ && \
 	echo "$(Cyan)Compiling $< [debug]$(Color_Off)" || \
 	echo "$(Red)Error compiling $<$(Color_Off)"
 
 -include $(DEPS)
 -include $(DEPS_DEBUG)
+-include $(DEPS_BOT)

@@ -1,0 +1,83 @@
+#ifndef CHANNEL_HPP
+#define CHANNEL_HPP
+
+#include <ostream>
+#include <string>
+#include <vector>
+#include <bitset>
+
+#include "Client.hpp"
+
+class Channel
+{
+	private:
+	std::string			_name;
+	std::string			_topic;
+	std::string			_password;
+	std::vector<Client *>	_users;
+	std::vector<int>	_operators;
+	std::vector<int>	_invited;
+	std::bitset<4>		_mode; // itkl = 0100
+	size_t				_userLimit;
+
+	public:
+	enum inviteMode {l = 0, k, t, i};
+
+	// CONSTRUCTOR
+	Channel();
+	Channel(std::string const &name, std::string const &password);
+	Channel(std::string const &name);
+	~Channel();
+	Channel(Channel const &original);
+
+	// OPERATOR
+	Channel &operator=(Channel const &other);
+
+	// GETTERS
+	std::string const &getName() const;
+	std::string const &getTopic() const;
+	std::string const &getPassword() const;
+	std::vector<Client *> const &getUsers() const;
+	std::vector<int> const &getOperators() const;
+	std::vector<int> const &getInvited() const;
+	int						getMode(int i) const;
+	int						isInviteOnly() const;
+	int						hasPassword() const;
+	int						isTopicRestricted() const;
+	int						hasUserLimit() const;
+	size_t					getUserLimit() const;
+	int						isChanOp(std::string userName) const;
+	bool					isUserInChannel(int clientFd) const;
+	Client					*getClient(const int fd) const;
+	Client					*getClient(const std::string nickname) const;
+
+	// SETTERS
+	void setTopic(std::string const &topic);
+	void setPassword(std::string const &password);
+	void setMode(int mode);
+	void setModeItem(unsigned int item, bool value);
+	void setUserLimit(size_t limit);
+
+	// METHODS
+	bool addUser(Client *client);
+	bool removeUser(Client *client);
+	bool removeUser(int clientFd);
+	bool removeUser(std::string nickname);
+	bool setOperator(int clientFd);
+	bool removeOperator(int clientFd);
+	bool isOp(int clientFd) const;
+	bool isOnChan(int clientFd);
+	bool isOnChan(std::string nickname);
+	void sendMessageToAll(const std::string &message) const;
+	void sendMessageToAllOther(const std::string &message, int senderFd) const;
+	void addInvite(int fd);
+	bool isInvited(int fd) const;
+	void removeInvite(int fd);
+	std::vector<std::string> listNames();
+	std::string getChannelNamesList() const;
+
+
+};
+std::ostream &operator<<(std::ostream &o, const Channel &obj);
+
+#endif // !CHANNEL_HPP

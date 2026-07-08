@@ -1,19 +1,21 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 11:38:11 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/04/13 11:40:04 by lud-adam         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "Server.hpp"
+#include "Command.hpp"
+#include <iostream>
+#include <csignal>
 
-#include "debug.hpp"
+void signalHandler(int signum);
 
-int	main(void)
+int	main(int argc, char* argv[])
 {
-	PRINT("Hello World !", GREEN, "\n");
+	if (argc != 3)
+	{
+		std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
+		return 2;
+	}
+	signal(SIGINT, signalHandler);
+	Server server;
+
+	server.launcherServer(argv[1], argv[2]);
+
 	return (0);
 }
