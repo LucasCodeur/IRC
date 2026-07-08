@@ -12,10 +12,7 @@ WhoCommand::WhoCommand(Server *server, const int clientFd, t_msgSpecs specs, con
 		throw Command::NotRegisteredException(server->getClientNickname(clientFd) + ":You are not registered");
 	}
 	if (params.size() < WhoCommand::min_params)
-	{
-		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "WHO");
-		this->_server->writeInBuffer(this->getClient(), reply);
-	}
+		throw Command::NotEnoughParametersException("WHO");
 }
 
 WhoCommand::~WhoCommand() {}

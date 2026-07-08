@@ -112,14 +112,30 @@ void JoinCommand::execute() const
 		if (key_it != keys.end())
 			providedPassword = *key_it++;
 
+		if (distChan_it->second->isInviteOnly() && !distChan_it->second->isInvited(this->getClientFd()))
+		{
+			std::string reply = this->_director.errInviteOnlyChan(this->getClient()->getNickname(), *chan_it);
+			this->_server->writeInBuffer(this->getClient(), reply);
+			continue;
+		}
+
+		if (distChan_it->second->hasUserLimit() && distChan_it->second->getUsers().size() >= distChan_it->second->getUserLimit())
+		{
+			std::string reply = this->_director.errChannelIsFull(this->getClient()->getNickname(), *chan_it);
+			this->_server->writeInBuffer(this->getClient(), reply);
+			continue;
+		}
+
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
 			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
+			distChan_it->second->removeInvite(this->getClientFd());
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
 			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
+			distChan_it->second->removeInvite(this->getClientFd());
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else // if password incorrect

@@ -20,11 +20,13 @@ void	QuitCommand::execute() const
 {
 	if (DEBUG)
 		std::cout << "	Executing QuitCommand" << std::endl;
-	std::string quitMessage = this->getClient()->getNickname() + "has quit";
+	std::string reason;
+	if (this->_trailer.empty())
+		reason = "Client Quit";
+	else
+		reason = this->_trailer;
+	std::string quitMessage = this->_director.rplQuit(*this->getClient(), reason);
 	std::map<std::string, Channel *> channels = this->getServer()->getChannelMap();
-
-	if (!this->_trailer.empty())
-		quitMessage = ": " + this->_trailer;
 
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{

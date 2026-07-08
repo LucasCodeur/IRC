@@ -1,6 +1,6 @@
 MAKEFLAGS += -j
 
-.PHONY : all clean fclean re debug
+.PHONY : all clean fclean re debug run bot runbot
 
 CC = c++
 CC_DEBUG = g++
@@ -77,6 +77,13 @@ Cyan=\033[0;36m
 
 all: $(NAME)
 
+PORT ?= 6667
+PASSWORD ?= pass
+
+run: $(NAME)
+	./$(NAME) $(PORT) $(PASSWORD)
+
+
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) -o $@ $(OBJS) && \
 	echo "$(Green)Creating executable $@$(Color_Off)" || \
@@ -106,8 +113,15 @@ re:
 
 debug: $(NAME_DEBUG)
 
-bot: 
+BOT_PORT ?= 6667
+BOT_PASSWORD ?= pass
+BOT_CHANNEL ?= \#bot
+
+bot:
 	$(MAKE) -C ./IRC_BOT/
+
+runbot: bot
+	./IRC_BOT/ircbot $(BOT_PORT) $(BOT_PASSWORD) '$(BOT_CHANNEL)'
 
 $(NAME_DEBUG): $(OBJS_DEBUG)
 	@$(CC_DEBUG) $(CFLAGS_DEBUG) -o $@ $(OBJS_DEBUG) && \

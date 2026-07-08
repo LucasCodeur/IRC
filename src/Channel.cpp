@@ -11,18 +11,19 @@ Channel::Channel()
 	: _name(""),
 	  _topic(""),
 	  _password(""),
-	  _mode(4)
+	  _mode(4),
+	  _userLimit(0)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
-	std::cout << " with mode " << _mode << std::endl;
 }
 
 Channel::Channel(std::string const &name)
 	: _name(name),
 	  _topic(""),
 	  _password(""),
-	  _mode(4)
+	  _mode(4),
+	  _userLimit(0)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -32,7 +33,8 @@ Channel::Channel(std::string const &name, std::string const &password)
 	: _name(name),
 	  _topic(""),
 	  _password(password),
-	  _mode(4)
+	  _mode(4),
+	  _userLimit(0)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
@@ -56,7 +58,8 @@ Channel::Channel(Channel const &original)
 	  _users(original._users),
 	  _operators(original._operators),
 	  _invited(original._invited),
-	  _mode(original._mode)
+	  _mode(original._mode),
+	  _userLimit(original._userLimit)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG BLUE "Channel copied: " RESET << *this <<std::endl;
@@ -73,6 +76,7 @@ Channel &Channel::operator=(Channel const &other)
 		this->_operators = other._operators;
 		this->_invited = other._invited;
 		this->_mode = other._mode;
+		this->_userLimit = other._userLimit;
 		if (DEBUG == 1)
 			std::cout << DBUG BLUE "Channel assigned: " RESET << *this << std::endl;
 	}
@@ -144,6 +148,11 @@ int Channel::hasUserLimit() const
 	return (this->_mode[l]);
 }
 
+size_t Channel::getUserLimit() const
+{
+	return (this->_userLimit);
+}
+
 int Channel::isChanOp(std::string userName) const
 {
 	int fd = this->getClient(userName)->getFd();
@@ -175,6 +184,11 @@ void Channel::setModeItem(unsigned int item, bool value)
 	if (item >= _mode.size())
 		return; // Invalid item index, do nothing
 	this->_mode.set(item, value);
+}
+
+void Channel::setUserLimit(size_t limit)
+{
+	this->_userLimit = limit;
 }
 
 /**
@@ -348,6 +362,18 @@ void Channel::addInvite(int fd)
 {
 	if (std::find(this->_invited.begin(), this->_invited.end(), fd) == this->_invited.end())
 		this->_invited.push_back(fd);
+}
+
+bool Channel::isInvited(int fd) const
+{
+	return (std::find(this->_invited.begin(), this->_invited.end(), fd) != this->_invited.end());
+}
+
+void Channel::removeInvite(int fd)
+{
+	std::vector<int>::iterator it = std::find(this->_invited.begin(), this->_invited.end(), fd);
+	if (it != this->_invited.end())
+		this->_invited.erase(it);
 }
 
 Client *Channel::getClient(const int fd) const

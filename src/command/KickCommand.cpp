@@ -1,6 +1,5 @@
 #include "KickCommand.hpp"
 #include "Command.hpp"
-#include <iostream>
 
 KickCommand::KickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -36,20 +35,21 @@ void KickCommand::execute() const
 		currentUser = this->getServer()->getClient(this->_params.back()[i]);
 
 		if (currentUser == NULL)
-			return;
-
-
-		if (this->_trailer.empty())
-			kickComment = "No reason specified";
-
-		std::cerr << "kicking" << currentUser->getNickname() << " from " << currentChannel->getName() << " :" << kickComment << std::endl;
+		{
+			reply = this->_director.errNoSuchNick(this->getClient()->getNickname(), this->_params.back()[i]);
+			this->getServer()->writeInBuffer(this->getClient(), reply);
+			continue ;
+		}
 
 		if (currentChannel == NULL)
 		{
-			reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), currentChannel->getName());
+			reply = this->_director.errNoSuchChannel(this->getClient()->getNickname(), this->_params.front()[i]);
 			this->getServer()->writeInBuffer(this->getClient(), reply);
 			continue ;
-		}	
+		}
+
+		if (this->_trailer.empty())
+			kickComment = "No reason specified";
 
 		if (!currentChannel->isUserInChannel(this->getClientFd()))
 		{
@@ -65,10 +65,7 @@ void KickCommand::execute() const
 			continue ;
 		}
 
-		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentUser->getNickname() + " : " + kickComment);
+		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentChannel->getName() + " " + currentUser->getNickname() + " :" + kickComment + "\r\n");
 		currentChannel->removeUser(currentUser);
-
-	  std::cout << "kicked " << currentUser->getNickname() << " from " << currentChannel->getName() << " : " << kickComment << std::endl;
-
 	}
 }

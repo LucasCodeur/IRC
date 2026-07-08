@@ -91,10 +91,13 @@ class Director
 		std::string		errUserOnChannel(std::string clientNick, std::string invitedNick, std::string channelName) const;
 		std::string		errChanOPrivsNeeded(std::string clientNick, std::string channelName) const;
 		std::string		errBadChannelKey(std::string clientNick, std::string channelName) const;
+		std::string		errInviteOnlyChan(std::string clientNick, std::string channelName) const;
+		std::string		errChannelIsFull(std::string clientNick, std::string channelName) const;
 		std::string		errNoSuchNick(std::string clientNick, std::string channelName) const;
 		std::string		errUnknownCommand(std::string clientNick, std::string cmdKeyword) const;
 		std::string		rplPrivmsg(Client const &client, Channel const &channel, std::string const &msgContent) const;
 		std::string		rplPrivmsg(Client const &client, Client const &target, std::string const &msgContent) const;
+		std::string		rplQuit(Client const &client, std::string const &reason) const;
 		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
 		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 		std::string		rplInviting(std::string clientNick, std::string invitedNick, std::string channelName) const;

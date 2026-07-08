@@ -2,6 +2,7 @@
 #include "Command.hpp"
 #include "debug.hpp"
 #include <iostream>
+#include <cstdlib>
 
 ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -37,7 +38,7 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 	}
 
 		
-	if (((this->_operationChar == "+" && this->_modeChar == "k") || this->_modeChar == "o") && this->_params.size() < 3)
+	if (((this->_operationChar == "+" && (this->_modeChar == "k" || this->_modeChar == "l")) || this->_modeChar == "o") && this->_params.size() < 3)
 		throw Command::NotEnoughParametersException(this->_command);
 
 	this->_targetChannel = this->_server->getChannelByName(targetChannelName);
@@ -93,7 +94,6 @@ void	ModeCommand::changeUserMode() const
 	if (DEBUG)
 		std::cerr << "trying to add/remove " << clientNick << " op status on channel " << this->_targetChannel << std::endl;
 	Client	*targetClient = this->_server->getClient(clientNick);
-	int	target = this->_server->getClient(clientNick)->getFd();
 	if (!this->_targetChannel->isOp(this->getClientFd()))
 	{
 		reply = this->_director.errChanOPrivsNeeded(clientNick, this->_targetChannel->getName());
@@ -101,12 +101,14 @@ void	ModeCommand::changeUserMode() const
 		return ;
 	}
 
-	if (targetClient == NULL || !(this->_targetChannel->isOnChan(target)))
+	if (targetClient == NULL || !(this->_targetChannel->isOnChan(targetClient->getFd())))
 	{
 		reply = this->_director.errNoSuchNick(clientNick, this->_targetChannel->getName());
 		this->_server->writeInBuffer(this->getClient(), reply);
 		return ;
 	}
+
+	int	target = targetClient->getFd();
 	if (this->_operationChar == "+")
 	{
 		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
@@ -161,7 +163,39 @@ void ModeCommand::execute() const
 	}
 
 	if (this->_modeChar == "o")
+	{
 		this->changeUserMode();
+		return ;
+	}
+
+	if (this->_modeChar == "k")
+	{
+		if (this->_operationChar == "+")
+		{
+			this->_targetChannel->setPassword(this->_params.back().front());
+		}
+		else
+		{
+			this->_targetChannel->setPassword("");
+		}
+	}
+
+	if (this->_modeChar == "l")
+	{
+		if (this->_operationChar == "+")
+		{
+			int limit = std::atoi(this->_params.back().front().c_str());
+			if (limit <= 0)
+			{
+				throw Command::IncorrectParametersException("MODE : invalid user limit");
+			}
+			this->_targetChannel->setUserLimit(limit);
+		}
+		else
+		{
+			this->_targetChannel->setUserLimit(0);
+		}
+	}
 
 	this->_targetChannel->setModeItem(operationNumber, _operationChar[0] == '+');
 	this->replyChannelMode();
