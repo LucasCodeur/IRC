@@ -153,17 +153,6 @@ size_t Channel::getUserLimit() const
 	return (this->_userLimit);
 }
 
-int Channel::isChanOp(std::string userName) const
-{
-	int fd = this->getClient(userName)->getFd();
-	for (size_t i = 0; i < this->_operators.size(); ++i)
-	{
-		if (this->_operators[i] == fd)
-			return (1);
-	}
-	return (0);
-}
-
 void Channel::setTopic(std::string const &topic)
 {
 	this->_topic = topic;
@@ -243,25 +232,6 @@ bool Channel::removeUser(int clientFd)
 	return (false);
 }
 
-/**
- * @brief removes the specified client from the Channel.
- * @param clientFd nickname of the user to remove.
- * @return true if the user was successfully removed, false if the user was not in the channel.
- */
-bool Channel::removeUser(std::string nickname)
-{
-	std::vector<Client *>::iterator it;
-	for (it = this->_users.begin(); it != this->_users.end(); ++it)
-	{
-		if ((*it)->getNickname() == nickname)
-		{
-			this->_users.erase(it);
-			return (true);
-		}
-	}
-	return (false);
-}
-
 bool Channel::setOperator(int clientFd)
 {
 	if (std::find(this->_operators.begin(), this->_operators.end(), clientFd) == this->_operators.end())
@@ -329,19 +299,6 @@ bool Channel::isUserInChannel(int clientFd) const
 	for (size_t i = 0; i < this->_users.size(); i++)
 		if (this->_users[i]->getFd() == clientFd) return true;
 	return false;
-}
-
-std::vector<std::string> Channel::listNames()
-{
-	std::vector<std::string> nicknamesList;
-	for (std::vector<Client *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it)
-	{
-		if (isChanOp((*it)->getNickname()))
-			nicknamesList.push_back("@" + (*it)->getNickname());
-		else
-			nicknamesList.push_back((*it)->getNickname());
-	}
-	return nicknamesList;
 }
 
 std::string Channel::getChannelNamesList() const

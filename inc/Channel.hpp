@@ -46,7 +46,6 @@ class Channel
 	int						isTopicRestricted() const;
 	int						hasUserLimit() const;
 	size_t					getUserLimit() const;
-	int						isChanOp(std::string userName) const;
 	bool					isUserInChannel(int clientFd) const;
 	Client					*getClient(const int fd) const;
 	Client					*getClient(const std::string nickname) const;
@@ -62,7 +61,6 @@ class Channel
 	bool addUser(Client *client);
 	bool removeUser(Client *client);
 	bool removeUser(int clientFd);
-	bool removeUser(std::string nickname);
 	bool setOperator(int clientFd);
 	bool removeOperator(int clientFd);
 	bool isOp(int clientFd) const;
@@ -73,7 +71,6 @@ class Channel
 	void addInvite(int fd);
 	bool isInvited(int fd) const;
 	void removeInvite(int fd);
-	std::vector<std::string> listNames();
 	std::string getChannelNamesList() const;
 
 
