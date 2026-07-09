@@ -56,7 +56,7 @@ class Client
 	Authstate		  &getAuthstate();
 	std::string		  &getBuf();
 	std::string		  &getClientInputBuffer();
-	int getFd() const;
+	int					getFd() const;
 	bool				isfullyRegistered();
 	// SETTERS
 	void setFd(int fd);

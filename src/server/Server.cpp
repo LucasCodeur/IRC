@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/09 18:08:15 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/07/09 18:49:53 by lud-adam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "debug.hpp"
 #include "Command.hpp"
 #include "Server.hpp"
@@ -6,6 +18,7 @@
 #include <netinet/in.h>
 #include <stdexcept>
 #include <stdlib.h>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -81,6 +94,8 @@ void	Server::listenConnexionsEpoll(void)
 			{
 				if (ft_epollin(client, n) == false)
 					return ;
+				else
+					this->_ev[n].events = EPOLLOUT;
 			}
 			std::map<int, Client*>::const_iterator it = this->_clients.find(this->_ev[n].data.fd);
 			if (it == this->_clients.end())
@@ -89,6 +104,11 @@ void	Server::listenConnexionsEpoll(void)
 			{
 				if (ft_epollout(client, n) == false)
 					return ;
+				this->_ev[n].events = EPOLLIN;
+			}
+			if (it->second->getClientInputBuffer().empty() == false)
+			{
+				this->_ev[n].events = EPOLLIN | EPOLLOUT;
 			}
 		}
 	}
@@ -106,7 +126,7 @@ bool	Server::addNewClient(int n)
 	{
 		int new_fd = this->acceptConnexion(&addrlen);
 		utils_server::setNonBlocking(new_fd);
-		this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
+		this->_ev[n + 1].events = EPOLLIN;
 		this->_ev[n + 1].data.fd = new_fd;
 		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
 
@@ -142,9 +162,7 @@ bool	Server::ft_epollin(Client* client, int n)
 		if (client->getBuf().find("\r\n") == std::string::npos)
 			return (true);
 		if (this->handleRequest(*client) == true)
-		{
 			return (false);
-		}
 	}
 	else
 		this->removeClient(client->getFd());

@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/22 18:00:25 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/07/09 18:30:24 by lud-adam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,6 @@ std::string extractCommand(std::string& buffer, bool security)
 	}
 	(void)security;
 	int size = res.size();
-	// if (security == true && res[size] != '\n' && res[size - 1] != '\r')
-	// {
-	// 	throw std::runtime_error("No carriage or newline at the end of the command");
-	// }
 	res = res.substr(0, size - 1);
 	return (res);
 }
