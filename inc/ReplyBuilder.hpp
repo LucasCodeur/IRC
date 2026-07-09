@@ -98,8 +98,6 @@ class Director
 		std::string		rplPrivmsg(Client const &client, Channel const &channel, std::string const &msgContent) const;
 		std::string		rplPrivmsg(Client const &client, Client const &target, std::string const &msgContent) const;
 		std::string		rplQuit(Client const &client, std::string const &reason) const;
-		std::string		rplNameReply(std::string clientNick, Channel &channel) const;
-		std::string		rplEndofNames(std::string clientNick, Channel &channel) const;
 		std::string		rplInviting(std::string clientNick, std::string invitedNick, std::string channelName) const;
 		std::string		errAlreadyRegistred(void) const;
 		std::string		errNonicknamegiven() const;

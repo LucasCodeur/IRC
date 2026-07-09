@@ -739,56 +739,6 @@ std::string Director::rplEndOfWho(Client const &requester, std::string const &ma
 	return (reply);
 }
 
-std::string Director::rplNameReply(std::string clientNick, Channel &channel) const
-{
-	ReplyBuilder builder;
-	std::vector<std::string> nicknamesVector = channel.listNames();
-	std::string nicknames = "";
-
-	for (std::vector<std::string>::iterator it = nicknamesVector.begin(); it != nicknamesVector.end(); ++it)
-	{
-		nicknames += (*it);	
-		if (it + 1 == nicknamesVector.end())
-			nicknames += " ";
-	}
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_NAMREPLY)
-				.addParams(clientNick)
-				.addParams(channel.getName())
-				.addTrailing(nicknames)
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512)
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
-
-std::string Director::rplEndofNames(std::string clientNick, Channel &channel) const
-{
-	ReplyBuilder builder;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_ENDOFNAMES)
-				.addParams(clientNick)
-				.addParams(channel.getName())
-				.addTrailing("End of /NAMES list")
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512)
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
-
 std::string Director::rplInviting(std::string clientNick, std::string invitedNick, std::string channelName) const
 {
 	ReplyBuilder builder;
