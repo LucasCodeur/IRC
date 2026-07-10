@@ -102,21 +102,24 @@ void	Server::listenConnexionsEpoll(void)
 			{
 				if (ft_epollout(client, n) == false)
 					return ;
-				this->_ev[n].events = EPOLLIN;
-				this->controlEpoll(EPOLL_CTL_MOD, this->_ev[n].data.fd, &this->_ev[n]);
+				epoll_event ev;
+				ev.events = EPOLLIN;
+				ev.data.fd = client->getFd();
+				this->controlEpoll(EPOLL_CTL_MOD, client->getFd(), &ev);
 			}
 			// PRINT(it->second->getClientInputBuffer(), RED, "\n");
 		}
-		for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
-		{
-			Client* temp = it->second;
-			if (temp->getClientInputBuffer().empty() == false)
-			{
-				struct epoll_event* event = temp->getEvent();
-				event->events |= EPOLLOUT;
-				this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), event);
-			}
-		}
+		// for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+		// {
+		// 	Client* temp = it->second;
+		// 	if (temp->getClientInputBuffer().empty() == false)
+		// 	{
+		// 		epoll_event ev;
+		// 		ev.events = EPOLLIN | EPOLLOUT;
+		// 		ev.data.fd = it->second->getFd();
+		// 		this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), &ev);
+		// 	}
+		// }
 	}
 }
 
@@ -134,7 +137,10 @@ bool	Server::addNewClient(int n)
 		utils_server::setNonBlocking(new_fd);
 		this->_ev[n + 1].events = EPOLLIN;
 		this->_ev[n + 1].data.fd = new_fd;
-		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+		epoll_event ev;
+		ev.events = EPOLLIN;
+		ev.data.fd = new_fd;
+		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &ev);
 
 		std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
 		if (it == this->_clients.end())
@@ -143,7 +149,6 @@ bool	Server::addNewClient(int n)
 			if (this->getPassword().empty() == true)
 				temp->getAuthstate().setPasswordReceived(true);
 			temp->setFd(new_fd);
-			temp->setEvent(&this->_ev[n + 1]);
 			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 		}
 	}
@@ -310,6 +315,11 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 void	Server::writeInBuffer(Client *client, std::string data)
 {
 	client->addToBuffer(data);
+
+    epoll_event ev;
+    ev.events = EPOLLIN | EPOLLOUT;
+    ev.data.fd = client->getFd();
+    this->controlEpoll(EPOLL_CTL_MOD, client->getFd(), &ev);
 }
 
 Server::Server()

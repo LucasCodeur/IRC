@@ -68,7 +68,6 @@ class Client
 	void setAuthState(const std::string state);
 	void setRealname(std::string const &realname);
 	void setHostname(std::string const &hostname);
-	void setEvent(struct epoll_event* ev);
 
 	void addToBuffer(std::string data);
 

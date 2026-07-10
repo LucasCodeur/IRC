@@ -156,11 +156,6 @@ void Client::setHostname(std::string const &hostname)
 	this->_hostname = hostname;
 }
 
-void Client::setEvent(struct epoll_event* ev)
-{
-	this->_ev = ev;
-}
-
 Authstate::Authstate()
 {
 	this->nickReceived = false;
