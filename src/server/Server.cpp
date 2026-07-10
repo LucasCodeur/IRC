@@ -105,15 +105,16 @@ void	Server::listenConnexionsEpoll(void)
 				this->_ev[n].events = EPOLLIN;
 				this->controlEpoll(EPOLL_CTL_MOD, this->_ev[n].data.fd, &this->_ev[n]);
 			}
-			PRINT(it->second->getClientInputBuffer(), RED, "\n");
+			// PRINT(it->second->getClientInputBuffer(), RED, "\n");
 		}
 		for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
 		{
 			Client* temp = it->second;
 			if (temp->getClientInputBuffer().empty() == false)
 			{
-				temp->getEvent()->events |= EPOLLOUT;
-				this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), temp->getEvent());
+				struct epoll_event* event = temp->getEvent();
+				event->events |= EPOLLOUT;
+				this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), event);
 			}
 		}
 	}
@@ -300,7 +301,7 @@ int	Server::acceptConnexion(socklen_t* addrlen)
  */
 int	Server::epollWaitOperation(int max_events, int timeout)
 {
-	int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
+	int nfds = epoll_wait(this->_epollfd, this->_ev, max_events, timeout);
 	if (nfds < 0)
 		throw (Server::FatalError("Epoll Wait Operation failed"));
 	return (nfds);
