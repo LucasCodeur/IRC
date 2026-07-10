@@ -81,6 +81,7 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
+
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
 				if (this->addNewClient(n) == false)
@@ -100,22 +101,24 @@ void	Server::listenConnexionsEpoll(void)
 				continue ;
 			if (this->_ev[n].events & EPOLLOUT)
 			{
+
 				if (ft_epollout(client, n) == false)
 					return ;
-				this->_ev[n].events = EPOLLIN;
-				this->controlEpoll(EPOLL_CTL_MOD, this->_ev[n].data.fd, &this->_ev[n]);
-			}
-			PRINT(it->second->getClientInputBuffer(), RED, "\n");
-		}
-		for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
-		{
-			Client* temp = it->second;
-			if (temp->getClientInputBuffer().empty() == false)
-			{
-				temp->getEvent()->events |= EPOLLOUT;
-				this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), temp->getEvent());
+				struct epoll_event ev;
+
+				ev.events = EPOLLIN;
+				ev.data.fd = client->getFd();
+				this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
 			}
 		}
+		// for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+		// {
+		// 	Client* temp = it->second;
+		// 	if (temp->getClientInputBuffer().empty() == false)
+		// 	{
+		// 		this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), temp->getEvent());
+		// 	}
+		// }
 	}
 }
 
@@ -126,14 +129,16 @@ void	Server::listenConnexionsEpoll(void)
  */
 bool	Server::addNewClient(int n)
 {
+	(void)n;
+	struct epoll_event ev;
 	socklen_t addrlen = sizeof(this->_addr);
 	try
 	{
 		int new_fd = this->acceptConnexion(&addrlen);
 		utils_server::setNonBlocking(new_fd);
-		this->_ev[n + 1].events = EPOLLIN;
-		this->_ev[n + 1].data.fd = new_fd;
-		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+		ev.events = EPOLLIN;
+		ev.data.fd = new_fd;
+		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &ev);
 
 		std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
 		if (it == this->_clients.end())
@@ -142,7 +147,7 @@ bool	Server::addNewClient(int n)
 			if (this->getPassword().empty() == true)
 				temp->getAuthstate().setPasswordReceived(true);
 			temp->setFd(new_fd);
-			temp->setEvent(&this->_ev[n + 1]);
+			// temp->setEvent(&this->_ev[n + 1]);
 			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 		}
 	}
@@ -300,7 +305,7 @@ int	Server::acceptConnexion(socklen_t* addrlen)
  */
 int	Server::epollWaitOperation(int max_events, int timeout)
 {
-	int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
+	int nfds = epoll_wait(this->_epollfd, this->_ev, max_events, timeout);
 	if (nfds < 0)
 		throw (Server::FatalError("Epoll Wait Operation failed"));
 	return (nfds);
@@ -308,6 +313,12 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 
 void	Server::writeInBuffer(Client *client, std::string data)
 {
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN | EPOLLOUT;
+	ev.data.fd = client->getFd();
+	this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
+
 	client->addToBuffer(data);
 }
 
