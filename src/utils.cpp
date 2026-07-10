@@ -38,10 +38,8 @@ bool	receiveData(int socket, std::string& buf)
 
 	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
-	if (bytes_read <= 0 && errno != EAGAIN && errno != EWOULDBLOCK)
-	{
+	if (bytes_read <= 0)
 		return (false);
-	}
 	buf += buffer;
 	return (true);
 }
@@ -149,7 +147,7 @@ void	sendData(int fd, std::string &data)
 {
 	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
 		throw std::runtime_error("Send failed");
-	data = "";
+	data.clear();
 }
 
 /**

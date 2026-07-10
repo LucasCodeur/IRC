@@ -94,8 +94,6 @@ void	Server::listenConnexionsEpoll(void)
 			{
 				if (ft_epollin(client, n) == false)
 					return ;
-				else
-					this->_ev[n].events = EPOLLOUT;
 			}
 			std::map<int, Client*>::const_iterator it = this->_clients.find(this->_ev[n].data.fd);
 			if (it == this->_clients.end())
@@ -105,10 +103,17 @@ void	Server::listenConnexionsEpoll(void)
 				if (ft_epollout(client, n) == false)
 					return ;
 				this->_ev[n].events = EPOLLIN;
+				this->controlEpoll(EPOLL_CTL_MOD, this->_ev[n].data.fd, &this->_ev[n]);
 			}
-			if (it->second->getClientInputBuffer().empty() == false)
+			PRINT(it->second->getClientInputBuffer(), RED, "\n");
+		}
+		for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+		{
+			Client* temp = it->second;
+			if (temp->getClientInputBuffer().empty() == false)
 			{
-				this->_ev[n].events = EPOLLIN | EPOLLOUT;
+				temp->getEvent()->events |= EPOLLOUT;
+				this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), temp->getEvent());
 			}
 		}
 	}
@@ -137,6 +142,7 @@ bool	Server::addNewClient(int n)
 			if (this->getPassword().empty() == true)
 				temp->getAuthstate().setPasswordReceived(true);
 			temp->setFd(new_fd);
+			temp->setEvent(&this->_ev[n + 1]);
 			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 		}
 	}
