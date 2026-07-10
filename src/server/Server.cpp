@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lud-adam <lud-adam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/09 18:08:15 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/07/09 18:49:53 by lud-adam         ###   ########.fr       */
+/*   Updated: 2026/07/10 20:24:58 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,11 +104,14 @@ void	Server::listenConnexionsEpoll(void)
 
 				if (ft_epollout(client, n) == false)
 					return ;
-				struct epoll_event ev;
+				if (client->getClientInputBuffer().empty())
+				{
+					struct epoll_event ev;
 
-				ev.events = EPOLLIN;
-				ev.data.fd = client->getFd();
-				this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
+					ev.events = EPOLLIN;
+					ev.data.fd = client->getFd();
+					this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
+				}
 			}
 		}
 		// for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
@@ -315,11 +318,10 @@ void	Server::writeInBuffer(Client *client, std::string data)
 {
 	struct epoll_event ev;
 
+	client->addToBuffer(data);
 	ev.events = EPOLLIN | EPOLLOUT;
 	ev.data.fd = client->getFd();
 	this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
-
-	client->addToBuffer(data);
 }
 
 Server::Server()

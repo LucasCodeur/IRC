@@ -1,4 +1,3 @@
-#include <exception>
 #include <ostream>
 #include <utility>
 #include <iostream>
@@ -34,7 +33,7 @@ JoinCommand::~JoinCommand() {}
 
 void JoinCommand::confirmJoin(Client &client, Channel const &channel) const
 {
-	channel.sendMessageToAll(this->_director.rplJoin(client, channel).c_str());
+	channel.sendMessageToAll(this->_server, this->_director.rplJoin(client, channel).c_str());
 
 	if (channel.getTopic().empty())
 		this->_server->writeInBuffer(&client, this->_director.rplNoTopic(client, channel));

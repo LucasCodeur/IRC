@@ -33,7 +33,7 @@ void	QuitCommand::execute() const
 		Channel *curChannel = (it->second);
 		if (curChannel->isUserInChannel(this->getClientFd()))
 		{
-			curChannel->sendMessageToAllOther(quitMessage, this->getClientFd());
+			curChannel->sendMessageToAllOther(this->_server, quitMessage, this->getClientFd());
 		}
 	}
 	this->getServer()->removeClient(this->getClientFd());

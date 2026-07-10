@@ -9,7 +9,7 @@ NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	if (sizeParams < NickCommand::min_params)
 	{
 		reply = this->_director.errNonicknamegiven();
-		this->getClient()->addToBuffer(reply);
+		this->_server->writeInBuffer(this->_client,reply);
 		throw Command::NotEnoughParametersException("Not enough parameters");
 	}
 	else if (sizeParams > NickCommand::max_params)
@@ -36,12 +36,12 @@ void	NickCommand::execute() const
 			reply = this->_director.errNicknameinuse(nickname);
 		else
 			reply = this->_director.errNickcollision(nickname);
-		client->addToBuffer(reply);
+		this->_server->writeInBuffer(this->_client, reply);
 	}
 	else if (check_nickname(nickname) == false)
 	{
 		reply = this->_director.errErroneusnickname(nickname);
-		this->_client->addToBuffer(reply);
+		this->_server->writeInBuffer(this->_client, reply);
 		return ;
 	}
 	client->setNickname(nickname);

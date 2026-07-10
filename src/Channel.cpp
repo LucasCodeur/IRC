@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include "Server.hpp"
 #include <algorithm>
 #include "debug.hpp"
 #include <iostream>
@@ -277,20 +278,20 @@ bool Channel::isOnChan(std::string nickname)
 	return (false);
 }
 
-void Channel::sendMessageToAll(const std::string &message) const
+void Channel::sendMessageToAll(Server *server, const std::string &message) const
 {
 	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
 	{
-		(*it)->addToBuffer(message);
+		server->writeInBuffer(*it, message);
 	}
 }
 
-void Channel::sendMessageToAllOther(const std::string &message, int senderFd) const
+void Channel::sendMessageToAllOther(Server *server, const std::string &message, int senderFd) const
 {
 	for (std::vector<Client *>::const_iterator it = this->_users.begin(); it != this->_users.end(); ++it)
 	{
 		if ((*it)->getFd() != senderFd)
-			(*it)->addToBuffer(message);
+			server->writeInBuffer(*it, message);
 	}
 }
 

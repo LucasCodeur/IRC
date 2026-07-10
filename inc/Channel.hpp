@@ -8,6 +8,8 @@
 
 #include "Client.hpp"
 
+class Server;
+
 class Channel
 {
 	private:
@@ -66,8 +68,8 @@ class Channel
 	bool isOp(int clientFd) const;
 	bool isOnChan(int clientFd);
 	bool isOnChan(std::string nickname);
-	void sendMessageToAll(const std::string &message) const;
-	void sendMessageToAllOther(const std::string &message, int senderFd) const;
+	void sendMessageToAll(Server *server, const std::string &message) const;
+	void sendMessageToAllOther(Server *server, const std::string &message, int senderFd) const;
 	void addInvite(int fd);
 	bool isInvited(int fd) const;
 	void removeInvite(int fd);
