@@ -145,7 +145,6 @@ bool	Server::addNewClient(int n)
 			if (this->getPassword().empty() == true)
 				temp->getAuthstate().setPasswordReceived(true);
 			temp->setFd(new_fd);
-			// temp->setEvent(&this->_ev[n + 1]);
 			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 		}
 	}

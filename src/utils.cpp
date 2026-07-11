@@ -125,13 +125,8 @@ std::string extractCommand(std::string& buffer, bool security)
 void	setNonBlocking(int sock)
 {
 	int result;
-	int flags;
 
-	flags = ::fcntl(sock, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("fcntl failed");
-	flags |= O_NONBLOCK;
-	result = fcntl(sock , F_SETFL , flags);
+	result = fcntl(sock , F_SETFL , O_NONBLOCK);
 	if (result == -1)
 		throw std::runtime_error("fcntl failed");
 }
