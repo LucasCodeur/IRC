@@ -865,6 +865,26 @@ std::string		Director::errAlreadyRegistred(void) const
 	return (reply);
 }
 
+/**
+* @brief Inform that the client changed their nickname.
+* @param oldNickname old nickname of client.
+* @param newNickname new nickname of client.
+* @return the reply in order to send it to the client.
+*/
+std::string Director::changeNick(const std::string& oldNickname, const std::string& newNickname) const
+{
+	ReplyBuilder builder;
+
+	std::string reply = builder
+				.reset()
+				.addPrefix("")
+				.addParams(oldNickname + " NICK " + newNickname)
+				.addCrln()
+				.buildReply();
+	PRINT(reply, YELLOW, "\n")
+	return (reply);
+}
+
 ReplyBuilder::ReplyBuilder()
 {
 }

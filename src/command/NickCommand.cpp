@@ -46,9 +46,15 @@ void	NickCommand::execute() const
 		return ;
 	}
 	PRINT(nickname + " is set" , RED, "\n");
+	std::string	oldNickname = client->getNickname();
 	client->setNickname(nickname);
 	authstate.setNickReceived(true);
-	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true && authstate.getUserReceived() == true)
+	if (authstate.getFullyRegistered() == true)
+	{
+		reply = ":" + oldNickname + " NICK " + client->getNickname() + "\r\n";
+		this->_server->writeInBuffer(this->_client, reply);
+	}
+	if (authstate.getFullyRegistered() == false && authstate.getNickReceived() == true && authstate.getPasswordReceived() == true && authstate.getUserReceived() == true)
 	{
 		authstate.setFullyRegistered(true);
 		this->_server->sendWelcomePack(*client);
