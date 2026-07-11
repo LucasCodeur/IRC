@@ -25,7 +25,7 @@ void PrivmsgCommand::execute() const
 	{
 		std::string const &target = targets[i];
 
-		if (target[0] == '#')
+		if (target[0] == '#' || target[0] == '&')
 		{
 			std::map<std::string, Channel *> const &m = this->_server->getChannelMap();
 			if (m.end() == m.find(target))

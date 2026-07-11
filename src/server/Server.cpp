@@ -115,14 +115,6 @@ void	Server::listenConnexionsEpoll(void)
 				}
 			}
 		}
-		// for (std::map<int, Client*>::const_iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
-		// {
-		// 	Client* temp = it->second;
-		// 	if (temp->getClientInputBuffer().empty() == false)
-		// 	{
-		// 		this->controlEpoll(EPOLL_CTL_MOD,it->second->getFd(), temp->getEvent());
-		// 	}
-		// }
 	}
 }
 

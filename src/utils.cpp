@@ -36,7 +36,9 @@ bool	receiveData(int socket, std::string& buf)
 
 	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
 	if (bytes_read <= 0)
+	{
 		return (false);
+	}
 	buf.append(buffer, bytes_read);
 	return (true);
 }

@@ -47,8 +47,7 @@ void	Bot::launcher_bot(std::string strPort, std::string password, std::string ch
 				if (this->handleRequest() == false)
 					break ;
 			}
-			else
-				break ;
+			usleep(10000);
 		}
 		close(this->_socketServer);
 	}
