@@ -7,19 +7,19 @@
 QuitCommand::QuitCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector <std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (DEBUG)
-		std::cout << "	creating QuitCommand" << std::endl;
+		std::cout << "Creating QuitCommand" << std::endl;
 }
 
 QuitCommand::~QuitCommand()
 {
 	if (DEBUG)
-		std::cout << " QuitCommand destroyed" << std::endl;
+		std::cout << "QuitCommand destroyed" << std::endl;
 }
 
 void	QuitCommand::execute() const
 {
 	if (DEBUG)
-		std::cout << "	Executing QuitCommand" << std::endl;
+		std::cout << "Executing QuitCommand" << std::endl;
 	std::string reason;
 	if (this->_trailer.empty())
 		reason = "Client Quit";

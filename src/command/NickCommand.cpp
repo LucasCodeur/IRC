@@ -31,10 +31,8 @@ void	NickCommand::execute() const
 	std::string								reply;
 	Authstate&								authstate = client->getAuthstate();
 
-	PRINT(nickname, RED, "\n");
 	if (checkCollisionNickname(map, nickname) == true)
 	{
-		PRINT("hello zinzins", BLUE, "\n");
 		reply = this->_director.errNicknameinuse(nickname);
 		this->_server->writeInBuffer(this->_client, reply);
 		return ;
@@ -45,7 +43,6 @@ void	NickCommand::execute() const
 		this->_server->writeInBuffer(this->_client, reply);
 		return ;
 	}
-	PRINT(nickname + " is set" , RED, "\n");
 	std::string	oldNickname = client->getNickname();
 	client->setNickname(nickname);
 	authstate.setNickReceived(true);
