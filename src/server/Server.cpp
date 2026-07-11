@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/09 18:08:15 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/07/10 20:24:58 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/07/11 13:50:45 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -493,6 +493,40 @@ Client *Server::getClient(const std::string nick) const
                         return (it->second);
         }
         return (NULL);
+}
+
+void Server::sendWelcomePack(Client &client)
+{
+		std::string clientNickname = client.getNickname();
+
+		Director dir;
+		
+		if (client.getHostname() != "botIrc")
+		{
+			try 
+			{
+				std::string reply;
+
+				reply = dir.rplWelcome(clientNickname);
+				this->writeInBuffer(&client, reply);
+
+				reply = dir.rplYourhost(clientNickname);
+				this->writeInBuffer(&client, reply);
+
+				reply = dir.rplCreated(clientNickname);
+				this->writeInBuffer(&client, reply);
+
+				reply = dir.rplMyInfo(clientNickname);
+				this->writeInBuffer(&client, reply);
+			}
+			catch (std::exception& e)
+			{
+				std::cout << "Caught: " << e.what() << std::endl;
+					return ;
+			}
+		}
+		else
+			this->setBotFd(client.getFd());
 }
 
 Server::FatalError::FatalError() throw() : std::runtime_error("Fatal error") {}

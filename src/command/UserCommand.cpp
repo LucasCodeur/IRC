@@ -30,41 +30,16 @@ void	UserCommand::execute() const
 	}
 	if (this->getServer()->getPassword().empty() == true)
 		authstate.setPasswordReceived(true);
+
+	client->setHostname(this->_params[1][0]);
+	client->setRealname(this->_trailer);
+	client->setUsername(this->_params[0][0]);
+
+	authstate.setUserReceived(true);
 	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true)
 	{
 		authstate.setFullyRegistered(true);
-		client->setUsername(this->_params[0][0]);
-		client->setHostname(this->_params[1][0]);
-		client->setRealname(this->_trailer);
-
-		std::string clientNickname = client->getNickname();
-
-		if (client->getHostname() != "botIrc")
-		{
-			try 
-			{
-				std::string reply;
-
-				reply = this->_director.rplWelcome(clientNickname);
-				this->_server->writeInBuffer(this->_client, reply);
-
-				reply = this->_director.rplYourhost(clientNickname);
-				this->_server->writeInBuffer(this->_client, reply);
-
-				reply = this->_director.rplCreated(clientNickname);
-				this->_server->writeInBuffer(this->_client, reply);
-
-				reply = this->_director.rplMyInfo(clientNickname);
-				this->_server->writeInBuffer(this->_client, reply);
-			}
-			catch (std::exception& e)
-			{
-				std::cout << "Caught: " << e.what() << std::endl;
-					return ;
-			}
-		}
-		else
-			_server->setBotFd(it->second->getFd());
+		this->_server->sendWelcomePack(*client);
 	}
 	else
 		std::cout << "Nick received or password are false" << std::endl;

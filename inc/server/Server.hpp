@@ -61,6 +61,7 @@ class Server
 		void															writeInBuffer(Client *client, std::string data);
 		void															removeClient(int clientFd);
 		void															setBotFd(int botFd);
+		void															sendWelcomePack(Client &client);
 	private :
 		int																_port;
 		int																_fd;
@@ -88,6 +89,7 @@ class Server
 		bool															addNewClient(int n);
 		bool															ft_epollin(Client* client, int n);
 		bool															ft_epollout(Client* client, int n);
+
 };
 std::ostream &operator<<(std::ostream &o, const Server &obj);
 
