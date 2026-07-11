@@ -39,7 +39,8 @@ void PartCommand::execute() const
 		{
 			if (it->second->removeUser(fd))
 			{
-				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
+				if (DEBUG)
+					std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
 				std::string reason;
 				if (this->_trailer.empty())
 					reason = "Leaving";

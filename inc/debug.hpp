@@ -22,7 +22,7 @@ class Client;
 #define DBUG		YELLOW "DEBUG " RESET
 
 #define PRINT(x, color, newline) \
-    std::cout << color << x << RESET << newline;
+    if (DEBUG) {std::cout << color << x << RESET << newline;}
 
 void print_vec(const std::vector<std::vector<std::string> > params);
 void print_info_client(const Client& toPrint);

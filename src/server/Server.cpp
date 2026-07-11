@@ -385,8 +385,6 @@ std::map<std::string, Channel *> const &Server::getChannelMap() const
 
 void    Server::removeClient(int clientFd)
 {
-	// PRINT("client disconnected: ", RED, "");
-	// PRINT(clientFd, RED, "\n");
 	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); )
 	{
 		Channel *channel = it->second;
@@ -395,7 +393,8 @@ void    Server::removeClient(int clientFd)
 			channel->removeUser(clientFd);
 			if (channel->getUsers().empty())
 			{
-				std::cout << RED << "deleting empty channel " RESET << it->first << std::endl;
+				if (DEBUG)
+					std::cout << RED << "deleting empty channel " RESET << it->first << std::endl;
 				delete channel;
 				this->_channels.erase(it++);
 				continue;
@@ -432,11 +431,6 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
 	Channel *newChan = new Channel(name, password);
 
 	pair = this->_channels.insert(std::make_pair(name, newChan));
-	// std::cout << DBUG GREEN "Added channel: " RESET << name << std::endl;
-	// std::cout << DBUG GREEN "Current channels: " RESET;
-	// for (std::map<std::string, Channel *>::const_iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
-	// 	std::cout << it->first << " ";
-	// std::cout << std::endl;
 	return (pair);
 }
 
@@ -445,7 +439,8 @@ void Server::removeChannel(const std::string &name)
 	std::map<std::string, Channel *>::iterator it = this->_channels.find(name);
 	if (it != this->_channels.end())
 	{
-		std::cout << DBUG RED "Deleting channel : " RESET << name << std::endl;
+		if (DEBUG)
+			std::cout << DBUG RED "Deleting channel : " RESET << name << std::endl;
 		delete it->second;
 		this->_channels.erase(it);
 	}

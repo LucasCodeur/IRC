@@ -41,6 +41,6 @@ void	UserCommand::execute() const
 		authstate.setFullyRegistered(true);
 		this->_server->sendWelcomePack(*client);
 	}
-	else
-		std::cout << "Nick received or password are false" << std::endl;
+	else if (DEBUG)
+		std::cerr << "Nick received or password are false" << std::endl;
 }
