@@ -111,12 +111,12 @@ void	ModeCommand::changeUserMode() const
 	int	target = targetClient->getFd();
 	if (this->_operationChar == "+")
 	{
-		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
+		targetChannel->sendMessageToAll(this->_server, ":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
 		this->_targetChannel->setOperator(target);
 	}
 	if (this->_operationChar == "-")
 	{
-		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " -o " + clientNick + "\r\n");
+		targetChannel->sendMessageToAll(this->_server, ":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " -o " + clientNick + "\r\n");
 		this->_targetChannel->removeOperator(target);
 	}
 }

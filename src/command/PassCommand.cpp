@@ -27,7 +27,7 @@ void	PassCommand::execute() const
 	{
 		std::string reply;
 		reply = this->_director.errAlreadyRegistred();
-		client->addToBuffer(reply);
+		this->_server->writeInBuffer(this->_client, reply);
 		return ;
 	}
 

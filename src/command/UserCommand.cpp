@@ -25,7 +25,7 @@ void	UserCommand::execute() const
 	{
 		std::string reply;
 		reply = this->_director.errAlreadyRegistred();
-		client->addToBuffer(reply);
+		this->_server->writeInBuffer(this->_client, reply);
 		return ;
 	}
 	if (this->getServer()->getPassword().empty() == true)
@@ -46,16 +46,16 @@ void	UserCommand::execute() const
 				std::string reply;
 
 				reply = this->_director.rplWelcome(clientNickname);
-				client->addToBuffer(reply);
+				this->_server->writeInBuffer(this->_client, reply);
 
 				reply = this->_director.rplYourhost(clientNickname);
-				client->addToBuffer(reply);
+				this->_server->writeInBuffer(this->_client, reply);
 
 				reply = this->_director.rplCreated(clientNickname);
-				client->addToBuffer(reply);
+				this->_server->writeInBuffer(this->_client, reply);
 
 				reply = this->_director.rplMyInfo(clientNickname);
-				client->addToBuffer(reply);
+				this->_server->writeInBuffer(this->_client, reply);
 			}
 			catch (std::exception& e)
 			{

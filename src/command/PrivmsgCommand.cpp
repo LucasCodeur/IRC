@@ -37,7 +37,7 @@ void PrivmsgCommand::execute() const
 
 			Channel *chan = m.find(target)->second;
 			if (chan->isUserInChannel(this->_client->getFd()))
-				chan->sendMessageToAllOther(this->_director.rplPrivmsg(*this->_client, *chan, msgContent), this->_client->getFd());
+				chan->sendMessageToAllOther(this->_server, this->_director.rplPrivmsg(*this->_client, *chan, msgContent), this->_client->getFd());
 			else
 			{
 				std::string reply = this->_director.errNotOnChannel(this->_client->getNickname(), target);

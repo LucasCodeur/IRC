@@ -46,7 +46,7 @@ void PartCommand::execute() const
 				else
 					reason = this->_trailer;
 				std::string reply = this->_director.rplPart(*this->_server->getClient(fd), *it->second, reason);
-				it->second->sendMessageToAll(reply);
+				it->second->sendMessageToAll(this->_server, reply);
 				this->_server->writeInBuffer(this->getClient(), reply);
 				if (it->second->getUsers().empty())
 				{
