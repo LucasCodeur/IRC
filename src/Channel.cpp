@@ -37,6 +37,10 @@ Channel::Channel(std::string const &name, std::string const &password)
 	  _mode(4),
 	  _userLimit(0)
 {
+	if (password.empty())
+		this->_mode.set(k, false);
+	else
+		this->_mode.set(k, true);
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Channel created: " RESET << *this <<std::endl;
 }
