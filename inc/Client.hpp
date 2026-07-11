@@ -13,13 +13,17 @@ class Authstate
 		bool	getPasswordReceived();
 		bool	getNickReceived();
 		bool	getFullyRegistered();
+		bool	getUserReceived();
 		void	setPasswordReceived(bool state);
 		void	setNickReceived(bool state);
 		void	setFullyRegistered(bool state);
+		void	setUserReceived(bool state);
+
 	private:
 		bool	passwordReceived;
 		bool	nickReceived;
 		bool	fullyRegistered;
+		bool	userReceived;
 };
 
 class Client

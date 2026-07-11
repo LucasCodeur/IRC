@@ -166,6 +166,7 @@ Authstate::Authstate()
 	this->nickReceived = false;
 	this->passwordReceived = false;
 	this->fullyRegistered = false;
+	this->userReceived = false;
 }
 
 Authstate::Authstate(bool statePassword) :
@@ -189,6 +190,11 @@ bool	Authstate::getPasswordReceived()
 	return (this->passwordReceived);
 }
 
+bool	Authstate::getUserReceived()
+{
+	return (this->userReceived);
+}
+
 bool	Authstate::getNickReceived()
 {
 	return (this->nickReceived);
@@ -208,6 +214,12 @@ void	Authstate::setNickReceived(bool state)
 {
 	this->nickReceived = state;
 }
+
+void	Authstate::setUserReceived(bool state)
+{
+	this->userReceived = state;
+}
+
 
 void	Authstate::setFullyRegistered(bool state)
 {

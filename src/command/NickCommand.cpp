@@ -1,6 +1,7 @@
 #include "NickCommand.hpp"
 #include "Client.hpp"
 #include <cctype>
+#include "debug.hpp"
 
 NickCommand::NickCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
@@ -30,13 +31,13 @@ void	NickCommand::execute() const
 	std::string								reply;
 	Authstate&								authstate = client->getAuthstate();
 
+	PRINT(nickname, RED, "\n");
 	if (checkCollisionNickname(map, nickname) == true)
 	{
-		if (authstate.getFullyRegistered() == true)
-			reply = this->_director.errNicknameinuse(nickname);
-		else
-			reply = this->_director.errNickcollision(nickname);
+		PRINT("hello zinzins", BLUE, "\n");
+		reply = this->_director.errNicknameinuse(nickname);
 		this->_server->writeInBuffer(this->_client, reply);
+		return ;
 	}
 	else if (check_nickname(nickname) == false)
 	{
@@ -44,8 +45,15 @@ void	NickCommand::execute() const
 		this->_server->writeInBuffer(this->_client, reply);
 		return ;
 	}
+	PRINT(nickname + " is set" , RED, "\n");
 	client->setNickname(nickname);
 	authstate.setNickReceived(true);
+	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true && authstate.getUserReceived() == true)
+	{
+		authstate.setFullyRegistered(true);
+		this->_server->sendWelcomePack(*client);
+	}
+
 }
 
 static bool	checkCollisionNickname(std::map<int, Client*>& map,  std::string nickname)
