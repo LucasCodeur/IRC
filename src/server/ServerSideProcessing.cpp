@@ -2,7 +2,6 @@
 #include "Command.hpp"
 #include "CommandFactory.hpp"
 #include "utils.hpp"
-#include <exception>
 #include <stdio.h>
 #include <bits/stdc++.h>
 #include "debug.hpp"

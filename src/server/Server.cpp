@@ -29,6 +29,7 @@
 #include <iostream>
 #include <string>
 #include <utils.hpp>
+#include "CommandFactory.hpp"
 
 int stopVar = false;
 
@@ -171,7 +172,12 @@ bool	Server::ft_epollin(Client* client, int n)
 			return (false);
 	}
 	else
-		this->removeClient(client->getFd());
+	{
+		Command *quit;
+		quit = CommandFactory::createCommand(this, client->getFd(), "QUIT : Connection lost");
+		quit->execute();
+		delete quit;
+	}
 	return (true);
 }
 
