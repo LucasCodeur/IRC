@@ -46,9 +46,26 @@ void	NickCommand::execute() const
 		return ;
 	}
 	PRINT(nickname + " is set" , RED, "\n");
+	std::string	oldNickname = client->getNickname();
 	client->setNickname(nickname);
 	authstate.setNickReceived(true);
-	if (authstate.getNickReceived() == true && authstate.getPasswordReceived() == true && authstate.getUserReceived() == true)
+	if (authstate.getFullyRegistered() == true)
+	{
+		reply = ":" + oldNickname + " NICK " + client->getNickname() + "\r\n";
+
+		std::map<std::string, Channel*>	channels;
+
+		for (std::map<std::string, Channel*>::const_iterator it = this->_server->getChannelMap().begin(); it != this->_server->getChannelMap().end(); ++it)
+		{
+			if (it->second->isUserInChannel(this->_client->getFd()) == true)
+				it->second->sendMessageToAll(this->_server, reply);
+		}
+
+
+
+		this->_server->writeInBuffer(this->_client, reply);
+	}
+	if (authstate.getFullyRegistered() == false && authstate.getNickReceived() == true && authstate.getPasswordReceived() == true && authstate.getUserReceived() == true)
 	{
 		authstate.setFullyRegistered(true);
 		this->_server->sendWelcomePack(*client);

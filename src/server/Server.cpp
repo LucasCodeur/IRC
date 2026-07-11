@@ -35,6 +35,8 @@ int stopVar = false;
 
 /**
  * @brief set up the server and launch it.
+ * port numerical identifier in order to communicate with the server.
+ * password password in order to connect to the server. 
  * @return true if no errors occur.
  */
 bool	Server::launcherServer(std::string port, std::string password)
