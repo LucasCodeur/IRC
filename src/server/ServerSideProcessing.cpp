@@ -41,7 +41,7 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch(Command::UnknownCommandException& e)
 		{
-			std::cout << YELLOW "Caught: " << e.what() << RESET << std::endl;
+			std::cout << YELLOW "Caught: " << e.what() << " : Unknown command" << RESET << std::endl;
 			Director director;
 			std::string cmdKeyword = e.what();
 			std::string reply = director.errUnknownCommand(client.getNickname(), cmdKeyword);

@@ -66,6 +66,6 @@ void	UserCommand::execute() const
 		else
 			_server->setBotFd(it->second->getFd());
 	}
-	else
-		std::cout << "Nick received or password are false" << std::endl;
+	else if (DEBUG)
+		std::cerr << "Nick received or password are false" << std::endl;
 }
