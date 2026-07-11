@@ -812,9 +812,7 @@ std::string Director::errErroneusnickname(const std::string& nickname) const
 				.reset()
 				.addPrefix(SERVERNAME)
 				.addNumeric(ERR_ERRONEUSNICKNAME)
-				.addTrailing(":")
-				.addParams(nickname)
-				.addTrailing("Erroneus nickname")
+				.addTrailing(" " + nickname)
 				.addCrln()
 				.buildReply();
 	PRINT(reply, YELLOW, "\n")
