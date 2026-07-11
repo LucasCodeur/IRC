@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/09 18:08:15 by lud-adam          #+#    #+#             */
+/*   Updated: 2026/07/10 20:24:58 by enchevri         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "debug.hpp"
 #include "Command.hpp"
 #include "Server.hpp"
@@ -6,6 +18,7 @@
 #include <netinet/in.h>
 #include <stdexcept>
 #include <stdlib.h>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -16,6 +29,7 @@
 #include <iostream>
 #include <string>
 #include <utils.hpp>
+#include "CommandFactory.hpp"
 
 int stopVar = false;
 
@@ -68,6 +82,7 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
+
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
 				if (this->addNewClient(n) == false)
@@ -87,8 +102,17 @@ void	Server::listenConnexionsEpoll(void)
 				continue ;
 			if (this->_ev[n].events & EPOLLOUT)
 			{
+
 				if (ft_epollout(client, n) == false)
 					return ;
+				if (client->getClientInputBuffer().empty())
+				{
+					struct epoll_event ev;
+
+					ev.events = EPOLLIN;
+					ev.data.fd = client->getFd();
+					this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
+				}
 			}
 		}
 	}
@@ -101,14 +125,16 @@ void	Server::listenConnexionsEpoll(void)
  */
 bool	Server::addNewClient(int n)
 {
+	(void)n;
+	struct epoll_event ev;
 	socklen_t addrlen = sizeof(this->_addr);
 	try
 	{
 		int new_fd = this->acceptConnexion(&addrlen);
 		utils_server::setNonBlocking(new_fd);
-		this->_ev[n + 1].events = EPOLLIN | EPOLLOUT;
-		this->_ev[n + 1].data.fd = new_fd;
-		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &this->_ev[n + 1]);
+		ev.events = EPOLLIN;
+		ev.data.fd = new_fd;
+		this->controlEpoll(EPOLL_CTL_ADD, new_fd, &ev);
 
 		std::map<int, Client*>::const_iterator it = this->_clients.find(new_fd);
 		if (it == this->_clients.end())
@@ -117,13 +143,14 @@ bool	Server::addNewClient(int n)
 			if (this->getPassword().empty() == true)
 				temp->getAuthstate().setPasswordReceived(true);
 			temp->setFd(new_fd);
+			// temp->setEvent(&this->_ev[n + 1]);
 			this->_clients.insert(std::pair<int, Client*>(new_fd, temp));
 		}
 	}
 	catch(std::exception& e)
 	{
 
-		std::cout << "Caught: " << e.what() << std::endl;
+		std::cout << YELLOW "Caught: " << e.what() << RESET << std::endl;
 		return (false);
 	}
 	return (true);
@@ -142,9 +169,14 @@ bool	Server::ft_epollin(Client* client, int n)
 		if (client->getBuf().find("\r\n") == std::string::npos)
 			return (true);
 		if (this->handleRequest(*client) == true)
-		{
 			return (false);
-		}
+	}
+	else
+	{
+		Command *quit;
+		quit = CommandFactory::createCommand(this, client->getFd(), "QUIT : Connection lost");
+		quit->execute();
+		delete quit;
 	}
 	return (true);
 }
@@ -166,11 +198,8 @@ bool	Server::ft_epollout(Client* client, int n)
 		}
 		catch (std::exception& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
-			{
-				std::cout << "ft_epollout stopping the server" << std::endl;
-				return (false);
-			}
+			std::cout << YELLOW "Caught: " << e.what() << std::endl;
+			return (false);
 		}
 	}
 	return (true);
@@ -277,7 +306,7 @@ int	Server::acceptConnexion(socklen_t* addrlen)
  */
 int	Server::epollWaitOperation(int max_events, int timeout)
 {
-	int nfds = epoll_wait(this->_epollfd, &this->_ev[0], max_events, timeout);
+	int nfds = epoll_wait(this->_epollfd, this->_ev, max_events, timeout);
 	if (nfds < 0)
 		throw (Server::FatalError("Epoll Wait Operation failed"));
 	return (nfds);
@@ -285,7 +314,12 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 
 void	Server::writeInBuffer(Client *client, std::string data)
 {
+	struct epoll_event ev;
+
 	client->addToBuffer(data);
+	ev.events = EPOLLIN | EPOLLOUT;
+	ev.data.fd = client->getFd();
+	this->controlEpoll(EPOLL_CTL_MOD, ev.data.fd, &ev);
 }
 
 Server::Server()
@@ -351,8 +385,6 @@ std::map<std::string, Channel *> const &Server::getChannelMap() const
 
 void    Server::removeClient(int clientFd)
 {
-	// PRINT("client disconnected: ", RED, "");
-	// PRINT(clientFd, RED, "\n");
 	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); )
 	{
 		Channel *channel = it->second;
@@ -361,7 +393,8 @@ void    Server::removeClient(int clientFd)
 			channel->removeUser(clientFd);
 			if (channel->getUsers().empty())
 			{
-				std::cout << RED << "deleting empty channel " << it->first << RESET << std::endl;
+				if (DEBUG)
+					std::cout << RED << "deleting empty channel " RESET << it->first << std::endl;
 				delete channel;
 				this->_channels.erase(it++);
 				continue;
@@ -398,11 +431,6 @@ std::pair<std::map<std::string, Channel *>::iterator, bool>Server::addChannel(st
 	Channel *newChan = new Channel(name, password);
 
 	pair = this->_channels.insert(std::make_pair(name, newChan));
-	std::cout << DBUG GREEN "Added channel: " RESET << name << std::endl;
-	std::cout << DBUG GREEN "Current channels: " RESET;
-	for (std::map<std::string, Channel *>::const_iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
-		std::cout << it->first << " ";
-	std::cout << std::endl;
 	return (pair);
 }
 
@@ -411,7 +439,8 @@ void Server::removeChannel(const std::string &name)
 	std::map<std::string, Channel *>::iterator it = this->_channels.find(name);
 	if (it != this->_channels.end())
 	{
-		std::cout << DBUG RED "Deleting channel : " RESET << name << std::endl;
+		if (DEBUG)
+			std::cout << DBUG RED "Deleting channel : " RESET << name << std::endl;
 		delete it->second;
 		this->_channels.erase(it);
 	}

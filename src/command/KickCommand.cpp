@@ -65,7 +65,7 @@ void KickCommand::execute() const
 			continue ;
 		}
 
-		currentChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " KICK " + currentChannel->getName() + " " + currentUser->getNickname() + " :" + kickComment + "\r\n");
+		currentChannel->sendMessageToAll(this->_server, ":" + this->getClient()->getNickname() + " KICK " + currentChannel->getName() + " " + currentUser->getNickname() + " :" + kickComment + "\r\n");
 		currentChannel->removeUser(currentUser);
 	}
 }

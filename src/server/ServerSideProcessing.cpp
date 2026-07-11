@@ -2,9 +2,9 @@
 #include "Command.hpp"
 #include "CommandFactory.hpp"
 #include "utils.hpp"
-#include <exception>
 #include <stdio.h>
 #include <bits/stdc++.h>
+#include "debug.hpp"
 
 /**
  * @brief allows handling of the client request.
@@ -41,7 +41,7 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch(Command::UnknownCommandException& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << YELLOW "Caught: " << e.what() << " : Unknown command" << RESET << std::endl;
 			Director director;
 			std::string cmdKeyword = e.what();
 			std::string reply = director.errUnknownCommand(client.getNickname(), cmdKeyword);
@@ -51,7 +51,7 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch (Command::NotEnoughParametersException& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << YELLOW "Caught: " << e.what() << RESET << std::endl;
 			Director director;
 			std::string reply = director.errNeedMoreParams(client.getNickname(), e.what());
 			this->writeInBuffer(&client, reply);
@@ -60,7 +60,7 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch (Command::NotRegisteredException& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << YELLOW "Caught: " << e.what() << RESET << std::endl;
 			Director director;
 			std::string reply = director.errNotRegistered(client.getNickname());
 			this->writeInBuffer(&client , reply);
@@ -69,12 +69,12 @@ bool	Server::handleRequest(Client& client)
 		}
 		catch(Server::FatalError& e)
 		{
-			std::cout << "[FATAL] Caught: " << e.what() << std::endl;
+			std::cout << RED "[FATAL] Caught: " << e.what() << RESET << std::endl;
 			stop = true;
 		}
 		catch(std::exception& e)
 		{
-			std::cout << "Caught: " << e.what() << std::endl;
+			std::cout << YELLOW "Caught: " << e.what() << RESET << std::endl;
 			delete command;
 			command = NULL;
 		}

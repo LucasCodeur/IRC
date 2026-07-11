@@ -6,7 +6,7 @@
 /*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/06/22 18:00:25 by enchevri         ###   ########lyon.fr   */
+/*   Updated: 2026/07/10 20:24:34 by enchevri         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 #include <sstream>
 
 #include <sys/socket.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <string.h>
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -34,20 +32,14 @@ namespace utils_server
 bool	receiveData(int socket, std::string& buf)
 {
 	int	bytes_read;
-	char	buffer[BUFFER_SIZE] = {"0"};
+	char	buffer[BUFFER_SIZE];
 
-	memset(buffer, 0, BUFFER_SIZE);
 	bytes_read = recv(socket, buffer, sizeof(buffer), 0);
 	if (bytes_read <= 0)
 	{
-		if (bytes_read == 0 || ((bytes_read == -1) && (errno != EAGAIN && errno != EWOULDBLOCK)))
-			return (false);
+		return (false);
 	}
-	// if (buffer[bytes_read - 2] == '\r')
-	// 	std::cout << "rrrrrrrrrrrrrrrrrrr\n" << std::endl;
-	// if (buffer[bytes_read - 1] == '\n')
-	// 	std::cout << "nnnnnnnnnnnnnnnnnn\n" << std::endl;
-	buf += buffer;
+	buf.append(buffer, bytes_read);
 	return (true);
 }
 
@@ -122,10 +114,6 @@ std::string extractCommand(std::string& buffer, bool security)
 	}
 	(void)security;
 	int size = res.size();
-	// if (security == true && res[size] != '\n' && res[size - 1] != '\r')
-	// {
-	// 	throw std::runtime_error("No carriage or newline at the end of the command");
-	// }
 	res = res.substr(0, size - 1);
 	return (res);
 }
@@ -156,9 +144,11 @@ void	setNonBlocking(int sock)
  */
 void	sendData(int fd, std::string &data)
 {
-	if (send(fd, data.c_str(), strlen(data.c_str()), 0) < 0)
+	ssize_t sent = send(fd, data.c_str(), data.size(), 0);
+	if (sent > 0)
+		data.erase(0, sent);
+	else if (sent == -1)
 		throw std::runtime_error("Send failed");
-	data = "";
 }
 
 /**

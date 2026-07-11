@@ -130,7 +130,7 @@ std::string	Director::rplWelcome(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
-
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -159,6 +159,7 @@ std::string	Director::rplYourhost(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -185,6 +186,7 @@ std::string	Director::rplCreated(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -212,6 +214,7 @@ std::string	Director::rplMyInfo(const std::string& nickname) const
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -229,6 +232,7 @@ std::string Director::rplJoin(Client const &client, Channel const &channel) cons
 
 	if (reply.size() > 512) 
 		throw std::runtime_error("Reply longer than 512 characters");
+	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
 
@@ -253,7 +257,6 @@ std::string	Director::rplChannelModeIs(std::string clientNick, std::string chann
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -274,7 +277,6 @@ std::string Director::errNeedMoreParams(std::string clientNick, std::string comm
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -294,7 +296,6 @@ std::string Director::errNotRegistered(const std::string &clientNick) const
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -320,7 +321,6 @@ std::string	Director::errNoSuchChannel(std::string clientNick, std::string chann
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -341,7 +341,6 @@ std::string		Director::errNoSuchNick(std::string clientNick, std::string channel
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -361,7 +360,6 @@ std::string		Director::errUnknownMode(std::string clientNick, std::string modeCh
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -382,7 +380,6 @@ std::string		Director::rplTopic(std::string clientNick, std::string channelName,
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -401,7 +398,6 @@ std::string	Director::rplQuit(Client const &client, std::string const &reason) c
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -421,7 +417,6 @@ std::string	Director::rplPrivmsg(Client const &client, Channel const &channel, s
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -441,7 +436,6 @@ std::string	Director::rplPrivmsg(Client const &client, Client const &target, std
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -462,7 +456,6 @@ std::string		Director::rplNoTopic(std::string clientNick, std::string channelNam
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -483,7 +476,6 @@ std::string		Director::errNotOnChannel(std::string clientNick, std::string chann
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -504,7 +496,6 @@ std::string		Director::errChanOPrivsNeeded(std::string clientNick, std::string c
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -526,7 +517,6 @@ std::string		Director::errBadChannelKey(std::string clientNick, std::string chan
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -547,7 +537,6 @@ std::string		Director::errInviteOnlyChan(std::string clientNick, std::string cha
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -568,7 +557,6 @@ std::string		Director::errChannelIsFull(std::string clientNick, std::string chan
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -589,7 +577,6 @@ std::string		Director::errUnknownCommand(std::string clientNick, std::string cmd
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -609,7 +596,6 @@ std::string Director::rplPart(Client const &client, Channel const &channel, std:
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -629,7 +615,6 @@ std::string Director::rplTopic(Client const &client, Channel const &channel) con
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -649,7 +634,6 @@ std::string Director::rplNoTopic(Client const &client, Channel const &channel) c
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -669,7 +653,6 @@ std::string Director::rplNameReply(Client const &client, Channel const &channel,
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -689,7 +672,6 @@ std::string Director::rplEndOfNames(Client const &client, Channel const &channel
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -714,7 +696,6 @@ std::string Director::rplWhoReply(Client const &requester, std::string const &ch
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -734,57 +715,6 @@ std::string Director::rplEndOfWho(Client const &requester, std::string const &ma
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
-
-std::string Director::rplNameReply(std::string clientNick, Channel &channel) const
-{
-	ReplyBuilder builder;
-	std::vector<std::string> nicknamesVector = channel.listNames();
-	std::string nicknames = "";
-
-	for (std::vector<std::string>::iterator it = nicknamesVector.begin(); it != nicknamesVector.end(); ++it)
-	{
-		nicknames += (*it);	
-		if (it + 1 == nicknamesVector.end())
-			nicknames += " ";
-	}
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_NAMREPLY)
-				.addParams(clientNick)
-				.addParams(channel.getName())
-				.addTrailing(nicknames)
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512)
-		throw std::runtime_error("Reply longer than 512 characters");
-
-	PRINT(reply, YELLOW, "\n");
-	return (reply);
-}
-
-std::string Director::rplEndofNames(std::string clientNick, Channel &channel) const
-{
-	ReplyBuilder builder;
-
-	std::string reply = builder
-				.reset()
-				.addPrefix(SERVERNAME)
-				.addNumeric(RPL_ENDOFNAMES)
-				.addParams(clientNick)
-				.addParams(channel.getName())
-				.addTrailing("End of /NAMES list")
-				.addCrln()
-				.buildReply();
-
-	if (reply.size() > 512)
-		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }
@@ -843,7 +773,6 @@ std::string Director::errUserOnChannel(std::string clientNick, std::string invit
 
 	if (reply.size() > 512)
 		throw std::runtime_error("Reply longer than 512 characters");
-
 	PRINT(reply, YELLOW, "\n");
 	return (reply);
 }

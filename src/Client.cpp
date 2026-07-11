@@ -13,7 +13,8 @@ Client::Client()
 	  _nickname(""),
 	  _password(""),
 	  _buf(""),
-	  _fd(-1)
+	  _fd(-1),
+	  _ev(NULL)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG GREEN "Client created: " RESET << *this <<std::endl;
@@ -35,7 +36,8 @@ Client::Client(Client const &original) :
 	  _nickname(original._nickname),
 	  _password(original._password),
 	  _buf(original._buf),
-	  _fd(original._fd)
+	  _fd(original._fd),
+	  _ev(original._ev)
 {
 	if (DEBUG == 1)
 		std::cout << DBUG BLUE "Client copied: " RESET << *this <<std::endl;
@@ -53,6 +55,7 @@ Client &Client::operator=(Client const &other)
 		this->_buf = other._buf;
 		this->_fd = other._fd;
 		this->_authstate = other._authstate;
+		this->_ev = other._ev;
 		if (DEBUG == 1)
 			std::cout << DBUG BLUE "Client assigned: " RESET << *this << std::endl;
 	}
@@ -117,6 +120,12 @@ std::string &Client::getClientInputBuffer()
 {
 	return (this->_inputBuffer);
 }
+
+struct epoll_event*	Client::getEvent() const
+{
+	return (this->_ev);
+}
+
 void Client::setFd(int fd)
 {
 	this->_fd = fd;
@@ -142,10 +151,14 @@ void Client::setRealname(std::string const &realname)
 	this->_realname = realname;
 }
 
-
 void Client::setHostname(std::string const &hostname)
 {
 	this->_hostname = hostname;
+}
+
+void Client::setEvent(struct epoll_event* ev)
+{
+	this->_ev = ev;
 }
 
 Authstate::Authstate()

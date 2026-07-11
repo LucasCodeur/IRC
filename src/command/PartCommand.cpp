@@ -14,8 +14,6 @@ PartCommand::PartCommand(Server *server, const int clientFd, t_msgSpecs specs, c
 	}
 	if (params.size() < PartCommand::min_params)
 	{
-		std::string reply = this->_director.errNeedMoreParams(this->getClient()->getNickname(), "PART");
-		this->_server->writeInBuffer(this->getClient(), reply);
 		throw NotEnoughParametersException("PART");
 	}
 	else if (PartCommand::max_params != 0 && params.size() > PartCommand::max_params)
@@ -41,10 +39,15 @@ void PartCommand::execute() const
 		{
 			if (it->second->removeUser(fd))
 			{
-				std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
-				std::string reason = this->_trailer.empty() ? "Leaving" : this->_trailer;
+				if (DEBUG)
+					std::cout << DBUG << fd << GREEN " leaving " << it->first << RESET << std::endl;
+				std::string reason;
+				if (this->_trailer.empty())
+					reason = "Leaving";
+				else
+					reason = this->_trailer;
 				std::string reply = this->_director.rplPart(*this->_server->getClient(fd), *it->second, reason);
-				it->second->sendMessageToAll(reply);
+				it->second->sendMessageToAll(this->_server, reply);
 				this->_server->writeInBuffer(this->getClient(), reply);
 				if (it->second->getUsers().empty())
 				{

@@ -26,16 +26,17 @@ class Client
 {
 	private:
 	
-	Authstate		_authstate;
-	std::string		_username;
-	std::string		_hostname;
-	std::string		_realname;
-	std::string		_servername;
-	std::string		_nickname;
-	std::string		_password; // take off
-	std::string		_buf; // output buffer
-	std::string		_inputBuffer;
-	int				_fd;
+	Authstate				_authstate;
+	std::string				_username;
+	std::string				_hostname;
+	std::string				_realname;
+	std::string				_servername;
+	std::string				_nickname;
+	std::string				_password; // take off
+	std::string				_buf; // output buffer
+	std::string				_inputBuffer;
+	int						_fd;
+	struct epoll_event*		_ev;
 
 	public:
 	// CONSTRUCTOR
@@ -56,7 +57,8 @@ class Client
 	Authstate		  &getAuthstate();
 	std::string		  &getBuf();
 	std::string		  &getClientInputBuffer();
-	int getFd() const;
+	int					getFd() const;
+	struct epoll_event*	getEvent() const;
 	bool				isfullyRegistered();
 	// SETTERS
 	void setFd(int fd);
@@ -66,6 +68,7 @@ class Client
 	void setAuthState(const std::string state);
 	void setRealname(std::string const &realname);
 	void setHostname(std::string const &hostname);
+	void setEvent(struct epoll_event* ev);
 
 	void addToBuffer(std::string data);
 

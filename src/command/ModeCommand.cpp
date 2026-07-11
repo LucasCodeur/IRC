@@ -24,7 +24,8 @@ ModeCommand::ModeCommand(Server *server, const int clientFd, Command::t_msgSpecs
 	if (params.size() == 2 && (modeEdition.length() != 2 || (modeEdition[0] != '+' && modeEdition[0] != '-')))
 		throw Command::IncorrectParametersException(); //NOTE: maybe just silently ignore?
 
-	std::cout << "Mode edition : " << modeEdition << std::endl;
+	if (DEBUG)
+		std::cout << "Mode edition : " << modeEdition << std::endl;
 	if (modeEdition.length() > 1)
 	{
 		this->_operationChar = params[1][0][0]; // eg. +
@@ -110,12 +111,12 @@ void	ModeCommand::changeUserMode() const
 	int	target = targetClient->getFd();
 	if (this->_operationChar == "+")
 	{
-		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
+		targetChannel->sendMessageToAll(this->_server, ":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " +o " + clientNick + "\r\n");
 		this->_targetChannel->setOperator(target);
 	}
 	if (this->_operationChar == "-")
 	{
-		targetChannel->sendMessageToAll(":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " -o " + clientNick + "\r\n");
+		targetChannel->sendMessageToAll(this->_server, ":" + this->getClient()->getNickname() + " MODE " + targetChannel->getName() + " -o " + clientNick + "\r\n");
 		this->_targetChannel->removeOperator(target);
 	}
 }
