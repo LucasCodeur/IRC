@@ -31,23 +31,24 @@ static bool	move_verticality(t_board* board, bool move_bottom);
 
 bool	Board::game_loop(t_board *board, char c)
 {
+	bool	move = false;
 	board->running = true;
 	sendPrivateMessage(this->_socket, this->_nick, "Commande (a=left, d=right, w=up, s=down, q=quit) :");
 
 	if (c == 'a')
-		move_side(board, false);
+		move = move_side(board, false);
 	else if (c == 'd')
-		move_side(board, true);
+		move = move_side(board, true);
 	else if (c == 'w')
-		move_verticality(board, false);
+		move = move_verticality(board, false);
 	else if (c == 's')
-		move_verticality(board, true);
+		move = move_verticality(board, true);
 	else if (c == 'q')
 	{
 		board->running = false;
 		return (false);
 	}
-	if (c == 'a' || c == 'd' || c == 'w' || c == 's')
+	if (move == true)
 		fill_nb_rd_place(board);
 	if (is_victory(board) == true)
 	{
