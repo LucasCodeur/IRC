@@ -16,7 +16,6 @@
 
 #include <cctype>
 #include <netinet/in.h>
-#include <stdexcept>
 #include <stdlib.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
@@ -29,7 +28,9 @@
 #include <iostream>
 #include <string>
 #include <utils.hpp>
+
 #include "CommandFactory.hpp"
+#include "exceptions.hpp"
 
 int stopVar = false;
 
@@ -60,7 +61,8 @@ bool	Server::launcherServer(std::string port, std::string password)
 		PRINT(e.what(), RED, "\n");
 		return (false);
 	}
-
+	close(this->_epollfd);
+	close(this->_server_sock);
 	return (true);
 }
 
@@ -217,7 +219,7 @@ int	Server::createSocket(int domain, int type_communication, int protocol)
 {
 	int sockfd = socket(domain, type_communication, protocol);
 	if (sockfd < 0)
-		throw Server::FatalError("Socket failed");
+		throw FatalError("Socket failed");
 	return (sockfd);
 }
 
@@ -231,7 +233,7 @@ int	Server::createSocket(int domain, int type_communication, int protocol)
 void	 Server::setSocketOption(int socket_fd, int level, int option_name)
 {
 	if (setsockopt(socket_fd, level, option_name, &this->_opt, sizeof(this->_opt)) < 0)
-		throw Server::FatalError("Set socket option failed");
+		throw FatalError("Set socket option failed");
 }
 
 /**
@@ -241,7 +243,7 @@ void	 Server::setSocketOption(int socket_fd, int level, int option_name)
 void	Server::bindSocket(void)
 {
 	if (bind(this->_server_sock, reinterpret_cast<sockaddr*>(&this->_addr), sizeof(this->_addr)) < 0)
-		throw Server::FatalError("Bind socket failed");
+		throw FatalError("Bind socket failed");
 }
 
 /**
@@ -254,7 +256,7 @@ void	Server::bindSocket(void)
 void	Server::listenSocket(int sizeWaitingList)
 {
 		if (listen(this->_server_sock, sizeWaitingList) < 0)
-			throw Server::FatalError("Listen Socket failed");
+			throw FatalError("Listen Socket failed");
 }
 
 /**
@@ -266,7 +268,7 @@ void	Server::setEpoll(int option)
 {
 	this->_epollfd = epoll_create1(option);
 	if (this->_epollfd == -1)
-		throw Server::FatalError("Epoll Create failed");
+		throw FatalError("Epoll Create failed");
 	this->_ev[0].events = EPOLLIN;
 	this->_ev[0].data.fd = this->_server_sock;
 }
@@ -282,7 +284,7 @@ void	Server::setEpoll(int option)
 void	Server::controlEpoll(int op, int fd, struct epoll_event* event)
 {
 	if (epoll_ctl(this->_epollfd, op, fd, event) < 0)
-		throw Server::FatalError("Control Epoll failed");
+		throw FatalError("Control Epoll failed");
 }
 
 /**
@@ -294,7 +296,7 @@ int	Server::acceptConnexion(socklen_t* addrlen)
 {
 	int fd = accept(this->_server_sock, (struct sockaddr *)&this->_addr, addrlen);
 	if (fd < 0)
-		throw Server::FatalError("Accept server failed");
+		throw FatalError("Accept server failed");
 	return (fd);
 }
 
@@ -309,7 +311,7 @@ int	Server::epollWaitOperation(int max_events, int timeout)
 {
 	int nfds = epoll_wait(this->_epollfd, this->_ev, max_events, timeout);
 	if (nfds < 0)
-		throw (Server::FatalError("Epoll Wait Operation failed"));
+		throw (FatalError("Epoll Wait Operation failed"));
 	return (nfds);
 }
 
@@ -342,8 +344,6 @@ Server::~Server()
 		delete it->second;
 	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		delete it->second;
-	close(this->_epollfd);
-	close(this->_server_sock);
 	if (DEBUG == 1)
 		std::cout << DBUG RED "Server destroyed: " RESET << *this << std::endl;
 }
@@ -524,10 +524,6 @@ void Server::sendWelcomePack(Client &client)
 		else
 			this->setBotFd(client.getFd());
 }
-
-Server::FatalError::FatalError() throw() : std::runtime_error("Fatal error") {}
-Server::FatalError::FatalError(std::string msg) throw() : std::runtime_error(msg) {}
-Server::FatalError::~FatalError() throw() {}
 
 void signalHandler(int signum)
 {

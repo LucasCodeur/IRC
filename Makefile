@@ -33,6 +33,7 @@ SRC =			main.cpp	\
 				Client.cpp	\
 				Channel.cpp \
 				debug.cpp \
+				exceptions.cpp
 
 SRC_SERVER =	Server.cpp	\
 				ServerSideProcessing.cpp \

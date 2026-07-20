@@ -1,10 +1,13 @@
 #include "Server.hpp"
 #include "Command.hpp"
+#include "exceptions.hpp"
+
 #include "CommandFactory.hpp"
 #include "utils.hpp"
+#include "debug.hpp"
+
 #include <stdio.h>
 #include <bits/stdc++.h>
-#include "debug.hpp"
 
 /**
  * @brief allows handling of the client request.
@@ -67,7 +70,7 @@ bool	Server::handleRequest(Client& client)
 			delete command;
 			command = NULL;
 		}
-		catch(Server::FatalError& e)
+		catch(FatalError& e)
 		{
 			std::cout << RED "[FATAL] Caught: " << e.what() << RESET << std::endl;
 			stop = true;

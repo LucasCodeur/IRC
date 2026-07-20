@@ -29,6 +29,7 @@ P_SRC_2048 = src/2048/
 SRC = main.cpp \
 	  Bot.cpp \
 	  utils.cpp \
+	  exceptions.cpp \
 
 SRC_2048 = launcher_2048.cpp \
 		   Board.cpp \

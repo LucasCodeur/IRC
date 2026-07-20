@@ -1,28 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.cpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: enchevri <enchevri@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/21 18:04:43 by lud-adam          #+#    #+#             */
-/*   Updated: 2026/07/10 20:24:34 by enchevri         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <stdexcept>
 #include <sstream>
+#include <iostream>
 
 #include <sys/socket.h>
 #include <fcntl.h>
-#include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+
+#include "exceptions.hpp"
 
 # define BUFFER_SIZE 2048
 
 namespace utils_server 
 {
+
 /**
  * @brief wrapper function of recv(), allowing it to receive data by the indicated file descriptor.
  * @param socketfd to receive data from this one.
@@ -53,15 +43,15 @@ static bool check_port(std::string& port);
 bool    convertPort(std::string port, int& portToSet)
 {
     if (check_port(port) == false)
-        throw std::runtime_error("Bad characters inside port");
+        throw BadPort("Bad characters inside port");
 
     std::stringstream ss(port);
     if (ss.fail() == true)
-        throw std::runtime_error("Bad characters inside port");
+        throw BadPort("Bad characters inside port");
 
     ss >> portToSet;
     if (1023 >= portToSet || portToSet >= 49152)
-        throw std::runtime_error("Bad range of port");
+        throw BadPort("Bad range of port");
 
     return (true);
 }
