@@ -7,6 +7,12 @@
 #include "Command.hpp"
 #include "JoinCommand.hpp"
 
+static void tolower(std::string &str)
+{
+	for (std::string::iterator it = str.begin(); it != str.end(); ++it)
+		*it = std::tolower(*it);
+}
+
 JoinCommand::JoinCommand(Server *server, const int clientFd, t_msgSpecs specs, const std::vector<std::vector<std::string> > params) : Command(server, clientFd, specs, params)
 {
 	if (!server->getClient(clientFd)->isfullyRegistered())
@@ -68,11 +74,13 @@ void JoinCommand::execute() const
 	std::vector<std::string>::const_iterator key_it = keys.begin();
 	std::vector<std::string>::iterator chan_it;
 
-	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(this->getClientFd());
-
+	int clientFd = this->getClientFd(); 
+	std::map<int, Client*>::const_iterator it = this->_server->getClientmap().find(clientFd);
+	
 	std::string providedPassword = "";
 	for (chan_it = channels.begin(); chan_it != channels.end(); ++chan_it)
 	{
+		tolower(*chan_it);
 		std::map<std::string, Channel *>::const_iterator distChan_it = channelMap.find(*chan_it);
 		if (distChan_it == channelMap.end()) // channel creation
 		{
@@ -93,8 +101,8 @@ void JoinCommand::execute() const
 					key_it++;
 				continue ;
 			}
-			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
-			distChan_it->second->setOperator(this->getClientFd());
+			distChan_it->second->addUser(this->_server->getClient(clientFd));
+			distChan_it->second->setOperator(clientFd);
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 			if (key_it != keys.end())
 				key_it++;
@@ -102,7 +110,7 @@ void JoinCommand::execute() const
 		}
 
 		providedPassword = "";
-		if (distChan_it->second->isUserInChannel(this->getClientFd())) // if already in channel, ignore
+		if (distChan_it->second->isUserInChannel(clientFd)) // if already in channel, ignore
 		{
 			if (key_it != keys.end())
 				key_it++;
@@ -111,7 +119,7 @@ void JoinCommand::execute() const
 		if (key_it != keys.end())
 			providedPassword = *key_it++;
 
-		if (distChan_it->second->isInviteOnly() && !distChan_it->second->isInvited(this->getClientFd()))
+		if (distChan_it->second->isInviteOnly() && !distChan_it->second->isInvited(clientFd))
 		{
 			std::string reply = this->_director.errInviteOnlyChan(this->getClient()->getNickname(), *chan_it);
 			this->_server->writeInBuffer(this->getClient(), reply);
@@ -127,14 +135,14 @@ void JoinCommand::execute() const
 
 		if (distChan_it->second->getPassword() == "") // if no password required
 		{
-			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
-			distChan_it->second->removeInvite(this->getClientFd());
+			distChan_it->second->addUser(this->_server->getClient(clientFd));
+			distChan_it->second->removeInvite(clientFd);
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else if (distChan_it->second->getPassword() == providedPassword) // if password correct
 		{
-			distChan_it->second->addUser(this->_server->getClient(this->getClientFd()));
-			distChan_it->second->removeInvite(this->getClientFd());
+			distChan_it->second->addUser(this->_server->getClient(clientFd));
+			distChan_it->second->removeInvite(clientFd);
 			this->confirmJoin(*(it->second), *(distChan_it->second));
 		}
 		else // if password incorrect
