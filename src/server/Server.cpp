@@ -86,10 +86,9 @@ void	Server::listenConnexionsEpoll(void)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-
 			if (this->_ev[n].data.fd == this->_server_sock)
 			{
-				if (this->addNewClient(n) == false)
+				if (this->addNewClient() == false)
 					return ;
 				continue;
 			}
@@ -106,7 +105,6 @@ void	Server::listenConnexionsEpoll(void)
 				continue ;
 			if (this->_ev[n].events & EPOLLOUT)
 			{
-
 				if (ft_epollout(client, n) == false)
 					return ;
 				if (client->getClientInputBuffer().empty())
@@ -124,12 +122,10 @@ void	Server::listenConnexionsEpoll(void)
 
 /**
  * @brief add new client inside server.
- * @param n index of the number of fds to handle.
  * @return true if success or false if not.
  */
-bool	Server::addNewClient(int n)
+bool	Server::addNewClient()
 {
-	(void)n;
 	struct epoll_event ev;
 	socklen_t addrlen = sizeof(this->_addr);
 	try
